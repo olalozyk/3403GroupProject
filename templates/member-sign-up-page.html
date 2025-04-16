@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--making the page mobile-friendly -->
+    <title>Member Sign Up</title>
+    
+    <!-- Bootstrap link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS link -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img class="logo" src="../static/images/event-title.png" alt="logo">
+            </a>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="admin_dashboard.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="activity_management.html">Activity Management</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view_timetable_admin.html">View Timetable</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_login.html">Logout</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <span class="nav-link">Welcome <span style="color:#FC0C0C">Admin</span>, weishenadmin</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- body -->
+    <div class="container">
+        <h2>Member's Sign Up</h2>
+
+        <form method="POST">
+            <label>Username</label><br>
+            <input type="text" name="username" required><br><br>
+
+            <label>Name</label><br>
+            <input type="text" name="name" required><br><br>
+
+            <label>Email</label><br>
+            <input type="email" name="email" required><br><br>
+
+            <label>Clubs</label><br>
+            <select name="club" required>
+                <option disabled selected>Select a club/ organisation</option>
+                <option>Football</option>
+                <option>Computing</option>
+                <option>Dance</option>
+            </select><br><br>
+
+            <label>Password</label><br>
+            <input type="password" name="password" required><br><br>
+
+            <label>Confirm Password</label><br>
+            <input type="password" name="confirm_password" required><br><br>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>
+            <a href="index.html">Back to Main Page</a>
+        </p>
+    </div>
+</body>
