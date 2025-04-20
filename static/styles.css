@@ -1,0 +1,240 @@
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    padding-top: 56px;
+}
+/* ================================ */
+/* NAVIGATION BAR STYLING   */
+/* ================================ */
+.navbar {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.7rem 1rem;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+    color: #FC0C0C;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar-brand img.logo {
+    max-height: 80px;
+    width: auto;
+}
+
+.container {
+    margin-top: 2rem;
+}
+
+
+/* ================================ */
+/* ADMIN VIEW TIMETABLE PAGE STYLING   */
+/* ================================ */
+
+
+.admin-timetable-page {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admin-timetable-page h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.admin-timetable-page input[type="text"],
+.admin-timetable-page input[type="date"],
+.admin-timetable-page select {
+    border-radius: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ced4da;
+    transition: box-shadow 0.3s;
+}
+
+.admin-timetable-page input:focus,
+.admin-timetable-page select:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+
+
+}
+
+.admin-timetable-page .btn {
+    border-radius: 30px;
+    font-weight: 600;
+    background-color: #007bff;
+    transition: all 0.3s ease-in-out;
+}
+
+.admin-timetable-page .btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-timetable-page .table-responsive {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.admin-timetable-page .table th,
+.admin-timetable-page .table td {
+    vertical-align: middle !important;
+    padding: 1rem;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+.admin-timetable-page .table thead {
+    background-color: #f1f1f1;
+    font-weight: 600;
+}
+
+.admin-timetable-page .table td:hover {
+    background-color: #e9f7ff;
+}
+
+@media (max-width: 768px) {
+    .admin-timetable-page .btn {
+        width: 100% !important;
+    }
+}
+
+/* ================================ */
+/* MEMBER TIMETABLE PAGE STYLING   */
+/* ================================ */
+
+.member-timetable-page {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.member-timetable-page h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.member-timetable-page input[type="text"],
+.member-timetable-page input[type="email"],
+.member-timetable-page input[type="date"] {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ced4da;
+    transition: box-shadow 0.3s;
+}
+
+.member-timetable-page input[type="text"]:focus,
+.member-timetable-page input[type="email"]:focus,
+.member-timetable-page input[type="date"]:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.member-timetable-page .btn {
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+}
+
+.member-timetable-page .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.member-timetable-page .user-submit-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.member-timetable-page .user-submit-button:hover {
+    background-color: #218838;
+}
+
+.member-timetable-page .user-edit-button {
+    background-color: orangered;
+    color: white;
+    border: none;
+}
+
+.member-timetable-page .user-edit-button:hover {
+    background-color: #d14200;
+}
+
+.member-timetable-page .user-share-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.member-timetable-page .user-share-button:hover {
+    background-color: #0056b3;
+}
+
+.member-timetable-page .table {
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.member-timetable-page .table-bordered th,
+.member-timetable-page .table-bordered td {
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.member-timetable-page .table thead {
+    background-color: #f1f1f1;
+    font-weight: 600;
+}
+
+.member-timetable-page .table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.member-timetable-page .table tbody tr:hover {
+    background-color: #e9f7ff;
+}
+
+.member-timetable-page .rostercells td {
+    height: 60px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.member-timetable-page .rostercells td:hover {
+    background-color: #d1f5d3;
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+    .member-timetable-page .user-submit-button,
+    .member-timetable-page .user-edit-button,
+    .member-timetable-page .user-share-button {
+        width: 100% !important;
+    }
+}
