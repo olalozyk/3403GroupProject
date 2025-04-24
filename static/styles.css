@@ -1,8 +1,7 @@
 
 body {
-    
+    background-color: #d0adfb;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #ffffff;
     color: #333;
     padding-top: 56px;
 }
@@ -242,41 +241,51 @@ body {
 
 /* ================================ */
 /* Page 3 styling */
-.control::placeholder {
-    color: #999;
-    opacity: 0.8;
+body {
+    background-color: #f7f3fc; /* Optional: light lavender background */
 }
+
 .purple-text {
-    color: #8e44ad;
-}
-.register-btn {
-    background-color: #8e44ad;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
-}
-.form-label {
-    color: #8e44ad;
+    color: #9d5ced;
     font-weight: bold;
 }
+.form-label {
+    color: #9562ee;
+    font-weight: bold;
+}
+
 .form-control {
     border-radius: 25px;
     border: 1.5px solid #ccc;
     padding: 0.6rem 1rem;
     font-size: 0.95rem;
 }
+
 .form-control::placeholder {
     color: #999;
     opacity: 0.8;
 }
- .purple-link {    /*can reuse! */
-    color: #8e44ad;
+
+.register-btn {
+    background-color: #a37edc;  /* Lavender button */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+}
+
+.register-btn:hover {
+    background-color: #8e60c4;  /* Darker hover */
+}
+
+.purple-link {
+    color: #a260ee;  /* Link below form */
     text-decoration: none;
     font-weight: 500;
 }
+
 .purple-link:hover {
     text-decoration: underline;
-    color: #732d91;
+    color: #8e60c4;
 }
