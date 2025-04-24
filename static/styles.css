@@ -1,5 +1,6 @@
 
 body {
+    
     font-family: 'Segoe UI', sans-serif;
     background-color: #ffffff;
     color: #333;
@@ -242,4 +243,8 @@ body {
 ::placeholder {
     color: #c0c0c0;
     opacity: 0.6;
+}
+
+.purple-text {
+    color: #8e44ad;
 }
