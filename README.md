@@ -41,12 +41,12 @@ All data is stored privately per user, with secure authentication and controlled
 
 ## Tech Stack
 
-| Category     | Tools/Libraries                     |
-|--------------|--------------------------------------|
-| Frontend     | HTML, CSS, Bootstrap, JavaScript, JQuery |
-| Backend      | Python, Flask                        |
-| Database     | SQLite with SQLAlchemy ORM           |
-| Other        | AJAX, Flask-WTF, WTForms             |
+| Category | Tools/Libraries                          |
+| -------- | ---------------------------------------- |
+| Frontend | HTML, CSS, Bootstrap, JavaScript, JQuery |
+| Backend  | Python, Flask                            |
+| Database | SQLite with SQLAlchemy ORM               |
+| Other    | AJAX, Flask-WTF, WTForms                 |
 
 ---
 
@@ -58,11 +58,15 @@ All data is stored privately per user, with secure authentication and controlled
    git clone https://github.com/YOUR-TEAM/chronic-pain-tracker.git
    cd chronic-pain-tracker
 
+   ```
+
 2. **Create a virtual environment**
 
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+   ```
 
 3. **Install dependencies**
 
@@ -71,10 +75,43 @@ All data is stored privately per user, with secure authentication and controlled
    Run the app
    flask run
 
-4. **Open your browser and go to: http://localhost:5000**
+   ```
 
+4. **Open your browser and go to: http://localhost:5000**
 
 ## Team Members
 
-UWA ID	Name	GitHub Username
-32032563	Aleksandra Lozyk	@olalozyk
+<h2>Team Members</h2>
+
+<table>
+  <tr>
+    <th>No.</th>
+    <th>UWA ID</th>
+    <th>Name</th>
+    <th>GitHub Username</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>23032563</td>
+    <td>Aleksandra Lozyk</td>
+    <td>@olalozyk</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>23804104</td>
+    <td>Siena Isaacs</td>
+    <td>@enahen77</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>242450666</td>
+    <td>Wei Shen Hong</td>
+    <td>@weishen1113</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>23832333</td>
+    <td>Dharun Somalingam</td>
+    <td>@DharunSomalingam</td>
+  </tr>
+</table>
