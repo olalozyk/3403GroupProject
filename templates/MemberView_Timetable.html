@@ -7,27 +7,24 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="/static/styles.css" rel="stylesheet">
+
 </head>
 <body>
 
-<!-- Navigation Bar -->
 <nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
     <div class="container">
-        <!-- Logo -->
         <a class="navbar-brand" href="index.html">
-            <img class="logo" src="../static/images/event-title.png" alt="logo">
+            <img class="logo" src="/static/event-title.png.png" alt="logo">
         </a>
 
-        <!-- Toggler for responsive navbar -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
                 aria-controls="myList" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="myList">
             <ul class="navbar-nav mx-auto">
-                <!-- Navigation Links -->
                 <li class="nav-item active nav1">
                     <a class="nav-link" href="admin_dashboard.html">Home</a>
                 </li>
@@ -41,12 +38,10 @@
                     <a class="nav-link" href="index.html">Logout</a>
                 </li>
             </ul>
-
-            <!-- Notification bell and welcome message -->
             <ul class="navbar-nav">
                 <li class="nav-item d-flex align-items-center">
                     <a class="nav-link" href="#">
-                        <i class="fa-regular fa-bell fs-5"></i> <!-- Notification Icon -->
+                        <i class="fa-regular fa-bell fs-5"></i>
                     </a>
                 </li>
                 <li class="nav-item nav2">
@@ -61,47 +56,36 @@
 
 <br>
 
-<!-- Main Container -->
-<div class="container mt-4">
-    <!-- Page Title -->
+<div class="container mt-4 member-timetable-page">
     <h1 align="center">View TimeTable</h1>
 
-    <!-- Club Info Section -->
     <nav>
-        <form class="d-flex flex-column -left mt-4">
+        <form class="d-flex flex-column -left mt-4 roster-form">
             <div class="col-md-1 mb-2">
                 <br>
                 <label for="club"><h4>FootBall</h4></label>
             </div>
             <div class="col-md-9 mb-2">
-                <!-- Date Range Input -->
                 <input type="text" id="club" name="Date" value="24/03/25 - 27/06/25">
             </div>
         </form>
 
-        <!-- Share and Edit Section -->
-        <form class="d-flex mt-4">
+        <form class="d-flex mt-4 roster-form">
             <div class="row w-100 rounded shadow pt-3">
-                <!-- Username Input -->
-                <div class="col-md-4 justify-content-end align-items">
+                <div class="col-md-4">
                     <label for="username" class="form-label"><strong>Username / Email</strong></label>
                     <input type="text" id="username" name="username" class="form-control">
                 </div>
-                <!-- Share Button -->
-                <div class="edit col-md-4 justify-content-end align-items-end mt-4" style="background-color: #f8f9fa;">
-                    <button type="submit" class="btn btn-primary user-share-button w-25">Share</button>
+                <div class="edit col-md-4 mt-4">
+                    <button type="submit" class="btn user-share-button w-25">Share</button>
                 </div>
-                <!-- Edit Button -->
                 <div class="col-md-4 d-flex justify-content-end align-items-end mb-2">
-                    <button type="button" class="btn btn-primary user-edit-button w-25">Edit</button>
+                    <button type="button" class="btn user-edit-button w-25">Edit</button>
                 </div>
             </div>
         </form>
     </nav>
 
-    <br>
-
-    <!-- Timetable Table -->
     <div class="table-responsive mt-4">
         <table class="table table-bordered text-center" border="1" align="center" cellspacing="0" cellpadding="9" width="95%">
             <thead class="table-light">
@@ -114,7 +98,7 @@
                 <th>Friday</th>
             </tr>
             </thead>
-            <!-- Time Slots Rows -->
+            <tbody>
             <tr class="rostercells"><td>09:00</td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr class="rostercells"><td>10:00</td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr class="rostercells"><td>11:00</td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -126,16 +110,15 @@
             <tr class="rostercells"><td>17:00</td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr class="rostercells"><td>18:00</td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr class="rostercells"><td>19:00</td><td></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
         </table>
     </div>
 
-    <!-- Submit Button -->
     <div class="col text-end">
-        <button type="submit" class="btn btn-primary user-submit-button w-25">Submit</button>
+        <button type="submit" class="btn user-submit-button w-25">Submit</button>
     </div>
     <br>
 </div>
 
 </body>
 </html>
-
