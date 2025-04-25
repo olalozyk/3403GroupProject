@@ -1,2 +1,135 @@
-<!DOCTYPE html> <!-- This file is strictly for the HTLM and BOOTSTRAP for Page 9: Upload New Document Page, not including the Nav Bar and Footer --> 
-<html lang="en"> <!-- This page was written by the team member: ____  -->    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">
+            <img class="logo" src="/static/event-title.png.png" alt="logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="page_4_DashboardPage.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="page_5_AppointmentsManagerPage.html">Appointments</a></li>
+                <li class="nav-item"><a class="nav-link" href="page_7_CalendarViewPage.html">Calendar</a></li>
+                <li class="nav-item"><a class="nav-link" href="page_8_MedicalDocumentsManagerPage.html">Documents</a></li>
+                <li class="nav-item"><a class="nav-link" href="page_11_UserProfileSettingsPage.html">Profile</a></li>
+                <li class="nav-item d-flex align-items-center me-3">
+                    <a class="nav-link" href="#"><i class="fa-regular fa-bell fs-5"></i></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item d-flex align-items-center me-3">
+                    <a class="nav-link" href="page_1_LandingPage.html">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<h1 class="upload-document-text text-center mt-4">Upload New Document</h1>
+
+<div class="container mt-5 member-timetable-page shadow">
+    <div class="d-flex flex-column align-items-center mt-3 mb-5">
+        <h4 class="mb-3 upload-title"><strong>Choose File</strong></h4>
+        <form class="file-upload">
+            <div class="input-group shadow-sm">
+                <input type="file" class="form-control" name="upload_document" id="fileUpload">
+            </div>
+        </form>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4 class="mb-2 upload-title"><strong>Document Name</strong></h4>
+            <form class="name_document">
+                <div class="input-group shadow-sm w-75">
+                    <input type="text" class="form-control form-control-sm" name="document_name" placeholder="Enter a name for your document">
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h4 class="mb-2 upload-title"><strong>Date Uploaded</strong></h4>
+            <form class="date_uploaded w-75">
+                <div class="input-group shadow-sm">
+                    <input type="date" class="form-control form-control-sm" name="date_uploaded" placeholder="Select a date">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h4 class="upload-title"><strong>Document Type</strong></h4>
+            <select class="form-select shadow-sm w-75" name="document_type" id="document_type">
+                <option value="" disabled selected style="opacity: 0.6;">Select an option</option>
+                <option value="report">Report</option>
+                <option value="invoice">Invoice</option>
+                <option value="scripts">Scripts</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <h4 class="mb-2 upload-title"><strong>Notes (Optional)</strong></h4>
+            <form class="note_name mb-3 w-75">
+                <div class="input-group shadow-sm">
+                    <textarea class="form-control form-control-sm" name="notes" rows="4" placeholder="Enter a short note or comment about the document (optional)"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6 move-up-practitioner">
+            <h4 class="upload-title practitioner"><strong>Practitioner Name</strong></h4>
+            <form class="name_practitione w-75">
+                <div class="input-group shadow-sm">
+                    <input type="text" class="form-control form-control-sm" name="name_practitioner" placeholder="Enter provider name">
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h4 class="upload-title practitioner"><strong>Expiration Date (Optional)</strong></h4>
+            <div class="d-flex align-items-center mb-2">
+                <input class="form-check-input me-2 custom-checkbox" type="checkbox" id="enableExpirationDate">
+                <label class="form-check-label upload-title mb-0 me-3" for="enableExpirationDate">
+                </label>
+                <input type="date" class="form-control form-control-sm shadow-sm w-75" id="expirationDateField" name="expiration_date" placeholder="Select a date" disabled>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h4 class="upload-title"><strong>Practitioner Type</strong></h4>
+            <select class="form-select shadow-sm w-75" name="practitioner_type" id="practitioner_type">
+                <option value="" disabled selected style="opacity: 0.6;">Select an option</option>
+                <option value="gp">GP</option>
+                <option value="specialist">Specialist</option>
+                <option value="doctor">Doctor</option>
+                <option value="surgeon">Surgeon</option>
+            </select>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button class="btn btn-upload shadow-sm w-75" type="submit">Upload Document</button>
+        </div>
+    </div>
+</div>
+<div>
+    <br>
+</div>
+
+</body>
+</html>
