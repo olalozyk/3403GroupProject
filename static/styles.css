@@ -367,12 +367,12 @@ button:hover {
 /* Core Typography */
 
 .upload-document-text {
-     color: #6f42c1;
-     font-weight: 700;
-     font-size: 2.5rem;
-     animation: fadeInUp 1s ease-in-out;
-     text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
- }
+    color: #6f42c1;
+    font-weight: 700;
+    font-size: 2.5rem;
+    animation: fadeInUp 1s ease-in-out;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
 
 .upload-title {
     color: rgba(111, 66, 193, 0.6); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
@@ -436,4 +436,11 @@ textarea.form-control:focus {
     accent-color: #6f42c1;
     transform: scale(1.5);
     cursor: pointer;
+}
+
+/* Edit documents Heading */
+/* Core Typography */
+.extra-margin-right {
+    margin-right: 100px; /* or whatever value you like */
+    background-color: mistyrose;
 }
