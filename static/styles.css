@@ -212,7 +212,7 @@ button:hover {
 
 /* Sticky Header Row */
 .table-outline-dark thead th {
-    position: sticky; !important;
+    position: sticky;
     top: 0;
     background-color: purple;
     color: white;
