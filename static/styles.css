@@ -262,7 +262,7 @@ body {
 }
 
 .form-control::placeholder {
-    color: #999;
+    color: #999 !important;
     opacity: 0.8;
 }
 
