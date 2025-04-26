@@ -1,2 +1,109 @@
 <!DOCTYPE html> <!-- This file is strictly for the HTLM and BOOTSTRAP for Page 8: Medical Documents Management Page, not including the Nav Bar and Footer --> 
-<html lang="en"> <!-- This page was written by the team member: ____  -->    
+<html lang="en"> <!-- This page was written by the team member: Siena -->    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Medical Documents</title>
+
+    <!-- Bootstrap & CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
+
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <button class="btn btn-light shadow-sm fw-bold px-4 py-2">+ Upload New Document</button>
+                <button class="btn btn-light shadow-sm fw-bold px-4 py-2">&larr; Share Your Documents</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+            <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
+            <select id="sortDocs" class="form-select w-auto">
+                <option value="upload-asc">date uploaded (ascending)</option>
+                <option value="upload-desc">date uploaded (descending)</option>
+                <option value="expiry-asc">expiration (soonest first)</option>
+                <option value="expiry-desc">expiration (latest first)</option>
+            </select>
+            <button class="btn btn-primary px-4">Display</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle table-borderless shadow-sm rounded text-center">
+                <thead class="table-light">
+                    <tr class="purple-text fw-bold">
+                        <th>Document</th>
+                        <th>Practitioner</th>
+                        <th>Type</th>
+                        <th>Uploaded</th>
+                        <th>Expiration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-light shadow-sm mb-3 rounded">
+                        <td>
+                            <span class="me-2">📄</span> LDN Script - S4
+                        </td>
+                        <td>Dr Jake Croll</td>
+                        <td>Script</td>
+                        <td>02/02/2025</td>
+                        <td>N/A</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-1">Edit</button>
+                            <button class="btn btn-success btn-sm me-1">Download</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                    <tr class="bg-light shadow-sm mb-3 rounded">
+                        <td>
+                            <span class="me-2">📄</span> Pain Specialist Referral
+                        </td>
+                        <td>Dr Jessica Adams</td>
+                        <td>Referral</td>
+                        <td>03/02/2025</td>
+                        <td>03/05/2025</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-1">Edit</button>
+                            <button class="btn btn-success btn-sm me-1">Download</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                    <tr class="bg-light shadow-sm mb-3 rounded">
+                        <td>
+                            <span class="me-2">📄</span> SKG Blood Test Results
+                        </td>
+                        <td>Dr Claire Willby</td>
+                        <td>Report</td>
+                        <td>29/04/2025</td>
+                        <td>N/A</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-1">Edit</button>
+                            <button class="btn btn-success btn-sm me-1">Download</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                    <tr class="bg-light shadow-sm mb-3 rounded">
+                        <td>
+                            <span class="me-2">📄</span> Photo of Medicare Card
+                        </td>
+                        <td>Dr Dan Dell</td>
+                        <td>Insurance</td>
+                        <td>29/04/2025</td>
+                        <td>08/2029</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-1">Edit</button>
+                            <button class="btn btn-success btn-sm me-1">Download</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
