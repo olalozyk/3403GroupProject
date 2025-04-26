@@ -1,26 +1,18 @@
 body {
-  background-color: #d0adfb;
-  font-family: "Segoe UI", sans-serif;
-  color: #333;
-  padding-top: 56px;
-}
-/* ================================ */
-/* NAVIGATION BAR STYLING   */
-/* ================================ */
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  background-color: #F8F5FF; /*coral*/
+  margin: 0;
 }
 
-/* Apply animation to navbar */
+/**----------navbar----------**/
+img.logo {
+  width: auto;
+  height: 60px;
+  /**margin-right: 34px;*/
+}
+
 .navbar {
-  animation: slideDown 0.6s ease-out forwards;
+  background-color: #e9e3f5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .nav1 {
@@ -76,10 +68,21 @@ a.nav-item1.active-link {
   position: relative;
 }
 
-body {
-  background-color: #f7f3fc; /* Optional: light lavender background */
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
+.small-container {
+  /**.popular-container, .featured-container, .testimonial-container, .partner-container*/
+  max-width: 1250px;
+  margin: auto;
+  padding-left: 0px;
+  /**22px**/
+  padding-right: 0px;
+}
 .purple-text {
   color: #9d5ced;
   font-weight: bold;
@@ -97,7 +100,7 @@ body {
 }
 
 .form-control::placeholder {
-  color: #999 !important;
+  color: #999;
   opacity: 0.8;
 }
 
@@ -124,6 +127,445 @@ body {
   text-decoration: underline;
   color: #8e60c4;
 }
+/**-----------general section--------**/
+/**-----------ad slider-----------*/
+.slideshowcontainer {
+  width: 100%;
+  max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.swiper {
+  width: 100%;
+  height: fit-content;
+}
+
+.swiper-slide img {
+  width: 100%;
+}
+
+.swiper .swiper-button-prev,
+.swiper .swiper-button-next {
+  color: #fff;
+}
+
+.swiper .swiper-pagination-bullet-active {
+  background: #fff;
+}
+
+/**-----------ad slider----------- */
+/**-----------action section--------**/
+.action {
+  margin-top: 40px;
+}
+h1.action-h1 {
+  margin-top: 40px;
+}
+.action .col-md-4 p {
+  font-size: 16px;
+  color: #434343;
+}
+.action .col-md-4 h3 {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #434343;
+}
+.action .action-col {
+  flex-basis: 27%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.action .col-md-4 img {
+  width: auto;
+  height: 140px;
+}
+.action .action-col:hover {
+  transform: translateY(-10px);
+}
+/**-----------action section--------**/
+
+/**-----------appointment manager section----------*/
+h1.appt-manager-h1 {
+  margin-top: 20px;
+}
+
+.appt-manager {
+  margin-top: 20px;
+}
+
+.appt-manager-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+/* Inner cell lines only */
+.appt-manager-table td,
+.appt-manager-table th {
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+.appt-manager-table th {
+  color: #6440b4;
+}
+
+/* Remove last column right border */
+.appt-manager-table tr td:last-child,
+.appt-manager-table tr th:last-child {
+  border-right: none;
+}
+/* Remove last row bottom border */
+.appt-manager-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appt-manager-col {
+  flex-basis: 100%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.edit-btn {
+  display: inline-block;
+  background-color: #66b986;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.edit-btn:hover {
+  background-color: #4b8862;
+  color: #2c2c2c;
+}
+.cancel-btn {
+  display: inline-block;
+  background-color: #e27676;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.cancel-btn:hover {
+  background-color: #be5d5d;
+  color: #2c2c2c;
+}
+.add-appt-btn {
+  margin-top: 20px;
+  padding: 8px 25px; /** topbot rightleft*/
+  border-radius: 10px;
+  font-weight: 700;
+  color: #3b3b3b;
+  font-size: 24px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+  transition: background 0.5s;
+}
+
+.add-appt-btn:hover {
+  color: #6440b4;
+  box-shadow: 0 0 20px 0px #ad8df0; /**top right bot left**/
+}
+
+.bg-status {
+  background-color: #29854c;
+}
+/**-----------appointment manager section----------*/
+/**-----------add appointment section----------*/
+.add-appt {
+  margin-top: 40px;
+}
+/**
+.activity-management .col-md-6 {
+  flex-basis: 45%; 
+  min-width: 300px; 
+}*/
+.add-appt .add-appt-col {
+  flex-basis: 88%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+.add-appt-container {
+  /**margin: 60px auto 0;*/
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+.add-appt-submit {
+  display: inline-block;
+  background-color: #6440b4;
+  color: #fff;
+  padding: 8px 0px;
+  margin-top: 20px;
+  border-radius: 30px;
+  transition: background 0.5s;
+  flex: 1;
+}
+
+.add-appt-submit:hover {
+  background-color: #b59af0;
+  color: #2c2c2c;
+}
+/**-----------add appointment section----------*/
+/**-----------introductory section----------*/
+.welcome-container {
+  max-width: 500px;
+  /**margin-top: 60px;**/
+  /**margin: 60px auto 0;**/
+  padding: 20px;
+  background-color: #e8e1f3;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.intro-btn {
+  display: inline-block;
+  background-color: #6440b4;
+  color: #fff;
+  padding: 8px 30px;
+  margin-top: 20px;
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.intro-btn:hover {
+  background-color: #8e60c4;
+  color: #2c2c2c;
+}
+/**-----------introductory section----------*/
+/**----------login, sign up and other forms---------------**/
+body.signup-body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+.login-container,
+.signup-container {
+  max-width: 400px;
+  margin-top: 20px;
+  /**margin: 60px auto 0;**/
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+.login-container h2,
+.signup-container h2,
+.challenge-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.signup-container .submit,
+.login-container .submit {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  background-color: #6440b4;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.signup-container .submit:hover,
+.login-container .submit:hover {
+  background-color: #8e60c4;
+  color: #2c2c2c;
+}
+.login-container form i,
+.signup-container form i {
+  margin-left: -30px;
+  cursor: pointer;
+}
+/**----------sign up and other forms---------------**/
+
+/**----------login---------------**/
+
+.msg {
+  color: #de0707;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.link-container {
+  text-align: center;
+}
+
+a.link2 {
+  text-decoration: none;
+  color: #016285;
+  font-size: 18px;
+  padding: 3px 7px;
+  border: 2px solid #03ced3;
+  border-radius: 5px;
+  margin: 20px 6px 40px;
+  /**top rightleft bottom*/
+  display: inline-block;
+}
+
+a.link2:hover {
+  border: 2px solid #f54141;
+}
+
+/**-----------timetable management section--------**/
+h1.h1-title {
+  margin-top: 20px;
+}
+/**-----------timetable management section--------**/
+
+/**-----------footer section--------**/
+
+.footer {
+  background: #000;
+  color: #d7d7d7;
+  font-size: 18px;
+  position: relative;
+  bottom: 100%;
+  padding: 30px 0 10px; /**top rightleft bot**/
+  margin-top: 30px;
+}
+
+.footer .col-md-6 .footer-link {
+  color: rgb(216, 216, 216);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.footer .col-md-6 .footer-link:hover {
+  text-decoration: underline;
+}
+
+.footer .footer-col {
+  flex-basis: 30%;
+  min-width: 300px;
+}
+
+#footer-name {
+  color: rgb(216, 216, 216);
+  text-decoration: none;
+  font-weight: 700;
+}
+/**-----------footer section--------**/
+
+.show {
+  display: block;
+}
+
+.username {
+  color: #0479b4;
+  font-weight: bold;
+}
+
+/**----------sign up and other forms---------------**/
+
+.success-msg {
+  color: #07cc0d;
+}
+
+.error-msg {
+  color: #de0707;
+}
+.msg-col {
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+select option[disabled] {
+  color: #999;
+}
+/**----------sign up---------------**/
+
+@media only screen and (max-device-width: 480px) {
+  body {
+    margin: auto;
+  }
+}
+
+
+/* ================================ */
+/* NAVIGATION BAR STYLING   */
+/* ================================ */
+@keyframes slideDown {
+  from {
+      transform: translateY(-100%);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+
+
+.purple-text {
+  color: #9d5ced;
+  font-weight: bold;
+}
+.form-label {
+  color: #9562ee;
+  font-weight: bold;
+}
+
+.form-control {
+  border-radius: 25px;
+  border: 1.5px solid #ccc;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+.form-control::placeholder {
+  color: #999;
+  opacity: 0.8;
+}
+
+.register-btn {
+  background-color: #a37edc;  /* Lavender button */
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+}
+
+.register-btn:hover {
+  background-color: #8e60c4;  /* Darker hover */
+}
+
+.purple-link {
+  color: #a260ee;  /* Link below form */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.purple-link:hover {
+  text-decoration: underline;
+  color: #8e60c4;
+}
+
+
 
 /* Calendar Heading */
 /* Core Typography */
@@ -134,18 +576,12 @@ body {
   font-weight: 700;
   font-size: 2.5rem;
   animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Controls */
@@ -177,7 +613,7 @@ body {
   transition: all 0.3s ease;
   border-radius: 12px;
   font-weight: bold;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
 
 .btn-purple-calender {
@@ -206,15 +642,10 @@ body {
   color: white;
 }
 
-.week-slider {
+.week-slider{
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Hover Animations */
-button:hover {
-  transform: scale(1.05);
-  opacity: 0.95;
-}
 
 /* Timetable Styles */
 .scrollable-timetable {
@@ -243,7 +674,7 @@ button:hover {
 
 /* Sticky Header Row */
 .table-outline-dark thead th {
-  position: sticky;
+  position: sticky; !important;
   top: 0;
   background-color: purple;
   color: white;
@@ -268,32 +699,13 @@ button:hover {
 }
 
 /* Navbar */
-.navbar-bgcolor {
-  background-color: #e9e3f5;
-}
 
-.nav1 a:hover,
-.nav2 a:hover {
+
+.nav1 a:hover, .nav2 a:hover {
   color: #6f42c1 !important;
   text-decoration: underline;
 }
 
-/* Logo */
-.logo {
-  height: 50px;
-}
-
-/* Button Group */
-.button-group-bg {
-  background-color: #e9e3f5;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.button-group-bg button:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
 
 .calender-appointment {
   margin-right: 60px;
@@ -304,6 +716,7 @@ button:hover {
   background-color: #fff;
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
 }
 
 .member-timetable-page h1 {
@@ -335,7 +748,7 @@ button:hover {
 
 .member-timetable-page .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow:  5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .member-timetable-page .user-submit-button:hover {
@@ -369,7 +782,7 @@ button:hover {
 }
 
 .member-timetable-page .rostercells td:hover {
-  background-color: #e6e6fa;
+  background-color: #E6E6FA;
   transform: scale(1.05);
   box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
 }
@@ -378,7 +791,7 @@ button:hover {
   .member-timetable-page .user-submit-button,
   .member-timetable-page .user-edit-button,
   .member-timetable-page .user-share-button {
-    width: 100% !important;
+      width: 100% !important;
   }
 }
 
@@ -402,28 +815,23 @@ button:hover {
   font-weight: 700;
   font-size: 2.5rem;
   animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 .upload-title {
-  color: rgba(
-    111,
-    66,
-    193,
-    0.6
-  ); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
+  color: rgba(111, 66, 193, 0.6); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
   margin-bottom: 8px;
 }
 
 .card {
   border-radius: 1rem;
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
 input.form-control,
@@ -457,13 +865,14 @@ textarea.form-control:focus {
 
 @keyframes fadeInUp {
   from {
-    opacity: 0;
-    transform: translateY(20px);
+      opacity: 0;
+      transform: translateY(20px);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+      opacity: 1;
+      transform: translateY(0);
   }
+
 }
 .custom-checkbox {
   width: 20px;
