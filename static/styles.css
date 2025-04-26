@@ -127,6 +127,11 @@ a.nav-item1.active-link {
   text-decoration: underline;
   color: #8e60c4;
 }
+
+h1.h1-title {
+  margin-top: 20px;
+  color: #6440B4;
+}
 /**-----------general section--------**/
 /**-----------action section--------**/
 .action {
@@ -274,11 +279,7 @@ a.link2:hover {
   border: 2px solid #f54141;
 }
 
-/**-----------timetable management section--------**/
-h1.h1-title {
-  margin-top: 20px;
-}
-/**-----------timetable management section--------**/
+
 
 /**-----------footer section--------**/
 
