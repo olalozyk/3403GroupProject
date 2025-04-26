@@ -135,39 +135,51 @@ a.nav-item1.active-link {
 h1.action-h1 {
   margin-top: 40px;
 }
-.action .col-md-4 p {
+.action .col-md-3 p {
   font-size: 16px;
   color: #434343;
 }
-.action .col-md-4 h3 {
+.action .col-md-3 h3 {
   margin-top: 10px;
   font-size: 22px;
   color: #434343;
 }
 .action .action-col {
-  flex-basis: 27%; /** the smaller the %, the narrower the div column*/
-  min-width: 250px; /** the larger the px, the narrower*/
+  flex-basis: 25%; /** the smaller the %, the narrower the div column*/
+  min-width: 200px; /** the larger the px, the narrower*/
   cursor: pointer;
   transition: transform 0.3s;
 }
-.action .col-md-4 img {
+.action .col-md-3 img {
   width: auto;
-  height: 140px;
+  height: 130px;
 }
 .action .action-col:hover {
   transform: translateY(-10px);
 }
 /**-----------action section--------**/
+/**--------upcoming appointment section-------**/
+.h2-title{
+  font-size: 22px;
+}
+.upcoming-appt {
+  margin-top: 40px;
+}
+.upcoming-appt .upcoming-appt-col {
+  flex-basis: 78%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+.upcoming-appt-details:hover{
+  color: #6440b4;
+  box-shadow: 0 0 20px 0px #9f78f3 !important;
+  cursor: pointer;
+}
+/**--------upcoming appointment section-------**/
 
 /**-----------add appointment section----------*/
 .add-appt {
   margin-top: 40px;
 }
-/**
-.activity-management .col-md-6 {
-  flex-basis: 45%; 
-  min-width: 300px; 
-}*/
 .add-appt .add-appt-col {
   flex-basis: 88%; /** the smaller the %, the narrower the div column*/
   min-width: 250px; /** the larger the px, the narrower*/
