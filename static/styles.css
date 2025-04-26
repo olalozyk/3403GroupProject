@@ -1,6 +1,8 @@
 body {
-  background-color: #ffffff; /*coral*/
-  margin: 0;
+  background-color: #d0adfb;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+  padding-top: 56px;
 }
 /* ================================ */
 /* NAVIGATION BAR STYLING   */
