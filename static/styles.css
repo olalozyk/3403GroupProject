@@ -1,291 +1,504 @@
-
 body {
-    background-color: #d0adfb;
-    font-family: 'Segoe UI', sans-serif;
-    color: #333;
-    padding-top: 56px;
+  background-color: #ffffff; /*coral*/
+  margin: 0;
 }
-/* ================================ */
-/* NAVIGATION BAR STYLING   */
-/* ================================ */
+
+/**----------navbar----------**/
+img.logo {
+  width: auto;
+  height: 60px;
+  /**margin-right: 34px;*/
+}
+
 .navbar {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 0.7rem 1rem;
+  background-color: #e8e1f3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.navbar .nav-link {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: color 0.3s ease;
+.nav1 {
+  position: relative;
+  /**margin-right: 34px;*/
 }
 
-.navbar .nav-link:hover {
-    color: #FC0C0C;
+.nav2 {
+  margin-left: 18px;
 }
 
-.navbar-brand {
-    font-weight: bold;
+a.nav-link {
+  color: #6440b4;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.navbar-brand img.logo {
-    max-height: 80px;
-    width: auto;
+.fa-regular.fa-bell {
+  font-size: 20px;
 }
 
+.notification-num {
+  color: #783c26;
+  text-decoration: none;
+}
+.nav-item1 {
+  text-decoration: none;
+  font-size: 15px;
+  margin-right: 15px;
+  margin-left: 15px;
+  color: black;
+}
+a.nav-item1.active-link {
+  color: rgb(230, 24, 24); /* or any color to highlight the active page */
+  font-weight: bold;
+}
+
+/**----------navbar------------**/
+/**----------notification------------**/
+.dropdown-menu {
+  border: none !important; /* Removes border color and border entirely */
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+.dropdown-menu.notification-menu {
+  min-width: 360px;
+}
+/**-----------general section--------**/
 .container {
-    margin-top: 2rem;
+  max-width: 1300px;
+  margin: auto;
+  padding-left: 0px;
+  padding-right: 0px;
+  position: relative;
 }
 
-
-/* ================================ */
-/* ADMIN VIEW TIMETABLE PAGE STYLING   */
-/* ================================ */
-
-
-.admin-timetable-page {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
-.admin-timetable-page h2 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
+.small-container {
+  /**.popular-container, .featured-container, .testimonial-container, .partner-container*/
+  max-width: 1250px;
+  margin: auto;
+  padding-left: 0px;
+  /**22px**/
+  padding-right: 0px;
 }
-
-.admin-timetable-page input[type="text"],
-.admin-timetable-page input[type="date"],
-.admin-timetable-page select {
-    border-radius: 0.5rem;
-    padding: 0.6rem 1rem;
-    border: 1px solid #ced4da;
-    transition: box-shadow 0.3s;
-}
-
-.admin-timetable-page input:focus,
-.admin-timetable-page select:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-
-
-}
-
-.admin-timetable-page .btn {
-    border-radius: 30px;
-    font-weight: 600;
-    background-color: #007bff;
-    transition: all 0.3s ease-in-out;
-}
-
-.admin-timetable-page .btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.admin-timetable-page .table-responsive {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    padding: 1rem;
-    overflow-x: auto;
-}
-
-.admin-timetable-page .table th,
-.admin-timetable-page .table td {
-    vertical-align: middle !important;
-    padding: 1rem;
-    font-size: 0.95rem;
-    transition: background-color 0.3s ease;
-}
-
-.admin-timetable-page .table thead {
-    background-color: #f1f1f1;
-    font-weight: 600;
-}
-
-.admin-timetable-page .table td:hover {
-    background-color: #e9f7ff;
-}
-
-@media (max-width: 768px) {
-    .admin-timetable-page .btn {
-        width: 100% !important;
-    }
-}
-
-/* ================================ */
-/* MEMBER TIMETABLE PAGE STYLING   */
-/* ================================ */
-
-.member-timetable-page {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.member-timetable-page h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
-}
-
-.member-timetable-page input[type="text"],
-.member-timetable-page input[type="email"],
-.member-timetable-page input[type="date"] {
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ced4da;
-    transition: box-shadow 0.3s;
-}
-
-.member-timetable-page input[type="text"]:focus,
-.member-timetable-page input[type="email"]:focus,
-.member-timetable-page input[type="date"]:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.member-timetable-page .btn {
-    border-radius: 20px;
-    font-weight: 500;
-    transition: all 0.3s ease-in-out;
-}
-
-.member-timetable-page .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.member-timetable-page .user-submit-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-}
-
-.member-timetable-page .user-submit-button:hover {
-    background-color: #218838;
-}
-
-.member-timetable-page .user-edit-button {
-    background-color: orangered;
-    color: white;
-    border: none;
-}
-
-.member-timetable-page .user-edit-button:hover {
-    background-color: #d14200;
-}
-
-.member-timetable-page .user-share-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-}
-
-.member-timetable-page .user-share-button:hover {
-    background-color: #0056b3;
-}
-
-.member-timetable-page .table {
-    border-collapse: collapse;
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.member-timetable-page .table-bordered th,
-.member-timetable-page .table-bordered td {
-    border: 1px solid #dee2e6;
-    padding: 1rem;
-    vertical-align: middle;
-}
-
-.member-timetable-page .table thead {
-    background-color: #f1f1f1;
-    font-weight: 600;
-}
-
-.member-timetable-page .table tbody tr {
-    transition: background-color 0.3s ease;
-}
-
-.member-timetable-page .table tbody tr:hover {
-    background-color: #e9f7ff;
-}
-
-.member-timetable-page .rostercells td {
-    height: 60px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    cursor: pointer;
-}
-
-.member-timetable-page .rostercells td:hover {
-    background-color: #d1f5d3;
-    transform: scale(1.05);
-    box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
-}
-
-@media (max-width: 768px) {
-    .member-timetable-page .user-submit-button,
-    .member-timetable-page .user-edit-button,
-    .member-timetable-page .user-share-button {
-        width: 100% !important;
-    }
-}
-
-/* ================================ */
-/* Page 3 styling */
-body {
-    background-color: #f7f3fc; /* Optional: light lavender background */
-}
-
 .purple-text {
-    color: #9d5ced;
-    font-weight: bold;
+  color: #9d5ced;
+  font-weight: bold;
 }
 .form-label {
-    color: #9562ee;
-    font-weight: bold;
+  color: #9562ee;
+  font-weight: bold;
 }
 
 .form-control {
-    border-radius: 25px;
-    border: 1.5px solid #ccc;
-    padding: 0.6rem 1rem;
-    font-size: 0.95rem;
+  border-radius: 25px;
+  border: 1.5px solid #ccc;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
 }
 
 .form-control::placeholder {
-    color: #999;
-    opacity: 0.8;
+  color: #999;
+  opacity: 0.8;
 }
 
 .register-btn {
-    background-color: #a37edc;  /* Lavender button */
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
+  background-color: #a37edc; /* Lavender button */
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
 }
 
 .register-btn:hover {
-    background-color: #8e60c4;  /* Darker hover */
+  background-color: #8e60c4; /* Darker hover */
 }
 
 .purple-link {
-    color: #a260ee;  /* Link below form */
-    text-decoration: none;
-    font-weight: 500;
+  color: #a260ee; /* Link below form */
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .purple-link:hover {
-    text-decoration: underline;
-    color: #8e60c4;
+  text-decoration: underline;
+  color: #8e60c4;
+}
+/**-----------general section--------**/
+/**-----------ad slider-----------*/
+.slideshowcontainer {
+  width: 100%;
+  max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.swiper {
+  width: 100%;
+  height: fit-content;
+}
+
+.swiper-slide img {
+  width: 100%;
+}
+
+.swiper .swiper-button-prev,
+.swiper .swiper-button-next {
+  color: #fff;
+}
+
+.swiper .swiper-pagination-bullet-active {
+  background: #fff;
+}
+
+/**-----------ad slider----------- */
+/**-----------action section--------**/
+.action {
+  margin-top: 40px;
+}
+h1.action-h1 {
+  margin-top: 40px;
+}
+.action .col-md-4 p {
+  font-size: 16px;
+  color: #434343;
+}
+.action .col-md-4 h3 {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #434343;
+}
+.action .action-col {
+  flex-basis: 27%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.action .col-md-4 img {
+  width: auto;
+  height: 140px;
+}
+.action .action-col:hover {
+  transform: translateY(-10px);
+}
+/**-----------action section--------**/
+
+/**-----------appointment manager section----------*/
+h1.appt-manager-h1 {
+  margin-top: 20px;
+}
+
+.appt-manager {
+  margin-top: 20px;
+}
+
+.appt-manager-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+/* Inner cell lines only */
+.appt-manager-table td,
+.appt-manager-table th {
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+.appt-manager-table th {
+  color: #6440b4;
+}
+
+/* Remove last column right border */
+.appt-manager-table tr td:last-child,
+.appt-manager-table tr th:last-child {
+  border-right: none;
+}
+/* Remove last row bottom border */
+.appt-manager-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appt-manager-col {
+  flex-basis: 100%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.edit-btn {
+  display: inline-block;
+  background-color: #66b986;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.edit-btn:hover {
+  background-color: #4b8862;
+  color: #2c2c2c;
+}
+.cancel-btn {
+  display: inline-block;
+  background-color: #e27676;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.cancel-btn:hover {
+  background-color: #be5d5d;
+  color: #2c2c2c;
+}
+.add-appt-btn {
+  margin-top: 20px;
+  padding: 8px 25px; /** topbot rightleft*/
+  border-radius: 10px;
+  font-weight: 700;
+  color: #3b3b3b;
+  font-size: 24px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+  transition: background 0.5s;
+}
+
+.add-appt-btn:hover {
+  color: #6440b4;
+  box-shadow: 0 0 20px 0px #ad8df0; /**top right bot left**/
+}
+
+.bg-status {
+  background-color: #29854c;
+}
+/**-----------appointment manager section----------*/
+/**-----------add appointment section----------*/
+.add-appt {
+  margin-top: 40px;
+}
+/**
+.activity-management .col-md-6 {
+  flex-basis: 45%; 
+  min-width: 300px; 
+}*/
+.add-appt .add-appt-col {
+  flex-basis: 88%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+.add-appt-container {
+  /**margin: 60px auto 0;*/
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+.add-appt-submit {
+  display: inline-block;
+  background-color: #6440b4;
+  color: #fff;
+  padding: 8px 0px;
+  margin-top: 20px;
+  border-radius: 30px;
+  transition: background 0.5s;
+  flex: 1;
+}
+
+.add-appt-submit:hover {
+  background-color: #b59af0;
+  color: #2c2c2c;
+}
+/**-----------add appointment section----------*/
+/**-----------introductory section----------*/
+.welcome-container {
+  max-width: 500px;
+  /**margin-top: 60px;**/
+  /**margin: 60px auto 0;**/
+  padding: 20px;
+  background-color: #e8e1f3;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.intro-btn {
+  display: inline-block;
+  background-color: #6440b4;
+  color: #fff;
+  padding: 8px 30px;
+  margin-top: 20px;
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.intro-btn:hover {
+  background-color: #8e60c4;
+  color: #2c2c2c;
+}
+/**-----------introductory section----------*/
+/**----------login, sign up and other forms---------------**/
+body.signup-body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+.login-container,
+.signup-container {
+  max-width: 400px;
+  margin-top: 20px;
+  /**margin: 60px auto 0;**/
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+.login-container h2,
+.signup-container h2,
+.challenge-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.signup-container .submit,
+.login-container .submit {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  background-color: #6440b4;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.signup-container .submit:hover,
+.login-container .submit:hover {
+  background-color: #8e60c4;
+  color: #2c2c2c;
+}
+.login-container form i,
+.signup-container form i {
+  margin-left: -30px;
+  cursor: pointer;
+}
+/**----------sign up and other forms---------------**/
+
+/**----------login---------------**/
+
+.msg {
+  color: #de0707;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.link-container {
+  text-align: center;
+}
+
+a.link2 {
+  text-decoration: none;
+  color: #016285;
+  font-size: 18px;
+  padding: 3px 7px;
+  border: 2px solid #03ced3;
+  border-radius: 5px;
+  margin: 20px 6px 40px;
+  /**top rightleft bottom*/
+  display: inline-block;
+}
+
+a.link2:hover {
+  border: 2px solid #f54141;
+}
+
+/**-----------timetable management section--------**/
+h1.h1-title {
+  margin-top: 20px;
+}
+/**-----------timetable management section--------**/
+
+/**-----------footer section--------**/
+
+.footer {
+  background: #000;
+  color: #d7d7d7;
+  font-size: 18px;
+  position: relative;
+  bottom: 100%;
+  padding: 30px 0 10px; /**top rightleft bot**/
+  margin-top: 30px;
+}
+
+.footer .col-md-6 .footer-link {
+  color: rgb(216, 216, 216);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.footer .col-md-6 .footer-link:hover {
+  text-decoration: underline;
+}
+
+.footer .footer-col {
+  flex-basis: 30%;
+  min-width: 300px;
+}
+
+#footer-name {
+  color: rgb(216, 216, 216);
+  text-decoration: none;
+  font-weight: 700;
+}
+/**-----------footer section--------**/
+
+.show {
+  display: block;
+}
+
+.username {
+  color: #0479b4;
+  font-weight: bold;
+}
+
+/**----------sign up and other forms---------------**/
+
+.success-msg {
+  color: #07cc0d;
+}
+
+.error-msg {
+  color: #de0707;
+}
+.msg-col {
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+select option[disabled] {
+  color: #999;
+}
+/**----------sign up---------------**/
+
+@media only screen and (max-device-width: 480px) {
+  body {
+    margin: auto;
+  }
 }
