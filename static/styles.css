@@ -1,6 +1,27 @@
 body {
-  background-color: #ffffff; /*coral*/
-  margin: 0;
+
+    background-color: #d0adfb;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    padding-top: 56px;
+}
+/* ================================ */
+/* NAVIGATION BAR STYLING   */
+/* ================================ */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Apply animation to navbar */
+.navbar {
+    animation: slideDown 0.6s ease-out forwards;
 }
 
 /**----------navbar----------**/
@@ -30,130 +51,251 @@ a.nav-link {
   font-weight: 500;
 }
 
-.fa-regular.fa-bell {
-  font-size: 20px;
+
+
+body {
+    background-color: #f7f3fc; /* Optional: light lavender background */
 }
 
-.notification-num {
-  color: #783c26;
-  text-decoration: none;
-}
-.nav-item1 {
-  text-decoration: none;
-  font-size: 15px;
-  margin-right: 15px;
-  margin-left: 15px;
-  color: black;
-}
-a.nav-item1.active-link {
-  color: rgb(230, 24, 24); /* or any color to highlight the active page */
-  font-weight: bold;
-}
-
-/**----------navbar------------**/
-/**----------notification------------**/
-.dropdown-menu {
-  border: none !important; /* Removes border color and border entirely */
-  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /* Soft shadow */
-}
-.dropdown-menu.notification-menu {
-  min-width: 360px;
-}
-/**-----------general section--------**/
-.container {
-  max-width: 1300px;
-  margin: auto;
-  padding-left: 0px;
-  padding-right: 0px;
-  position: relative;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
-
-.small-container {
-  /**.popular-container, .featured-container, .testimonial-container, .partner-container*/
-  max-width: 1250px;
-  margin: auto;
-  padding-left: 0px;
-  /**22px**/
-  padding-right: 0px;
-}
 .purple-text {
-  color: #9d5ced;
-  font-weight: bold;
+    color: #9d5ced;
+    font-weight: bold;
 }
 .form-label {
-  color: #9562ee;
-  font-weight: bold;
+    color: #9562ee;
+    font-weight: bold;
 }
 
 .form-control {
-  border-radius: 25px;
-  border: 1.5px solid #ccc;
-  padding: 0.6rem 1rem;
-  font-size: 0.95rem;
+    border-radius: 25px;
+    border: 1.5px solid #ccc;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
 }
 
 .form-control::placeholder {
-  color: #999;
-  opacity: 0.8;
+    color: #999 !important;
+    opacity: 0.8;
 }
 
 .register-btn {
-  background-color: #a37edc; /* Lavender button */
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
+    background-color: #a37edc;  /* Lavender button */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
 }
 
 .register-btn:hover {
-  background-color: #8e60c4; /* Darker hover */
+    background-color: #8e60c4;  /* Darker hover */
 }
 
 .purple-link {
-  color: #a260ee; /* Link below form */
-  text-decoration: none;
-  font-weight: 500;
+    color: #a260ee;  /* Link below form */
+    text-decoration: none;
+    font-weight: 500;
 }
 
 .purple-link:hover {
-  text-decoration: underline;
-  color: #8e60c4;
-}
-/**-----------general section--------**/
-/**-----------ad slider-----------*/
-.slideshowcontainer {
-  width: 100%;
-  max-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+    text-decoration: underline;
+    color: #8e60c4;
 }
 
-.swiper {
-  width: 100%;
-  height: fit-content;
+
+
+/* Calendar Heading */
+/* Core Typography */
+
+/* Header Styling */
+.calender-text {
+    color: #6f42c1 !important;
+    font-weight: 700;
+    font-size: 2.5rem;
+    animation: fadeInUp 1s ease-in-out;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Controls */
+.form-select-calender {
+    width: 140px;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    border-radius: 10px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+}
+
+.form-select-calender:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #c8a9ef;
+}
+
+.slightly-right-calender {
+    margin-right: 10px;
+}
+
+/* Buttons */
+.btn-purple-calender,
+.btn-Appointment,
+.btn-Tests,
+.btn-Expirations,
+.btn-Missed,
+.user-submit-button {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+
+.btn-purple-calender {
+    background-color: #8e60c4;
+    color: white;
+}
+
+.btn-Appointment {
+    background-color: #b0e57c;
+}
+
+.btn-Tests {
+    background-color: #8ddcff;
+}
+
+.btn-Expirations {
+    background-color: #f7c06b;
+}
+
+.btn-Missed {
+    background-color: #f59494;
+}
+
+.user-submit-button {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.week-slider{
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover Animations */
+button:hover {
+    transform: scale(1.05);
+    opacity: 0.95;
+}
+
+/* Timetable Styles */
+.scrollable-timetable {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+}
+
+/* Table */
+/* Darker table outlines (borders) */
+.table-outline-dark th,
+.table-outline-dark td {
+    border: 2px solid black;
+    background-color: #f8f9fa;
+}
+
+/* Light purple for the first column and header row */
+.table-outline-dark th:first-child,
+.table-outline-dark td:first-child {
+    font-weight: bold;
+    background-color: #f2f3f5;
+}
+
+/* Sticky Header Row */
+.table-outline-dark thead th {
+    position: sticky;
+    top: 0;
+    background-color: purple;
+    color: white;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* Timetable Cells */
+.rostercells td {
+    word-wrap: break-word;
+    white-space: normal;
+    vertical-align: middle;
+    max-width: 130px;
+    padding: 10px;
+}
+
+/* Purple hover effect on rows */
+.table-outline-dark tbody tr:hover {
+    background-color: #e1bee7 !important;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Navbar */
+.navbar-bgcolor {
+    background-color: #e9e3f5;
+}
+
+.nav1 a:hover, .nav2 a:hover {
+    color: #6f42c1 !important;
+    text-decoration: underline;
+}
+
+/* Logo */
+.logo {
+    height: 50px;
+}
+
+/* Button Group */
+.button-group-bg {
+    background-color: #e9e3f5;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.button-group-bg button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.calender-appointment {
+    margin-right: 60px;
+}
+
+.member-timetable-page {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
 }
 
 .swiper-slide img {
   width: 100%;
 }
 
-.swiper .swiper-button-prev,
-.swiper .swiper-button-next {
-  color: #fff;
+
+.member-timetable-page input[type="text"],
+.member-timetable-page input[type="date"] {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ced4da;
+    transition: box-shadow 0.3s;
 }
 
-.swiper .swiper-pagination-bullet-active {
-  background: #fff;
+.member-timetable-page input[type="text"]:focus,
+.member-timetable-page input[type="date"]:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 /**-----------ad slider----------- */
@@ -188,13 +330,10 @@ h1.action-h1 {
 }
 /**-----------action section--------**/
 
-/**-----------appointment manager section----------*/
-h1.appt-manager-h1 {
-  margin-top: 20px;
-}
 
-.appt-manager {
-  margin-top: 20px;
+.member-timetable-page .btn:hover {
+    transform: translateY(-2px);
+    box-shadow:  5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .appt-manager-table {
@@ -206,45 +345,12 @@ h1.appt-manager-h1 {
   box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
 }
 
-/* Inner cell lines only */
-.appt-manager-table td,
-.appt-manager-table th {
-  border: none;
-  border-bottom: 1px solid #dee2e6;
-  border-right: 1px solid #dee2e6;
-}
 
-.appt-manager-table th {
-  color: #6440b4;
-}
-
-/* Remove last column right border */
-.appt-manager-table tr td:last-child,
-.appt-manager-table tr th:last-child {
-  border-right: none;
-}
-/* Remove last row bottom border */
-.appt-manager-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.appt-manager-col {
-  flex-basis: 100%; /** the smaller the %, the narrower the div column*/
-  min-width: 250px; /** the larger the px, the narrower*/
-}
-
-.edit-btn {
-  display: inline-block;
-  background-color: #66b986;
-  color: #fff;
-  padding: 2px 25px; /** topbot rightleft*/
-  border-radius: 30px;
-  transition: background 0.5s;
-}
-
-.edit-btn:hover {
-  background-color: #4b8862;
-  color: #2c2c2c;
+.member-timetable-page .table-bordered th,
+.member-timetable-page .table-bordered td {
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    vertical-align: middle;
 }
 .cancel-btn {
   display: inline-block;
@@ -429,9 +535,12 @@ a.link2:hover {
   border: 2px solid #f54141;
 }
 
-/**-----------timetable management section--------**/
-h1.h1-title {
-  margin-top: 20px;
+
+.member-timetable-page .rostercells td:hover {
+    background-color: #E6E6FA;
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
+
 }
 /**-----------timetable management section--------**/
 
@@ -447,58 +556,105 @@ h1.h1-title {
   margin-top: 30px;
 }
 
-.footer .col-md-6 .footer-link {
-  color: rgb(216, 216, 216);
-  text-decoration: none;
-  font-weight: 700;
+
+.occupation-cell {
+    background-color: lightcoral !important;
+    color: white;
+    font-weight: bold;
 }
 
-.footer .col-md-6 .footer-link:hover {
-  text-decoration: underline;
+.physiotherapy-cell {
+    background-color: #b0e57c !important;
+    color: white;
+    font-weight: bold;
 }
 
-.footer .footer-col {
-  flex-basis: 30%;
-  min-width: 300px;
+/* Uploade documents Heading */
+/* Core Typography */
+
+.upload-document-text {
+    color: #6f42c1;
+    font-weight: 700;
+    font-size: 2.5rem;
+    animation: fadeInUp 1s ease-in-out;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
-#footer-name {
-  color: rgb(216, 216, 216);
-  text-decoration: none;
-  font-weight: 700;
+.upload-title {
+    color: rgba(111, 66, 193, 0.6); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
+    margin-bottom: 8px;
+
 }
 /**-----------footer section--------**/
 
-.show {
-  display: block;
+
+.card {
+    border-radius: 1rem;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s ease-in-out;
 }
 
-.username {
-  color: #0479b4;
-  font-weight: bold;
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
-/**----------sign up and other forms---------------**/
-
-.success-msg {
-  color: #07cc0d;
+input.form-control,
+select.form-select,
+textarea.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    transition: all 0.2s ease-in-out;
 }
 
-.error-msg {
-  color: #de0707;
+input.form-control:focus,
+select.form-select:focus,
+textarea.form-control:focus {
+    box-shadow: 0 0 8px rgba(111, 66, 193, 0.3);
+    border-color: #6f42c1;
 }
-.msg-col {
-  margin-bottom: 8px;
-  text-align: center;
-  font-size: 14px;
+
+.btn-upload {
+    width: 100%;
+    background-color: #6f42c1;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-upload:hover {
+    background-color: #5a35a0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: #6f42c1;
+    transform: scale(1.5);
+    cursor: pointer;
 }
 select option[disabled] {
   color: #999;
 }
 /**----------sign up---------------**/
 
-@media only screen and (max-device-width: 480px) {
-  body {
-    margin: auto;
-  }
+/* Edit documents Heading */
+/* Core Typography */
+.extra-margin-right {
+    margin-right: 100px; /* or whatever value you like */
+    background-color: mistyrose;
+
 }
