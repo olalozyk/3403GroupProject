@@ -229,6 +229,83 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="text-center">
+            <h1 class="featured-h1">Featured Specialisations</h1>
+        </div>
+    </div>
+
+    <section class="featured">
+        <div class="swiper featured-slider">
+            <div class="swiper-wrapper">
+
+                <!-- Slide 1: Football Club Featured -->
+                <div class="swiper-slide">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <img src="../static/images/physiotherapist.png" class="img-fluid featured-img"
+                                alt="Football Club">
+                        </div>
+                        <div class="col-md-6 featured-col text-col">
+                            <div class="text-wrapper">
+                                <span>Now Available</span>
+                                <h3 class="featured-title">Physiotherapy Services Available!</h3>
+                                <p class="featured-desc">Get personalized physiotherapy treatments to improve mobility,
+                                    relieve pain, and restore function.</p>
+                                <a href="page_6_AddAppointmentPage.html" class="btn">Book an Appointment Now!
+                                    &#8594;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- You can add more club slides here following the same pattern -->
+                <!-- Example additional slide -->
+                <div class="swiper-slide">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <img src="../static/images/cardiologist.png" class="img-fluid featured-img"
+                                alt="Martial Art">
+                        </div>
+                        <div class="col-md-6 featured-col text-col">
+                            <div class="text-wrapper">
+                                <span>Now Available</span>
+                                <h3 class="featured-title">Cardiology Consultations Open!</h3>
+                                <p class="featured-desc">Monitor and improve your heart health with expert advice and
+                                    advanced cardiac care.</p>
+                                <a href="page_6_AddAppointmentPage.html" class="btn">Book an Appointment Now!
+                                    &#8594;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper-slide">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <img src="../static/images/neurologist.png" class="img-fluid featured-img" alt="Computing">
+                        </div>
+                        <div class="col-md-6 featured-col text-col">
+                            <div class="text-wrapper">
+                                <span>Now Available</span>
+                                <h3 class="featured-title">Neurology Expertise at Your Service!</h3>
+                                <p class="featured-desc">Consult with specialist neurologists for diagnosis and
+                                    treatment of brain and nerve disorders.</p>
+                                <a href="page_6_AddAppointmentPage.html" class="btn">Book an Appointment Now!
+                                    &#8594;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Optional: Add pagination or arrows -->
+            <div class="swiper-pagination featured-pagination"></div>
+            <div class="swiper-button-prev featured-prev"></div>
+            <div class="swiper-button-next featured-next"></div>
+        </div>
+    </section>
+
 
     <div class="footer">
         <div class="container">
@@ -254,26 +331,30 @@
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <!-------for ads slider-------->
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
-    <!-- Bootstrap Javascript bundle -->
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>-->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
         </script>
 
     <script>
-        /* When the user clicks on the button, 
-        toggle between hiding and showing the dropdown content */
-        function showNotifications() {
-            document.getElementById("notifications").classList.toggle("show");
-            if ($('.notification-count')[0]) {
-                myURL = window.location.origin + '/notification-seen';
-                fetch(myURL);
-            };
-        }
+        // -------for featured slider--------
+        const featuredSwiper = new Swiper('.featured-slider', {
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            loop: true,
+            pagination: {
+                el: '.featured-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.featured-next',
+                prevEl: '.featured-prev',
+            },
+        });
+        // -------for featured slider--------
     </script>
-
-
 
     <script src='../static/main.js'></script>
 </body>
