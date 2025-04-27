@@ -8,7 +8,7 @@
         crossorigin="anonymous">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 
     <!--<link href="home.css" rel="stylesheet" type="text/css" />-->
@@ -19,7 +19,7 @@
 
     </style>
 
-    <title>Activity Management</title>
+    <title>Edit Appointment</title>
 </head>
 
 <body>
@@ -94,22 +94,6 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="date" class="form-label">Date</label>
-                                    <input type="date" class="form-control" name="date" value="2025-05-01" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="time" class="form-label">Time</label>
-                                    <input type="time" class="form-control" name="time" value="10:00" required>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="practitioner" class="form-label">Practitioner Name</label>
-                                    <input type="text" class="form-control" name="practitioner" value="Dr Smith"
-                                        required>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="practitioner_type" class="form-label">Practitioner Type</label>
                                     <select name="practitioner_type" class="form-select" required>
                                         <option>General Practitioner (GP)</option>
@@ -127,6 +111,38 @@
                                         <option>Endocrinologist</option>
                                         <option>Neurologist</option>
                                         <option>Oncologist</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="practitioner" class="form-label">Practitioner Name</label>
+                                    <select name="practitioner" class="form-select" required>
+                                        <option value="">-- Select Practitioner --</option>
+                                        <option>Dr. Alex</option>
+                                        <option>Dr. Henry</option>
+                                        <option selected>Dr. Tan</option>
+                                        <option>Dr. Derrick</option>
+                                        <option>Dr. Wong</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="date" class="form-label">Date</label>
+                                    <input type="date" class="form-control" name="date" value="2025-05-01" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="time" class="form-label">Available Time Slots</label>
+                                    <select name="time" class="form-select" required>
+                                        <option value="">-- Select Time Slot --</option>
+                                        <option>9:00am - 10:00am</option>
+                                        <option>10:00am - 11:00am</option>
+                                        <option>11:00am - 12:00pm</option>
+                                        <option>12:00pm - 1:00pm</option>
+                                        <option selected>1:30pm - 2:30pm</option>
+                                        <option>2:00pm - 3:00pm</option>
+                                        <option>3:00pm - 4:00pm</option>
+                                        <option>4:00pm - 5:00pm</option>
                                     </select>
                                 </div>
                             </div>

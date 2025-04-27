@@ -1,5 +1,8 @@
 # Chronic Pain Tracker
 
+<p align="center">
+  <img src="static/images/chronic-care-title.png" alt="Chronic Care Logo" height="60px">
+</p>
 A web-based application designed to help individuals with chronic pain manage medical appointments, documents, and reminders with ease. The application prioritizes simplicity, accessibility, and privacy, making it suitable for users of all ages, including caregivers.
 
 ---
@@ -104,7 +107,7 @@ All data is stored privately per user, with secure authentication and controlled
   </tr>
   <tr>
     <td>3</td>
-    <td>242450666</td>
+    <td>24250666</td>
     <td>Wei Shen Hong</td>
     <td>@weishen1113</td>
   </tr>
