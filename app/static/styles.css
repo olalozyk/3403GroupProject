@@ -169,6 +169,7 @@ h1.h1-title {
 }
 h1.action-h1 {
   margin-top: 40px;
+  color: #6440B4;
 }
 .action .col-md-3 p {
   font-size: 16px;
@@ -600,7 +601,7 @@ select option[disabled] {
 
 /* Sticky Header Row */
 .table-outline-dark thead th {
-  position: sticky; !important;
+  position: sticky !important;
   top: 0;
   background-color: purple;
   color: white;
@@ -806,4 +807,63 @@ textarea.form-control:focus {
 .extra-margin-right {
   margin-right: 100px; /* or whatever value you like */
   background-color: mistyrose;
+}
+
+
+/* header row border to a soft purple */
+.table-outline-dark thead th {
+  border: 2px solid #C8A9EF !important;
+}
+
+/* each data-row cell size increase */
+.scrollable-timetable .rostercells td {
+  padding: 16px 12px !important;
+  min-height: 60px;
+}
+
+/* make all button text white for consistency */
+.btn,
+.btn-sm {
+  color: #ffffff !important;
+}
+
+/* soften all cell borders */
+table.table-outline-dark th,
+table.table-outline-dark td {
+  border: 1px solid #ccc !important;
+}
+
+/* lighten & unify header background */
+table.table-outline-dark thead th {
+  background-color: #b589eb !important; 
+  color: #fff !important;
+}
+
+/* rows more breathing room */
+table.table-outline-dark tbody td {
+  padding: 1rem 1.25rem !important;
+}
+
+/* round the outer corners of the entire table */
+.scrollable-timetable table {
+  border-radius: 8px;
+  overflow: hidden;   
+}
+
+/* all action-button text to white */
+table.table-outline-dark .btn {
+  color: #fff !important;
+}
+
+/* increase row height */
+.table tbody tr td,
+.table tbody tr th {
+  padding: 1.2rem 0.75rem;
+}
+
+/* bigger status badges */
+.table .badge {
+  font-size: 0.9rem;      
+  padding: 0.5em 0.9em;   
+  border-radius: 0.5rem;   
 }
