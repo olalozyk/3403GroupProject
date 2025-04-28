@@ -1,7 +1,7 @@
 # Chronic Pain Tracker
 
 <p align="center">
-  <img src="static/images/chronic-care-title.png" alt="Chronic Care Logo" height="60px">
+  <img src="https://raw.githubusercontent.com/olalozyk/3403GroupProject/main/app/static/images/chronic-care-title.png" alt="Chronic Care Logo" height="80px">
 </p>
 A web-based application designed to help individuals with chronic pain manage medical appointments, documents, and reminders with ease. The application prioritizes simplicity, accessibility, and privacy, making it suitable for users of all ages, including caregivers.
 
