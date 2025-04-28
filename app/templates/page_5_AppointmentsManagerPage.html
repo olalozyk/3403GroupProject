@@ -1,189 +1,162 @@
-<!DOCTYPE html>
-<!-- This file is strictly for the HTLM and BOOTSTRAP for Page 5: Appointments Management Page, not including the Nav Bar and Footer -->
-<html lang="en"> <!-- This page was written by the team member: Siena -->
+<!DOCTYPE html> <!-- Page 5: Appointments Manager Page – Written by: Siena -->
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Appointments</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Appointments</title>
 
-    <!-- Bootstrap & CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-    <link rel="stylesheet" href="../static/styles.css">
+  <!-- Bootstrap & Project CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/styles.css">
 </head>
+<body class="bg-light">
 
-<body>
-<nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
     <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="page_4_DashboardPage.html">
-            <img class="logo" src="../static/images/chronic-care-title.png" alt="logo">
-        </a>
+      <a class="navbar-brand" href="page_4_DashboardPage.html">
+        <img class="logo" src="../static/images/chronic-care-title.png" alt="logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item nav1"><a class="nav-link" href="page_4_DashboardPage.html">Home</a></li>
+          <li class="nav-item nav1 active">
+            <a class="nav-link" href="page_5_AppointmentsManagerPage.html">Appointments</a>
+          </li>
+          <li class="nav-item nav1"><a class="nav-link" href="page_7_CalendarViewPage.html">Calendar</a></li>
+          <li class="nav-item nav1"><a class="nav-link" href="page_8_MedicalDocumentsManagerPage.html">Documents</a></li>
+          <li class="nav-item nav1"><a class="nav-link" href="page_11_UserProfileSettingsPage.html">Profile</a></li>
+          <li class="nav-item nav1"><a class="nav-link" href="page_1_LandingPage.html">Logout</a></li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#"><i class="fa-regular fa-bell"></i></a>
+          </li>
+          <li class="nav-item nav2">
+            <a class="nav-link" href="#">Welcome <span style="color:#FC0C0C">weishen</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-        <!-- Toggler for small screens -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
-                aria-controls="myList" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+  <!-- Content Card -->
+  <div class="container py-5">
+    <div class="card shadow-sm rounded p-4 bg-white">
+      <div class="text-center mb-4">
+        <h1 class="purple-text">Your Appointments</h1>
+        <button type="button"
+                class="btn btn-purple-calender"
+                onclick="location.href='page_6_AddAppointmentPage.html'">
+          + Add Appointment
         </button>
+      </div>
 
-        <!-- Nav Links -->
-        <div class="collapse navbar-collapse" id="myList">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item active nav1">
-                    <a class="nav-link" href="page_4_DashboardPage.html">Home</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="page_5_AppointmentsManagerPage.html">Appointments</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="page_7_CalendarViewPage.html">Calendar</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="page_8_MedicalDocumentsManagerPage.html">Documents</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="page_11_UserProfileSettingsPage.html">Profile</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="page_1_LandingPage.html">Logout</a>
-                </li>
-            </ul>
-
-            <!-- Right-side: Notifications + Welcome -->
-            <ul class="navbar-nav">
-                <li class="nav-item d-flex align-items-center">
-                    <a class="nav-link" href="#">
-                        <i class="fa-regular fa-bell fs-5"></i>
-                    </a>
-                </li>
-                <li class="nav-item nav2">
-                    <a class="nav-link" href="#">
-                        Welcome <span style="color:#FC0C0C">weishen</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<div class="container py-4">
-    <div class="text-center mb-4">
-        <h1 class="purple-text" style="font-size: 2.8rem;">Your
-            Appointments
-        </h1>
-        <button class="btn btn-light shadow-sm mt-3 fw-bold px-4 py-2" style="font-size: 1.1rem;"><a
-                href="/appointments/add_appointment" style="text-decoration: none; color: inherit;">+ Add
-            Appointment</a></button>
-    </div>
-
-    <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
-        <label for="sortSelect" class="fw-semibold mb-0">Order your appointments by</label>
+      <!-- Sort Controls -->
+      <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-4">
+        <label for="sortSelect" class="fw-semibold mb-0">Order by</label>
         <select id="sortSelect" class="form-select w-auto">
-            <option value="date-asc">date (ascending)</option>
-            <option value="date-desc">date (descending)</option>
+          <option value="date-asc">Date ↑</option>
+          <option value="date-desc">Date ↓</option>
         </select>
-        <button class="btn btn-primary px-4">Display</button>
-    </div>
+        <button class="btn btn-purple-calender">Display</button>
+      </div>
 
-    <div class="table-responsive">
-        <table class="table align-middle table-borderless shadow-sm rounded text-center">
-            <thead class="table-light">
+      <!-- Scrollable Table -->
+      <div class="scrollable-timetable table-responsive mb-3">
+        <table class="table align-middle table-borderless shadow rounded text-center">
+          <thead class="table-light">
             <tr class="purple-text fw-bold">
-                <th>Date</th>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Practitioner</th>
-                <th>Location</th>
-                <th>Notes</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Practitioner</th>
+              <th>Location</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-            </thead>
-            <tbody>
-            <tr class="bg-light shadow-sm mb-3 rounded">
-                <td class="fw-bold">20/04/25</td>
-                <td>10:00AM</td>
-                <td>General Practitioner</td>
-                <td>Dr Jake Croll</td>
-                <td>MediClinic - Nedlands</td>
-                <td>Check bloods</td>
-                <td><span class="badge bg-success">Upcoming</span></td>
-                <td>
-                    <a href="/appointments/edit_appointment">
-                        <button class="btn btn-success btn-sm me-1">Edit</button></a>
-                    <button class="btn btn-danger btn-sm">Cancel</button>
-                </td>
+          </thead>
+          <tbody>
+            <tr class="bg-light mb-3 rounded">
+              <td class="fw-bold">20/04/25</td>
+              <td>10:00 AM</td>
+              <td>General Practitioner</td>
+              <td>Dr Jake Croll</td>
+              <td>MediClinic – Nedlands</td>
+              <td>Check bloods</td>
+              <td><span class="badge bg-success">Upcoming</span></td>
+              <td>
+                <button class="btn btn-Appointment btn-sm me-1">Edit</button>
+                <button class="btn btn-Missed btn-sm">Cancel</button>
+              </td>
             </tr>
-            <tr class="bg-light shadow-sm mb-3 rounded">
-                <td class="fw-bold">23/04/25</td>
-                <td>2:00PM</td>
-                <td>Pain Specialist</td>
-                <td>Dr Jessica Adams</td>
-                <td>Perth Hospital</td>
-                <td>Follow up MRI</td>
-                <td><span class="badge bg-success">Upcoming</span></td>
-                <td>
-                    <a href="/appointments/edit_appointment">
-                        <button class="btn btn-success btn-sm me-1">Edit</button></a>
-                    <button class="btn btn-danger btn-sm">Cancel</button>
-                </td>
+            <tr class="bg-light mb-3 rounded">
+              <td class="fw-bold">23/04/25</td>
+              <td>2:00 PM</td>
+              <td>Pain Specialist</td>
+              <td>Dr Jessica Adams</td>
+              <td>Perth Hospital</td>
+              <td>Follow up MRI</td>
+              <td><span class="badge bg-success">Upcoming</span></td>
+              <td>
+                <button class="btn btn-Appointment btn-sm me-1">Edit</button>
+                <button class="btn btn-Missed btn-sm">Cancel</button>
+              </td>
             </tr>
-            <tr class="bg-light shadow-sm mb-3 rounded">
-                <td class="fw-bold">29/04/25</td>
-                <td>9:00AM</td>
-                <td>Physiotherapist</td>
-                <td>Dr Claire Willby</td>
-                <td>Physio Wellness Centre</td>
-                <td>Knee exercises</td>
-                <td><span class="badge bg-success">Upcoming</span></td>
-                <td>
-                    <a href="/appointments/edit_appointment">
-                        <button class="btn btn-success btn-sm me-1">Edit</button></a>
-                    <button class="btn btn-danger btn-sm">Cancel</button>
-                </td>
+            <tr class="bg-light mb-3 rounded">
+              <td class="fw-bold">29/04/25</td>
+              <td>9:00 AM</td>
+              <td>Physiotherapist</td>
+              <td>Dr Claire Willby</td>
+              <td>Physio Wellness Centre</td>
+              <td>Knee exercises</td>
+              <td><span class="badge bg-success">Upcoming</span></td>
+              <td>
+                <button class="btn btn-Appointment btn-sm me-1">Edit</button>
+                <button class="btn btn-Missed btn-sm">Cancel</button>
+              </td>
             </tr>
-            <tr class="bg-light shadow-sm mb-3 rounded">
-                <td class="fw-bold">29/04/25</td>
-                <td>4:00PM</td>
-                <td>Psychiatrist</td>
-                <td>Dr Dan Dell</td>
-                <td>St Charlies Hospital</td>
-                <td>Discuss increase</td>
-                <td><span class="badge bg-success">Upcoming</span></td>
-                <td>
-                    <a href="/appointments/edit_appointment">
-                        <button class="btn btn-success btn-sm me-1">Edit</button></a>
-                    <button class="btn btn-danger btn-sm">Cancel</button>
-                </td>
+            <tr class="bg-light mb-3 rounded">
+              <td class="fw-bold">29/04/25</td>
+              <td>4:00 PM</td>
+              <td>Psychiatrist</td>
+              <td>Dr Dan Dell</td>
+              <td>St Charles Hospital</td>
+              <td>Discuss increase</td>
+              <td><span class="badge bg-success">Upcoming</span></td>
+              <td>
+                <button class="btn btn-Appointment btn-sm me-1">Edit</button>
+                <button class="btn btn-Missed btn-sm">Cancel</button>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-</div>
-<div class="footer">
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
     <div class="container">
-        <div class="row">
-
-            <div class="col-md-6 footer-col">
-                <p>&copy; Copyright 2025. <span id='footer-name'>Chronic Care</span></p>
-            </div>
-
-
-            <div class="col-md-6 footer-col">
-                <p>Connect with me on <a class='footer-link' href=''>LinkedIn</a> or <a class='footer-link'
-                                                                                        href=''>Github</a>
-                </p>
-            </div>
-
+      <div class="row">
+        <div class="col-md-6 footer-col">
+          <p>&copy; 2025 <strong>Chronic Care</strong></p>
         </div>
+        <div class="col-md-6 footer-col">
+          <p>Connect with me on <a class="footer-link" href="#">LinkedIn</a> or <a class="footer-link" href="#">Github</a></p>
+        </div>
+      </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-</script>
+  </div>
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
+
