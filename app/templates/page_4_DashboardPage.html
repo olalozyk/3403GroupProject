@@ -8,6 +8,7 @@
         crossorigin="anonymous">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 
@@ -68,10 +69,56 @@
                             data-bs-toggle="dropdown">
                             <i class="fa-regular fa-bell fs-5"></i>
                             <span
+
+<!-- Implement the Navbar -->
+<nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
+    <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand" href="page_4_DashboardPage.html">
+            <img class="logo" src="../static/images/chronic-care-title.png" alt="logo">
+        </a>
+
+        <!-- Toggler for small screens -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
+                aria-controls="myList" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="myList">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item active nav1">
+                    <a class="nav-link" href="page_4_DashboardPage.html">Home</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="page_5_AppointmentsManagerPage.html">Appointments</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="page_7_CalendarViewPage.html">Calendar</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="page_8_MedicalDocumentsManagerPage.html">Documents</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="page_11_UserProfileSettingsPage.html">Profile</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="page_1_LandingPage.html">Logout</a>
+                </li>
+            </ul>
+
+            <!-- Right-side: Notifications + Welcome -->
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown d-flex align-items-end">
+                    <a class="nav-link position-relative d-inline-block" href="#" role="button"
+                       data-bs-toggle="dropdown">
+                        <i class="fa-regular fa-bell fs-5"></i>
+                        <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                 style="font-size: 0.65rem; transform: translate(-60%, -30%) !important;">
                                 2
                             </span>
+
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow p-3 notification-menu">
                             <li class="mb-3 border-bottom pb-2">
@@ -159,10 +206,98 @@
                         </div>
 
                     </div>
+
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow p-3 notification-menu">
+                        <li class="mb-3 border-bottom pb-2">
+                            <div>
+                                <strong>Reminder:</strong> Referral to Dr. Wong expiring in 7 days!<br>
+                                <small class="text-muted">Due: May 3rd</small>
+                            </div>
+                        </li>
+                        <li class="mb-3 border-bottom pb-2">
+                            <div>
+                                <strong>Upcoming Appointment:</strong> Physio session in 2 days!<br>
+                                <small class="text-muted">Apr 28th</small>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item nav2">
+                    <a class="nav-link" href="#">
+                        Welcome <span style="color:#FC0C0C">weishen</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="h1-title">Welcome back, weishen!</h1>
+    </div>
+</div>
+
+<!-- Upcoming Appointments -->
+<div class="upcoming-appt">
+    <div class="small-container">
+        <div class="row">
+
+            <div class="text-center col-md-12 upcoming-appt-col">
+                <h2 class="h2-title mb-4">Your Upcoming Appointments</h2>
+                <div class="d-grid gap-3">
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">2 Days Away →</div>
+                            <div class="col-md-3">Apr 28th</div>
+                            <div class="col-md-4">Dr. Lim (Physiotherapy)</div>
+                            <div class="col-md-2">10:00am</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">5 Days Away →</div>
+                            <div class="col-md-3">May 1st</div>
+                            <div class="col-md-4">Dr. Tan (Cardiology)</div>
+                            <div class="col-md-2">1:30pm</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">7 Days Away →</div>
+                            <div class="col-md-3">May 3rd</div>
+                            <div class="col-md-4">Dr. Wong (Orthopedics)</div>
+                            <div class="col-md-2">11:00am</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">10 Days Away →</div>
+                            <div class="col-md-3">May 6th</div>
+                            <div class="col-md-4">Dr. Smith (Dentist)</div>
+                            <div class="col-md-2">9:00am</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">12 Days Away →</div>
+                            <div class="col-md-3">May 8th</div>
+                            <div class="col-md-4">Dr. Chua (General)</div>
+                            <div class="col-md-2">4:00pm</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Expiring Referrals/Insurance -->
     <div class="upcoming-appt">
@@ -192,6 +327,35 @@
                         </div>
 
                     </div>
+</div>
+
+<!-- Expiring Referrals/Insurance -->
+<div class="upcoming-appt">
+    <div class="small-container">
+        <div class="row">
+
+            <div class="text-center col-md-12 upcoming-appt-col">
+                <h2 class="h2-title mb-4">Your Expiring Referrals / Insurance</h2>
+                <div class="d-grid gap-3">
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">7 Days Left →</div>
+                            <div class="col-md-3">Referral</div>
+                            <div class="col-md-3">Pain Specialist</div>
+                            <div class="col-md-3">Expires May 3rd</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">15 Days Left →</div>
+                            <div class="col-md-3">Insurance</div>
+                            <div class="col-md-3">ABC Health</div>
+                            <div class="col-md-3">Expires May 11th</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -436,6 +600,88 @@
     </script>
 
     <script src='../static/main.js'></script>
+=======
+</div>
+
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="action-h1">Quick Action</h1>
+    </div>
+</div>
+
+<div class="action">
+    <div class="small-container">
+        <div class="row justify-content-center text-center">
+            <div class="col-md-3 action-col"><a class="" href="/appointments/add_appointment"><img
+                    src="../static/images/add-appointment.png"></a><br>
+                <h3>Add Appointment</h3>
+            </div>
+            <div class="col-md-3 action-col"><a class="" href="/calender"><img
+                    src="../static/images/view-calendar.png"></a><br>
+                <h3>View Calendar</h3>
+            </div>
+
+            <div class="col-md-3 action-col"><a class="" href="medical_document/upload_document"><img
+                    src="../static/images/upload-document.png"></a><br>
+                <h3>Upload Document</h3>
+            </div>
+            <div class="col-md-3 action-col"><a class="" href="medical_document/share_document"><img
+                    src="../static/images/share-document.png"></a><br>
+                <h3>Share Document</h3>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="footer">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-6 footer-col">
+                <p>&copy; Copyright 2025. <span id='footer-name'>Chronic Care</span></p>
+            </div>
+
+
+            <div class="col-md-6 footer-col">
+                <p>Connect with me on <a class='footer-link' href=''>LinkedIn</a> or <a class='footer-link'
+                                                                                        href=''>Github</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<!-------for ads slider-------->
+<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+<!-- Bootstrap Javascript bundle -->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+</script>
+
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function showNotifications() {
+        document.getElementById("notifications").classList.toggle("show");
+        if ($('.notification-count')[0]) {
+            myURL = window.location.origin + '/notification-seen';
+            fetch(myURL);
+        };
+    }
+</script>
+
+
+
+<script src='../static/main.js'></script>
 </body>
 
 </html>
