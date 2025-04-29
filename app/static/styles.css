@@ -169,6 +169,7 @@ h1.h1-title {
 }
 h1.action-h1 {
   margin-top: 40px;
+  color: #6440B4;
 }
 .action .col-md-3 p {
   font-size: 16px;
@@ -867,6 +868,7 @@ table.table-outline-dark .btn {
   border-radius: 0.5rem;   
 }
 
+/* fix title colour */
 .select-docs-page .h1-title {
   color: #6f42c1;  
 }
