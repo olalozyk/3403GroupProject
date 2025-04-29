@@ -866,3 +866,7 @@ table.table-outline-dark .btn {
   padding: 0.5em 0.9em;   
   border-radius: 0.5rem;   
 }
+
+.select-docs-page .h1-title {
+  color: #6f42c1;  
+}
