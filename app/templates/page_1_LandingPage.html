@@ -1,93 +1,22 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %}Introductory Page{% endblock %}
+{% block content %}
 
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        crossorigin="anonymous"> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-
-    <!--<link href="home.css" rel="stylesheet" type="text/css" />-->
-    <link rel="stylesheet" href="../static/styles.css">
-    <style>
-
-    </style>
-
-    <title>Landing Page</title>
-</head>
-
-<body>
-
-<!-- Implement the Navbar -->
-<nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
-    <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="/login">
-            <img class="logo" src="../static/images/chronic-care-title.png" alt="logo">
-        </a>
-
-            <!-- Toggler for small screens -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
-                aria-controls="myList" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-        <!-- Nav Links -->
-        <div class="collapse navbar-collapse" id="myList">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item active nav1">
-                    <a class="nav-link" href="/index">Home</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>
-                <li class="nav-item nav1">
-                    <a class="nav-link" href="/registration">Registration</a>
-                </li>
-            </ul>
-
-                <!-- Right-side: Notifications + Welcome -->
-                <ul class="navbar-nav">
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="#">
-                            <i class="fa-regular fa-bell fs-5"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item nav2">
-                        <a class="nav-link" href="#">
-                            Welcome <span style="color:#FC0C0C">Guest</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="text-center">
+        <div class="p-4 mb-4 welcome-container">
+            <h1 class="fw-bold text-dark">Welcome!</h1>
         </div>
-    </nav>
-
-    <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
-        <div class="text-center">
-            <div class="p-4 mb-4 welcome-container">
-                <h1 class="fw-bold text-dark">Welcome!</h1>
-            </div>
-            <h4 class="fw-semibold text-dark">Chronic Pain Tracker</h4>
-            <p class="fw-bold text-dark">Track your medical journey easily!</p>
-            <p class="text-muted" style="max-width: 500px; margin: auto;">
-                Manage appointments, store medical documents, receive reminders,
-                and easily share your health recorders with providers
-            </p>
-            <div class="mt-4">
-                <a href="/login" class="btn intro-btn px-4 me-3">Login</a>
-                <a href="/register" class="btn intro-btn px-4">Register</a>
-            </div>
+        <h4 class="fw-semibold text-dark">Chronic Pain Tracker</h4>
+        <p class="fw-bold text-dark">Track your medical journey easily!</p>
+        <p class="text-muted" style="max-width: 500px; margin: auto;">
+            Manage appointments, store medical documents, receive reminders,
+            and easily share your health recorders with providers
+        </p>
+        <div class="mt-4">
+            <a href="{{ url_for('main.login') }}" class="btn intro-btn px-4 me-3">Login</a>
+            <a href="{{ url_for('main.register') }}" class="btn intro-btn px-4">Register</a>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-        </script>
-</body>
-
-</html>
+</div>
+{% endblock %}
