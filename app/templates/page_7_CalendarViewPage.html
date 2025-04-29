@@ -1,19 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block title %}Your Calendar{% endblock %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Member Calendar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
-    <link href="../static/styles.css" rel="stylesheet">
-</head>
-
-<body>
-
-{% include 'navbar.html'%}
 <!-- Main Content -->
 <div class="container mt-5 member-timetable-page ">
 
@@ -46,7 +34,7 @@
             </button>
         </div>
         <div
-                class="button-group-bg d-inline-flex justify-content-end gap-3 p-3 rounded shadow-sm mt-4 calender-appointment">
+            class="button-group-bg d-inline-flex justify-content-end gap-3 p-3 rounded shadow-sm mt-4 calender-appointment">
             <button class="btn btn-Appointment">Appointment</button>
             <button class="btn btn-Tests">Tests/Scans</button>
             <button class="btn btn-Expirations">Expiration</button>
@@ -60,88 +48,88 @@
         <div class="table-responsive shadow-sm rounded">
             <table class="table table-bordered text-center mb-0">
                 <thead class="table-outline-dark">
-                <tr>
-                    <th style="width: 7%"></th>
-                    <th>Monday</th>
-                    <th>Tuesday</th>
-                    <th>Wednesday</th>
-                    <th>Thursday</th>
-                    <th>Friday</th>
-                </tr>
+                    <tr>
+                        <th style="width: 7%"></th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr class="rostercells">
-                    <td>09:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>10:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="physiotherapy-cell">Physiotheraphy physic Wellness center</td>
-                </tr>
-                <tr class="rostercells">
-                    <td>11:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>12:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>13:00</td>
-                    <td class="occupation-cell">Occupation Therapy@ EasyHelp</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>14:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>15:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>16:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="rostercells">
-                    <td>17:00</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                    <tr class="rostercells">
+                        <td>09:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>10:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="physiotherapy-cell">Physiotheraphy physic Wellness center</td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>11:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>12:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>13:00</td>
+                        <td class="occupation-cell">Occupation Therapy@ EasyHelp</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>14:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>15:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>16:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="rostercells">
+                        <td>17:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -149,28 +137,4 @@
     <br>
 
 </div>
-<div class="footer">
-    <div class="container">
-        <div class="row">
-
-            <div class="col-md-6 footer-col">
-                <p>&copy; Copyright 2025. <span id='footer-name'>Chronic Care</span></p>
-            </div>
-
-
-            <div class="col-md-6 footer-col">
-                <p>Connect with me on <a class="footer-link" href="">LinkedIn</a> or <a class="footer-link"
-                                                                                        href="">Github</a>
-                </p>
-            </div>
-
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-</script>
-
-</body>
-
-</html>
+{% endblock %}
