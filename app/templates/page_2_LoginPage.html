@@ -80,13 +80,12 @@
 
                     <div class="d-grid mb-3">
 
-                        <button type="button" class="register-btn"
-                            onclick="location.href='page_4_DashboardPage.html'">Login</button>
+                        <a href="{{ url_for('dashboard') }}" class="btn register-btn">Login</a>
                     </div>
 
                     <p class="text-center mb-0">
                         No account?
-                        <a href="page_3_RegisterPage.html" class="purple-link">Register here</a>
+                        <a href="/register" class="purple-link">Register here</a>
                     </p>
                 </form>
             </div>
