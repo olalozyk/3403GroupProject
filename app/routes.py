@@ -21,7 +21,7 @@ def register():
 # Page 4 - Dashboard Page
 @app.route("/dashboard")
 def dashboard():
-    return render_template("page_4_dashboardPage.html")
+    return render_template("page_4_DashboardPage.html")
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
