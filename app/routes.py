@@ -16,6 +16,22 @@ def index():
     return render_template("page_1_LandingPage.html")
 
 # Page 2 - Login Page
+@main.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    msg = ""
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            session['first_name'] = user.first_name  # add this
+            session['role'] = user.role
+            flash("Login successful", "success")
+            return redirect(url_for('main.dashboard'))
+        else:
+            msg = "Invalid email or password"
+
+    return render_template("page_2_loginPage.html", form=form, msg=msg)
 
 @main.route("/logout")
 def logout():
@@ -64,6 +80,11 @@ def register():
 
 
 # Page 4 - Dashboard Page
+@main.route('/dashboard')
+def dashboard():
+    if session.get("role") != "member":
+        return redirect(url_for("main.index"))
+    return render_template("page_4_DashboardPage.html", username=session.get("first_name"))
 
 # Page 5 - Appointments Manager Page
 @main.route("/appointments")
