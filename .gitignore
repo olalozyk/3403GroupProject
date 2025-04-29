@@ -1,1 +1,6 @@
 app/application-env/
+.env
+*.env
+instance/
+venv/
+env/
