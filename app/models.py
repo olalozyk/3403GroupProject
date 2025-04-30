@@ -19,3 +19,7 @@ class User(UserMixin,db.Model):
 
     def __repr__(self):
             return f'<User {self.email}>'
+
+@login.user_loader #needed for Flask-Login to load a user from the database
+def load_user(id):
+    return User.query.get(int(id))
