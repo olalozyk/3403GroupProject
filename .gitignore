@@ -1,9 +1,11 @@
+# Ignore environment variable files
 app/application-env/
 .env
 *.env
 instance/
-venv/
 env/
+# Ignore virtual environment
+venv/
 
 # Bytecode/cache
 __pycache__/
