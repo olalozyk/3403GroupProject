@@ -75,16 +75,18 @@ All data is stored privately per user, with secure authentication and controlled
 
    ```bash
    pip install -r requirements.txt
-   Run the app
-   flask run
 
    ```
 
-4. **Open your browser and go to: http://localhost:5000**
+4. **Run the app**
+  
+  ```bash
+  + flask db upgrade  # Run database migrations (if using Flask-Migrate)
+  + flask run
+
+  ```
 
 ## Team Members
-
-<h2>Team Members</h2>
 
 <table>
   <tr>
