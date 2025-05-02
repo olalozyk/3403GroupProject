@@ -32,6 +32,11 @@ def login():
     
     return render_template("page_2_LoginPage.html", form=form)
 
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
 # Page 3 - Register Page
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -101,6 +106,43 @@ def medical_document():
     
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
+# View document route
+@app.route("/medical_document/view/<int:doc_id>")
+@login_required
+def view_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    if document.user_id != current_user.id:
+        flash("You don't have permission to view this document")
+        return redirect(url_for('medical_document'))
+    # for now return to the documents list with a message
+    flash("Document viewing functionality will be implemented soon")
+    return redirect(url_for('medical_document'))
+
+# Download document route
+@app.route("/medical_document/download/<int:doc_id>")
+@login_required
+def download_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    if document.user_id != current_user.id:
+        flash("You don't have permission to download this document")
+        return redirect(url_for('medical_document'))
+    flash("Document download functionality will be implemented soon")
+    return redirect(url_for('medical_document'))
+
+# Delete document route
+@app.route("/medical_document/delete/<int:doc_id>")
+@login_required
+def delete_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    if document.user_id != current_user.id:
+        flash("You don't have permission to delete this document")
+        return redirect(url_for('medical_document'))
+    db.session.delete(document)
+    db.session.commit()
+    
+    flash(f"Document '{document.document_name}' has been deleted")
+    return redirect(url_for('medical_document'))
+
 # Page 9 - Upload New Document Page
 @app.route("/medical_document/upload_document")
 @login_required
@@ -130,8 +172,3 @@ def edit_appointment():
 @login_required
 def edit_document():
     return render_template("page_13_EditDocumentPage.html")
-
-@app.route("/logout")
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
