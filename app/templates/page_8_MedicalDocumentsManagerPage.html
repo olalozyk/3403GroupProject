@@ -19,8 +19,6 @@
     <div class="text-center mb-4">
         <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
 
-
-
       <div class="d-flex justify-content-center gap-3 mt-3">
         <button class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2"
                 onclick="location.href='/medical_document/upload_document'">
@@ -33,15 +31,16 @@
       </div>
     </div>
 
+    <!-- Sorting dropdown with dynamic selection -->
     <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
       <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
       <select id="sortDocs" class="form-select w-auto">
-        <option value="upload-asc">date uploaded ↑</option>
-        <option value="upload-desc">date uploaded ↓</option>
-        <option value="expiry-asc">expiration ↑</option>
-        <option value="expiry-desc">expiration ↓</option>
+        <option value="upload-asc" {% if sort_by == 'upload-asc' %}selected{% endif %}>date uploaded ↑</option>
+        <option value="upload-desc" {% if sort_by == 'upload-desc' %}selected{% endif %}>date uploaded ↓</option>
+        <option value="expiry-asc" {% if sort_by == 'expiry-asc' %}selected{% endif %}>expiration ↑</option>
+        <option value="expiry-desc" {% if sort_by == 'expiry-desc' %}selected{% endif %}>expiration ↓</option>
       </select>
-      <button class="btn btn-purple-calender px-4">Display</button>
+      <button class="btn btn-purple-calender px-4" id="sortButton">Display</button>
     </div>
 
     <!-- Scrollable timetable-style table -->
