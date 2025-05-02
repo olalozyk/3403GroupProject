@@ -2,8 +2,8 @@
 <nav class="navbar navbar-expand-sm sticky-top navbar-bgcolor">
     <div class="container">
         <!-- Logo -->
-        <a class="navbar-brand" href="/dashboard">
-            <img class="logo" src="../static/images/chronic-care-title.png" alt="logo">
+        <a class="navbar-brand" href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('index') }}">
+            <img class="logo" src="{{ url_for('static', filename='images/chronic-care-title.png') }}" alt="logo">
         </a>
 
         <!-- Toggler for small screens -->
@@ -12,27 +12,38 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Nav Links -->
         <div class="collapse navbar-collapse" id="myList">
             <ul class="navbar-nav mx-auto">
+                {% if current_user.is_authenticated %}
                 <li class="nav-item active nav1">
-                    <a class="nav-link" href="/dashboard">Home</a>
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">Home</a>
                 </li>
                 <li class="nav-item nav1">
-                    <a class="nav-link" href="/appointments">Appointments</a>
+                    <a class="nav-link" href="{{ url_for('appointments') }}">Appointments</a>
                 </li>
                 <li class="nav-item nav1">
-                    <a class="nav-link" href="/calender">Calendar</a>
+                    <a class="nav-link" href="{{ url_for('calender') }}">Calendar</a>
                 </li>
                 <li class="nav-item nav1">
-                    <a class="nav-link" href="/medical_document">Documents</a>
+                    <a class="nav-link" href="{{ url_for('medical_document') }}">Documents</a>
                 </li>
                 <li class="nav-item nav1">
-                    <a class="nav-link" href="/user_Profile">Profile</a>
+                    <a class="nav-link" href="{{ url_for('user_Profile') }}">Profile</a>
                 </li>
                 <li class="nav-item nav1">
-                    <a class="nav-link" href="/index">Logout</a>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </li>
+                {% else %}
+                <li class="nav-item active nav1">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item nav1">
+                    <a class="nav-link" href="{{ url_for('register') }}">Registration</a>
+                </li>
+                {% endif %}
             </ul>
 
             <!-- Right-side: Notifications + Welcome -->
@@ -44,7 +55,12 @@
                 </li>
                 <li class="nav-item nav2">
                     <a class="nav-link" href="#">
-                        Welcome <span style="color:#FC0C0C">weishen</span>
+                        Welcome 
+                        {% if current_user.is_authenticated %}
+                        <span style="color:#FC0C0C">{{ current_user.first_name }}</span>
+                        {% else %}
+                        <span style="color:#FC0C0C">Guest</span>
+                        {% endif %}
                     </a>
                 </li>
             </ul>
