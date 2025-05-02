@@ -1,2 +1,6 @@
+# Ignore environment variable files
 app/application-env/
 .env
+# Ignore virtual environment
+venv/
+# Ignore Python environment
