@@ -20,6 +20,15 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def generate_member_id(self):
+        import random
+        import string
+        member_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        while User.query.filter_by(member_id=member_id).first() is not None:
+            member_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        return member_id
+
 
     def __repr__(self):
         return f'<User {self.email}>'
