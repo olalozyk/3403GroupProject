@@ -1,73 +1,71 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, current_user, login_required
-from werkzeug.urls import url_parse
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document
-from datetime import datetime
+from app.models import Users, Document
+
 # Page 1 - Landing Page
 @app.route('/')
 @app.route('/index')
 def index():
+    # Automatically redirect member to dashboard if already logged in
+    if session.get("role") == "member":
+        return redirect(url_for("dashboard"))
     return render_template("page_1_LandingPage.html")
 
 # Page 2 - Login Page
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    
     form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid email or password')
-            return redirect(url_for('login'))
-        
-        if not user.member_id:
-            user.member_id = user.generate_member_id()
-            db.session.commit()
-        
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('dashboard')
-        return redirect(next_page)
-    
-    return render_template("page_2_LoginPage.html", form=form)
+    msg = ""
 
-@app.route("/logout")
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            session['first_name'] = user.first_name  # add this
+            session['role'] = user.role
+            flash("Login successful", "success")
+            return redirect(url_for('dashboard'))
+        else:
+            msg = "Invalid email or password"
+
+    return render_template("page_2_loginPage.html", form=form, msg=msg)
 
 # Page 3 - Register Page
-@app.route("/register", methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    
     form = RegistrationForm()
+    error_msg = None
+    success_msg = None
+
     if form.validate_on_submit():
-        user = User(
-            member_id=form.member_id.data,
+        existing_user = Users.query.filter_by(email=form.email.data).first()
+
+        if existing_user:
+            error_msg = "Email already exists."
+            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
+
+        if form.password.data != form.confirm_password.data:
+            error_msg = "Passwords do not match. Please try again."
+            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
+
+        # If all validations pass
+        hashed_pw = generate_password_hash(form.password.data)
+        new_user = Users(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            role="member"
+            password=hashed_pw
         )
-        user.set_password(form.password.data)
 
-        # Generate and set member_id
-        user.member_id = user.generate_member_id()
-        
-        db.session.add(user)
+        db.session.add(new_user)
         db.session.commit()
-        
-        flash('Registration successful! Please log in with your new account.')
-        return redirect(url_for('login'))
-    
-    return render_template("page_3_RegisterPage.html", form=form)
+
+        success_msg = "Account has been created successfully! You can now login."
+        return render_template("page_3_registerPage.html", form=RegistrationForm(), success_msg=success_msg)
+
+    return render_template("page_3_registerPage.html", form=form)
 
 # Page 4 - Dashboard Page
 @app.route("/dashboard")
