@@ -1,31 +1,26 @@
-import os
 from flask import Flask
-from app.extensions import db, migrate, csrf, socketio, login_manager
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_wtf import CSRFProtect
+from app.config import Config
 from dotenv import load_dotenv
+from flask_login import LoginManager
+import os
+
 load_dotenv()
 
-def create_app():
-    app = Flask(__name__, instance_relative_config=True)
-    # Ensure instance folder exists
-    try:
-        os.makedirs(app.instance_path, exist_ok=True)
-    except OSError:
-        pass
+app = Flask(__name__)
+app.config.from_object(Config)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key')
 
-    # Configuration
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')  # fallback to 'dev' key if missing
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'project.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # recommended to turn off
+# Set up extensions
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+csrf = CSRFProtect(app)
 
-    # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-    csrf.init_app(app)
-    socketio.init_app(app)
-    login_manager.init_app(app)
+# Configure login manager
+login = LoginManager()
+login.init_app(app)
+login.login_view = 'login'
 
-    # Register Blueprints
-    from app.routes import main
-    app.register_blueprint(main)
-
-    return app
+from app import routes, models
