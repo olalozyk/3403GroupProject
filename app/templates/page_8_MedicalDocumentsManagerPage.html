@@ -43,9 +43,9 @@
       <button class="btn btn-purple-calender px-4" id="sortButton">Display</button>
     </div>
 
-    <!-- Scrollable timetable-style table -->
+    <!-- Documents table with dynamic content -->
     <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
-        <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
+      <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
         <thead class="table-outline-dark">
           <tr>
             <th>Document</th>
@@ -57,62 +57,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="rostercells">
-            <td>📄 LDN Script - S4</td>
-            <td>Dr Jake Croll</td>
-            <td>Script</td>
-            <td>02/02/2025</td>
-            <td>N/A</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 Pain Specialist Referral</td>
-            <td>Dr Jessica Adams</td>
-            <td>Referral</td>
-            <td>03/02/2025</td>
-            <td>03/05/2025</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 SKG Blood Test Results</td>
-            <td>Dr Claire Willby</td>
-            <td>Report</td>
-            <td>29/04/2025</td>
-            <td>N/A</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 Photo of Medicare Card</td>
-            <td>Dr Dan Dell</td>
-            <td>Insurance</td>
-            <td>29/04/2025</td>
-            <td>08/2029</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
+          {% if documents %}
+            {% for document in documents %}
+              <tr class="rostercells">
+                <td>📄 {{ document.document_name }}</td>
+                <td>{{ document.practitioner_name }}</td>
+                <td>{{ document.document_type }}</td>
+                <td>{{ document.upload_date.strftime('%d/%m/%Y') }}</td>
+                <td>{% if document.expiration_date %}{{ document.expiration_date.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</td>
+                <td>
+                  <button class="btn btn-purple-calender btn-sm me-1" 
+                          onclick="location.href='/medical_document/edit_document/{{ document.id }}'">Edit</button>
+                  <button class="btn btn-Appointment btn-sm me-1" 
+                          onclick="location.href='/medical_document/download/{{ document.id }}'">Download</button>
+                  <button class="btn btn-Missed btn-sm delete-doc-btn" 
+                          data-doc-id="{{ document.id }}" data-doc-name="{{ document.document_name }}">Delete</button>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <p>No documents found. Start by uploading a document!</p>
+              </td>
+            </tr>
+          {% endif %}
         </tbody>
       </table>
     </div>
-  </div>
 
   <!-- Footer -->
   <div class="footer">
