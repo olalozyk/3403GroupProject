@@ -12,13 +12,6 @@
         <form method="POST" action="{{ url_for('register') }}">
             {{ form.hidden_tag() }}
             <div class="mb-3">
-                <label for="memberId" class="form-label">Member ID</label>
-                {{ form.member_id(class="form-control", id="memberId", placeholder="Enter your member ID") }}
-                {% for error in form.member_id.errors %}
-                <span class="text-danger">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
                 {{ form.first_name(class="form-control", id="firstName", placeholder="Enter your first name") }}
                 {% for error in form.first_name.errors %}
