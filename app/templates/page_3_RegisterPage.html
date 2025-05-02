@@ -65,51 +65,81 @@
             <h1 class="purple-text" style="font-size: 3rem;">Sign Up</h1>
         </div>
 
-        <div class="d-flex justify-content-center align-items-center" style="min-height: 45.5vh;">
-            <div class="p-4 shadow rounded" style="background-color: white; max-width: 420px; width: 100%;">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="firstName" class="form-label">First Name</label>
-                        <input type="text" name="firstName" class="form-control" id="firstName"
-                            placeholder="Enter your first name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="lastName" class="form-label">Last Name</label>
-                        <input type="text" name="lastName" class="form-control" id="lastName"
-                            placeholder="Enter your last name" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email"
-                            required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="password"
-                            placeholder="Enter your password" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword"
-                            placeholder="Confirm your password" required>
-                    </div>
-
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="register-btn">Register</button>
-                    </div>
-
-                    <p class="text-center mb-0">
-                        Already have an account?
-                        <a href="/login" class="purple-link">Login here</a>
-                    </p>
-                </form>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-6">
+            <div class="alert alert-info text-center">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
             </div>
         </div>
     </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 45.5vh;">
+        <div class="p-4 shadow rounded" style="background-color: white; max-width: 420px; width: 100%;">
+            <form method="POST" action="{{ url_for('register') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    {{ form.first_name(class="form-control", id="firstName", placeholder="Enter your first name") }}
+                    {% for error in form.first_name.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    {{ form.last_name(class="form-control", id="lastName", placeholder="Enter your last name") }}
+                    {% for error in form.last_name.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    {{ form.email(class="form-control", id="email", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    {{ form.password(class="form-control", id="password", placeholder="Enter your password") }}
+                    {% for error in form.password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    {{ form.confirm_password(class="form-control", id="confirmPassword", placeholder="Confirm your password") }}
+                    {% for error in form.confirm_password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid mb-3">
+                    {{ form.submit(class="register-btn") }}
+                </div>
+
+                <p class="text-center mb-0">
+                    Already have an account?
+                    <a href="{{ url_for('login') }}" class="purple-link">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+</script>
 </body>
 
 </html>
