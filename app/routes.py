@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.models import User, Document
 from datetime import datetime
 # Page 1 - Landing Page
 @app.route('/')
@@ -84,7 +84,22 @@ def calender():
 @app.route("/medical_document")
 @login_required
 def medical_document():
-    return render_template("page_8_MedicalDocumentsManagerPage.html")
+    # Get all documents for the current user
+    documents = Document.query.filter_by(user_id=current_user.id).all()
+    
+    # Handle sorting parameter if provided
+    sort_by = request.args.get('sort', 'upload-desc')
+    
+    if sort_by == 'upload-asc':
+        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
+    elif sort_by == 'upload-desc':
+        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.desc()).all()
+    elif sort_by == 'expiry-asc':
+        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
+    elif sort_by == 'expiry-desc':
+        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
+    
+    return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
 # Page 9 - Upload New Document Page
 @app.route("/medical_document/upload_document")
