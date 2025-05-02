@@ -4,70 +4,70 @@
 
 
 <div class="container py-4">
-  <h1 class="purple-text" style="font-size: 2.8rem;">Select Documents to Share</h1>
-  <p class="text-muted">Select the medical documents you’d like to send.</p>
+    <h1 class="purple-text" style="font-size: 2.8rem;">Select Documents to Share</h1>
+    <p class="text-muted">Select the medical documents you’d like to send.</p>
 </div>
 
 <!-- Main Content -->
 <div class="container mt-5 member-timetable-page select-docs-page">
-  <h1 class="h1-title purple-text text-center">Select Documents to Share</h1>
-  <p class="text-center mb-4" style="color:#000000;">Select the medical documents you’d like to send.</p>
-  <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
-    <table class="table table-bordered text-center mb-0">
-      <thead class="table-outline-dark">
-        <tr>
-          <th style="width: 6%;">Select</th>
-          <th>Document</th>
-          <th>Practitioner</th>
-          <th>Type</th>
-          <th>Uploaded</th>
-          <th>Expiration</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="bg-light">
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>LDN Script - S4</td>
-          <td>Dr Jake Croll</td>
-          <td>Script</td>
-          <td>02/02/2025</td>
-          <td>N/A</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Pain Specialist Referral</td>
-          <td>Dr Jessica Adams</td>
-          <td>Referral</td>
-          <td>03/02/2025</td>
-          <td>03/05/2025</td>
-        </tr>
-        <tr class="bg-light">
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>SKG Blood Test Results</td>
-          <td>Dr Claire Willby</td>
-          <td>Report</td>
-          <td>29/04/2025</td>
-          <td>N/A</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Photo of Medicare Card</td>
-          <td>Dr Dan Dell</td>
-          <td>Insurance</td>
-          <td>29/04/2025</td>
-          <td>08/2029</td>
-        </tr>
-      </tbody>
-    </table>
+    <h1 class="h1-title purple-text text-center">Select Documents to Share</h1>
+    <p class="text-center mb-4" style="color:#000000;">Select the medical documents you’d like to send.</p>
+    <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
+        <table class="table table-bordered text-center mb-0">
+            <thead class="table-outline-dark">
+            <tr>
+                <th style="width: 6%;">Select</th>
+                <th>Document</th>
+                <th>Practitioner</th>
+                <th>Type</th>
+                <th>Uploaded</th>
+                <th>Expiration</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="bg-light">
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>LDN Script - S4</td>
+                <td>Dr Jake Croll</td>
+                <td>Script</td>
+                <td>02/02/2025</td>
+                <td>N/A</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Pain Specialist Referral</td>
+                <td>Dr Jessica Adams</td>
+                <td>Referral</td>
+                <td>03/02/2025</td>
+                <td>03/05/2025</td>
+            </tr>
+            <tr class="bg-light">
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>SKG Blood Test Results</td>
+                <td>Dr Claire Willby</td>
+                <td>Report</td>
+                <td>29/04/2025</td>
+                <td>N/A</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Photo of Medicare Card</td>
+                <td>Dr Dan Dell</td>
+                <td>Insurance</td>
+                <td>29/04/2025</td>
+                <td>08/2029</td>
+            </tr>
+            </tbody>
+        </table>
 
-  </div>
+    </div>
 
-  <div class="mb-3">
-    <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
-    <input id="shareTo" type="text" class="form-control share-email-input" placeholder="e.g., admin@newclinic.com" />
-  </div>
+    <div class="mb-3">
+        <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
+        <input id="shareTo" type="text" class="form-control share-email-input" placeholder="e.g., admin@newclinic.com" />
+    </div>
 
-  <button class="btn user-submit-button w-100 py-2">Share Selected Documents</button>
+    <button class="btn user-submit-button w-100 py-2">Share Selected Documents</button>
 </div>
 
 {% endblock %}
