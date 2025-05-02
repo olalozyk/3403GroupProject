@@ -24,6 +24,10 @@ def login():
             flash('Invalid email or password')
             return redirect(url_for('login'))
         
+        if not user.member_id:
+            user.member_id = user.generate_member_id()
+            db.session.commit()
+        
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -53,6 +57,9 @@ def register():
             role="member"
         )
         user.set_password(form.password.data)
+
+        # Generate and set member_id
+        user.member_id = user.generate_member_id()
         
         db.session.add(user)
         db.session.commit()
