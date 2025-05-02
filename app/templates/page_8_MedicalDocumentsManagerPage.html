@@ -19,8 +19,6 @@
     <div class="text-center mb-4">
         <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
 
-
-
       <div class="d-flex justify-content-center gap-3 mt-3">
         <button class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2"
                 onclick="location.href='/medical_document/upload_document'">
@@ -33,20 +31,21 @@
       </div>
     </div>
 
+    <!-- Sorting dropdown with dynamic selection -->
     <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
       <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
       <select id="sortDocs" class="form-select w-auto">
-        <option value="upload-asc">date uploaded ↑</option>
-        <option value="upload-desc">date uploaded ↓</option>
-        <option value="expiry-asc">expiration ↑</option>
-        <option value="expiry-desc">expiration ↓</option>
+        <option value="upload-asc" {% if sort_by == 'upload-asc' %}selected{% endif %}>date uploaded ↑</option>
+        <option value="upload-desc" {% if sort_by == 'upload-desc' %}selected{% endif %}>date uploaded ↓</option>
+        <option value="expiry-asc" {% if sort_by == 'expiry-asc' %}selected{% endif %}>expiration ↑</option>
+        <option value="expiry-desc" {% if sort_by == 'expiry-desc' %}selected{% endif %}>expiration ↓</option>
       </select>
-      <button class="btn btn-purple-calender px-4">Display</button>
+      <button class="btn btn-purple-calender px-4" id="sortButton">Display</button>
     </div>
 
-    <!-- Scrollable timetable-style table -->
+    <!-- Documents table with dynamic content -->
     <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
-        <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
+      <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
         <thead class="table-outline-dark">
           <tr>
             <th>Document</th>
@@ -58,62 +57,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="rostercells">
-            <td>📄 LDN Script - S4</td>
-            <td>Dr Jake Croll</td>
-            <td>Script</td>
-            <td>02/02/2025</td>
-            <td>N/A</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 Pain Specialist Referral</td>
-            <td>Dr Jessica Adams</td>
-            <td>Referral</td>
-            <td>03/02/2025</td>
-            <td>03/05/2025</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 SKG Blood Test Results</td>
-            <td>Dr Claire Willby</td>
-            <td>Report</td>
-            <td>29/04/2025</td>
-            <td>N/A</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
-          <tr class="rostercells">
-            <td>📄 Photo of Medicare Card</td>
-            <td>Dr Dan Dell</td>
-            <td>Insurance</td>
-            <td>29/04/2025</td>
-            <td>08/2029</td>
-            <td>
-              <button class="btn btn-purple-calender btn-sm me-1"
-                      onclick="location.href='/medical_document/edit_document'">Edit</button>
-              <button class="btn btn-Appointment btn-sm me-1">Download</button>
-              <button class="btn btn-Missed btn-sm">Delete</button>
-            </td>
-          </tr>
+          {% if documents %}
+            {% for document in documents %}
+              <tr class="rostercells">
+                <td>📄 {{ document.document_name }}</td>
+                <td>{{ document.practitioner_name }}</td>
+                <td>{{ document.document_type }}</td>
+                <td>{{ document.upload_date.strftime('%d/%m/%Y') }}</td>
+                <td>{% if document.expiration_date %}{{ document.expiration_date.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</td>
+                <td>
+                  <button class="btn btn-purple-calender btn-sm me-1" 
+                          onclick="location.href='/medical_document/edit_document/{{ document.id }}'">Edit</button>
+                  <button class="btn btn-Appointment btn-sm me-1" 
+                          onclick="location.href='/medical_document/download/{{ document.id }}'">Download</button>
+                  <button class="btn btn-Missed btn-sm delete-doc-btn" 
+                          data-doc-id="{{ document.id }}" data-doc-name="{{ document.document_name }}">Delete</button>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <p>No documents found. Start by uploading a document!</p>
+              </td>
+            </tr>
+          {% endif %}
         </tbody>
       </table>
     </div>
-  </div>
 
   <!-- Footer -->
   <div class="footer">
@@ -132,6 +103,27 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+  </script>
+
+  <!-- Sorting and Delete JS -->
+  <script>
+    // Sorting functionality
+    document.getElementById('sortButton').addEventListener('click', function() {
+      const sortValue = document.getElementById('sortDocs').value;
+      window.location.href = '/medical_document?sort=' + sortValue;
+    });
+    
+    // Delete confirmation
+    document.querySelectorAll('.delete-doc-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const docId = this.getAttribute('data-doc-id');
+        const docName = this.getAttribute('data-doc-name');
+        
+        if (confirm(`Are you sure you want to delete "${docName}"?`)) {
+          window.location.href = `/medical_document/delete/${docId}`;
+        }
+      });
+    });
   </script>
 </body>
 </html>

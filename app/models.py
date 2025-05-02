@@ -4,14 +4,14 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import time, date
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(25), nullable=False, default="member")
 
     def set_password(self, password):
@@ -19,14 +19,17 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def generate_member_id(self):
+        import random
+        import string
+        member_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        while Users.query.filter_by(member_id=member_id).first() is not None:
+            member_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        return member_id
 
     def __repr__(self):
         return f'<User {self.email}>'
-
-
-@login.user_loader
-def load_user(id):
-    return User.query.get(int(id))
 
 
 class Appointment(db.Model):
