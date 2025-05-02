@@ -14,5 +14,7 @@ migrate = Migrate(app, db)
 
 login = LoginManager(app)
 login.login_view = 'login' #redirects to login page if user is not logged in
+login.login_message = "Please log in to access this page."
+
 
 from app import routes,models
