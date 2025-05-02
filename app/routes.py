@@ -46,6 +46,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(
+            member_id=form.member_id.data,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
