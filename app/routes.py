@@ -1,9 +1,9 @@
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, flash, redirect, url_for, request, session, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document
+from app.models import User, Document, Appointment
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -24,6 +24,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):  # use method
             login_user(user)  # Flask-Login login
+            session['user_id'] = user.id
             session['first_name'] = user.first_name
             session['role'] = user.role
             flash("Login successful", "success")
@@ -82,15 +83,22 @@ def dashboard():
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
-@login_required
-def appointments():
-    return render_template("page_5_AppointmentsManagerPage.html")
+def appointment_manager():
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
 
-# Page 6 - Add Appointment Page
-@app.route("/appointments/add_appointment")
-@login_required
-def add_appointment():
-    return render_template("page_6_AddAppointmentPage.html")
+    sort_by = request.args.get("sort", "appointment_date")
+    order = request.args.get("order", "asc")
+
+    appointments = Appointment.query.filter_by(user_id=session["user_id"])
+
+    if sort_by == "appointment_date":
+        appointments = appointments.order_by(
+            Appointment.appointment_date.asc() if order == "asc" else Appointment.appointment_date.desc()
+        )
+
+    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
+
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
@@ -174,11 +182,6 @@ def share_document():
 def user_profile():
     return render_template("page_11_UserProfileSettingsPage.html")
 
-# Page 12 - Edit Appointment Page
-@app.route("/appointments/edit_appointment")
-@login_required
-def edit_appointment():
-    return render_template("page_12_EditAppointmentPage.html")
 
 # Page 13 - Edit Document Page
 @app.route("/medical_document/edit_document")
