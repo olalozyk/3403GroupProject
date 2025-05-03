@@ -1,8 +1,9 @@
 import os
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
 class Config(object):
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'+os.path.join(BASE_DIR,'ChronicCare.db')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(
+        os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'instance')),
+        'ChronicCare.db'
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
