@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, session, current_app
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
@@ -175,6 +175,17 @@ def edit_appointment(appointment_id):
         return redirect(url_for("appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
+
+@app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
+def delete_appointment(appointment_id):
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    if session.get("role") != "member" or appt.user_id != session.get("user_id"):
+        return jsonify({"error": "Unauthorized"}), 403
+
+    db.session.delete(appt)
+    db.session.commit()
+    return jsonify({"success": True})
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
