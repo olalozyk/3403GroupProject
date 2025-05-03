@@ -45,17 +45,16 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    error_msg = None
-    success_msg = None
-
+    
     if form.validate_on_submit():
-        # If all validations pass
+        # All validations passed, create new user
         hashed_pw = generate_password_hash(form.password.data)
         new_user = User(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            password=hashed_pw
+            password=hashed_pw,
+            role="member"  # Make sure to set a default role
         )
 
         db.session.add(new_user)
