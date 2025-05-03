@@ -1,5 +1,5 @@
 body {
-  background-color: #F8F5FF; /*coral*/
+  background-color: #f8f5ff; /*coral*/
   margin: 0;
 }
 /**----------navbar----------**/
@@ -42,13 +42,14 @@ a.nav-link {
   font-size: 15px;
   margin-right: 15px;
   margin-left: 15px;
-  color: black;
+  color: #6440b4;
 }
 a.nav-item1.active-link {
   color: rgb(230, 24, 24); /* or any color to highlight the active page */
   font-weight: bold;
 }
-.nav1 a:hover, .nav2 a:hover {
+.nav1 a:hover,
+.nav2 a:hover {
   color: #6f42c1 !important;
   text-decoration: underline;
 }
@@ -131,7 +132,7 @@ a.nav-item1.active-link {
 
 h1.h1-title {
   margin-top: 20px;
-  color: #6440B4;
+  color: #6440b4;
 }
 /**-----------general section--------**/
 /**-----------ad slider-----------*/
@@ -169,7 +170,7 @@ h1.h1-title {
 }
 h1.action-h1 {
   margin-top: 40px;
-  color: #6440B4;
+  color: #6440b4;
 }
 .action .col-md-3 p {
   font-size: 16px;
@@ -225,7 +226,7 @@ h3.featured-title {
 }
 
 h1.featured-h1 {
-  color: #6440B4;
+  color: #6440b4;
   margin-top: 46px;
 }
 
@@ -251,7 +252,7 @@ h1.featured-h1 {
 /**--------featured section--------*/
 /**--------testimonial section--------*/
 h1.testimonial-h1 {
-  color: #6440B4;
+  color: #6440b4;
   margin-top: 54px;
 }
 
@@ -319,11 +320,11 @@ h1.testimonial-h1 {
 
 h1.partner-h1 {
   margin-top: 46px;
-  color: #6440B4;
+  color: #6440b4;
 }
 /**-----------partner section-----------*/
 /**--------upcoming appointment section-------**/
-.h2-title{
+.h2-title {
   font-size: 22px;
 }
 .upcoming-appt {
@@ -333,7 +334,7 @@ h1.partner-h1 {
   flex-basis: 78%; /** the smaller the %, the narrower the div column*/
   min-width: 250px; /** the larger the px, the narrower*/
 }
-.upcoming-appt-details:hover{
+.upcoming-appt-details:hover {
   color: #6440b4;
   box-shadow: 0 0 20px 0px #9f78f3 !important;
   cursor: pointer;
@@ -371,6 +372,90 @@ h1.partner-h1 {
   color: #2c2c2c;
 }
 /**-----------add appointment section----------*/
+/**-----------appointment manager section----------*/
+h1.appt-manager-h1 {
+  margin-top: 20px;
+  color: #6440b4;
+}
+
+.appt-manager {
+  margin-top: 20px;
+}
+
+.appt-manager-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+/* Inner cell lines only */
+.appt-manager-table td,
+.appt-manager-table th {
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+/* Remove last column right border */
+.appt-manager-table tr td:last-child,
+.appt-manager-table tr th:last-child {
+  border-right: none;
+}
+/* Remove last row bottom border */
+.appt-manager-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appt-manager-col {
+  flex-basis: 100%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.edit-btn {
+  display: inline-block;
+  background-color: #66b986;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.edit-btn:hover {
+  background-color: #4b8862;
+  color: #2c2c2c;
+}
+.cancel-btn {
+  display: inline-block;
+  background-color: #e27676;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.cancel-btn:hover {
+  background-color: #be5d5d;
+  color: #2c2c2c;
+}
+.add-appt-btn {
+  margin-top: 20px;
+  padding: 8px 25px; /** topbot rightleft*/
+  border-radius: 10px;
+  font-weight: 700;
+  color: #3b3b3b;
+  font-size: 24px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+  transition: background 0.5s;
+}
+
+.add-appt-btn:hover {
+  color: #6440b4;
+  box-shadow: 0 0 20px 0px #ad8df0; /**top right bot left**/
+}
+/**-----------appointment manager section----------*/
 /**-----------introductory section----------*/
 .welcome-container {
   max-width: 500px;
@@ -397,9 +482,6 @@ h1.partner-h1 {
 }
 /**-----------introductory section----------*/
 /**----------login, sign up and other forms---------------**/
-label {
-  font-weight: bold;
-}
 
 .login-container form i,
 .signup-container form i {
@@ -486,12 +568,12 @@ select option[disabled] {
 /* ================================ */
 @keyframes slideDown {
   from {
-      transform: translateY(-100%);
-      opacity: 0;
+    transform: translateY(-100%);
+    opacity: 0;
   }
   to {
-      transform: translateY(0);
-      opacity: 1;
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 /* Calendar Heading */
@@ -503,12 +585,18 @@ select option[disabled] {
   font-weight: 700;
   font-size: 2.5rem;
   animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Controls */
@@ -540,7 +628,7 @@ select option[disabled] {
   transition: all 0.3s ease;
   border-radius: 12px;
   font-weight: bold;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-purple-calender {
@@ -569,10 +657,9 @@ select option[disabled] {
   color: white;
 }
 
-.week-slider{
+.week-slider {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-
 
 /* Timetable Styles */
 .scrollable-timetable {
@@ -636,7 +723,6 @@ select option[disabled] {
   background-color: #fff;
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
 }
 
 .member-timetable-page h1 {
@@ -668,7 +754,7 @@ select option[disabled] {
 
 .member-timetable-page .btn:hover {
   transform: translateY(-2px);
-  box-shadow:  5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .member-timetable-page .user-submit-button:hover {
@@ -702,7 +788,7 @@ select option[disabled] {
 }
 
 .member-timetable-page .rostercells td:hover {
-  background-color: #E6E6FA;
+  background-color: #e6e6fa;
   transform: scale(1.05);
   box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
 }
@@ -711,7 +797,7 @@ select option[disabled] {
   .member-timetable-page .user-submit-button,
   .member-timetable-page .user-edit-button,
   .member-timetable-page .user-share-button {
-      width: 100% !important;
+    width: 100% !important;
   }
 }
 
@@ -735,23 +821,28 @@ select option[disabled] {
   font-weight: 700;
   font-size: 2.5rem;
   animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .upload-title {
-  color: rgba(111, 66, 193, 0.6); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
+  color: rgba(
+    111,
+    66,
+    193,
+    0.6
+  ); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
   margin-bottom: 8px;
 }
 
 .card {
   border-radius: 1rem;
   background: white;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .card:hover {
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 input.form-control,
@@ -785,14 +876,13 @@ textarea.form-control:focus {
 
 @keyframes fadeInUp {
   from {
-      opacity: 0;
-      transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
-
 }
 .custom-checkbox {
   width: 20px;
@@ -809,10 +899,9 @@ textarea.form-control:focus {
   background-color: mistyrose;
 }
 
-
 /* header row border to a soft purple */
 .table-outline-dark thead th {
-  border: 2px solid #C8A9EF !important;
+  border: 2px solid #c8a9ef !important;
 }
 
 /* each data-row cell size increase */
@@ -822,10 +911,6 @@ textarea.form-control:focus {
 }
 
 /* make all button text white for consistency */
-.btn,
-.btn-sm {
-  color: #ffffff !important;
-}
 
 /* soften all cell borders */
 table.table-outline-dark th,
@@ -835,7 +920,7 @@ table.table-outline-dark td {
 
 /* lighten & unify header background */
 table.table-outline-dark thead th {
-  background-color: #b589eb !important; 
+  background-color: #b589eb !important;
   color: #fff !important;
 }
 
@@ -847,7 +932,7 @@ table.table-outline-dark tbody td {
 /* round the outer corners of the entire table */
 .scrollable-timetable table {
   border-radius: 8px;
-  overflow: hidden;   
+  overflow: hidden;
 }
 
 /* all action-button text to white */
@@ -856,19 +941,19 @@ table.table-outline-dark .btn {
 }
 
 /* increase row height */
-.table tbody tr td,
-.table tbody tr th {
+.member-timetable-page .table tbody tr td,
+.member-timetable-page .table tbody tr th {
   padding: 1.2rem 0.75rem;
 }
 
 /* bigger status badges */
-.table .badge {
-  font-size: 0.9rem;      
-  padding: 0.5em 0.9em;   
-  border-radius: 0.5rem;   
+.member-timetable-page .table .badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.9em;
+  border-radius: 0.5rem;
 }
 
 /* fix title colour */
 .select-docs-page .h1-title {
-  color: #6f42c1;  
+  color: #6f42c1;
 }

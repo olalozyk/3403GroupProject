@@ -1,1 +1,16 @@
+# Ignore environment variable files
 app/application-env/
+.env
+*.env
+instance/
+env/
+# Ignore virtual environment
+venv/
+
+# Bytecode/cache
+__pycache__/
+*.pyc
+
+# Ignore compiled Alembic files
+migrations/__pycache__/
+migrations/versions/__pycache__/
