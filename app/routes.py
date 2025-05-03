@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document
+from app.models import User, Document, Appointment
+from datetime import datetime
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -24,6 +25,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):  # use method
             login_user(user)  # Flask-Login login
+            session['user_id'] = user.id
             session['first_name'] = user.first_name
             session['role'] = user.role
             flash("Login successful", "success")
@@ -82,15 +84,108 @@ def dashboard():
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
-@login_required
-def appointments():
-    return render_template("page_5_AppointmentsManagerPage.html")
+def appointment_manager():
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
 
-# Page 6 - Add Appointment Page
-@app.route("/appointments/add_appointment")
-@login_required
+    sort_by = request.args.get("sort", "appointment_date")
+    order = request.args.get("order", "asc")
+
+    appointments = Appointment.query.filter_by(user_id=session["user_id"])
+
+    if sort_by == "appointment_date":
+        appointments = appointments.order_by(
+            Appointment.appointment_date.asc() if order == "asc" else Appointment.appointment_date.desc()
+        )
+
+    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
+
+@app.route("/appointment/add", methods=["GET", "POST"])
 def add_appointment():
-    return render_template("page_6_AddAppointmentPage.html")
+    if request.method == "POST":
+        # Directly get start_time and end_time from the form
+        start_time_str = request.form['starting_time']
+        end_time_str = request.form['ending_time']
+
+        # Parse them properly
+        starting_time = datetime.strptime(start_time_str, "%H:%M").time()
+        ending_time = datetime.strptime(end_time_str, "%H:%M").time()
+
+        # Reminder handling
+        reminder = ",".join(request.form.getlist("reminder"))
+        reminder_custom_str = request.form.get("custom_reminder")
+        custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
+
+        # Create the appointment
+        new_appointment = Appointment(
+            user_id=session["user_id"],
+            appointment_date=datetime.strptime(request.form['appointment_date'], "%Y-%m-%d").date(),
+            starting_time=starting_time,
+            ending_time=ending_time,
+            practitioner_name=request.form['practitioner_name'],
+            practitioner_type=request.form['practitioner_type'],
+            location=request.form['location'],
+            appointment_notes=request.form['appointment_notes'],
+            appointment_type=request.form['appointment_type'],
+            provider_number=request.form.get('provider_number'),
+            reminder=reminder,
+            custom_reminder=custom_reminder
+        )
+
+        # Save to DB
+        db.session.add(new_appointment)
+        db.session.commit()
+
+        return redirect(url_for("appointment_manager"))
+
+    # GET method — show blank form
+    return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
+
+@app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
+def edit_appointment(appointment_id):
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    if session.get("role") != "member" or appt.user_id != session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        # NEW: Fetch start_time and end_time separately (NO more time split)
+        start_time_str = request.form["starting_time"]
+        end_time_str = request.form["ending_time"]
+
+        starting_time = datetime.strptime(start_time_str.strip(), "%H:%M").time()
+        ending_time = datetime.strptime(end_time_str.strip(), "%H:%M").time()
+
+        # Update appointment fields
+        appt.appointment_date = datetime.strptime(request.form["appointment_date"], "%Y-%m-%d").date()
+        appt.starting_time = starting_time
+        appt.ending_time = ending_time
+        appt.practitioner_name = request.form["practitioner_name"]
+        appt.practitioner_type = request.form["practitioner_type"]
+        appt.location = request.form["location"]
+        appt.appointment_notes = request.form["appointment_notes"]
+        appt.appointment_type = request.form["appointment_type"]
+        appt.provider_number = request.form.get("provider_number")
+        appt.reminder = ",".join(request.form.getlist("reminder"))
+
+        reminder_custom_str = request.form.get("custom_reminder")
+        appt.custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
+
+        db.session.commit()
+        return redirect(url_for("appointment_manager"))
+
+    return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
+
+@app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
+def delete_appointment(appointment_id):
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    if session.get("role") != "member" or appt.user_id != session.get("user_id"):
+        return jsonify({"error": "Unauthorized"}), 403
+
+    db.session.delete(appt)
+    db.session.commit()
+    return jsonify({"success": True})
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
@@ -174,11 +269,6 @@ def share_document():
 def user_profile():
     return render_template("page_11_UserProfileSettingsPage.html")
 
-# Page 12 - Edit Appointment Page
-@app.route("/appointments/edit_appointment")
-@login_required
-def edit_appointment():
-    return render_template("page_12_EditAppointmentPage.html")
 
 # Page 13 - Edit Document Page
 @app.route("/medical_document/edit_document")

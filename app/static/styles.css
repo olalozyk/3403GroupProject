@@ -372,6 +372,90 @@ h1.partner-h1 {
   color: #2c2c2c;
 }
 /**-----------add appointment section----------*/
+/**-----------appointment manager section----------*/
+h1.appt-manager-h1 {
+  margin-top: 20px;
+  color: #6440b4;
+}
+
+.appt-manager {
+  margin-top: 20px;
+}
+
+.appt-manager-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+
+/* Inner cell lines only */
+.appt-manager-table td,
+.appt-manager-table th {
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+}
+
+/* Remove last column right border */
+.appt-manager-table tr td:last-child,
+.appt-manager-table tr th:last-child {
+  border-right: none;
+}
+/* Remove last row bottom border */
+.appt-manager-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appt-manager-col {
+  flex-basis: 100%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.edit-btn {
+  display: inline-block;
+  background-color: #66b986;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.edit-btn:hover {
+  background-color: #4b8862;
+  color: #2c2c2c;
+}
+.cancel-btn {
+  display: inline-block;
+  background-color: #e27676;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.cancel-btn:hover {
+  background-color: #be5d5d;
+  color: #2c2c2c;
+}
+.add-appt-btn {
+  margin-top: 20px;
+  padding: 8px 25px; /** topbot rightleft*/
+  border-radius: 10px;
+  font-weight: 700;
+  color: #3b3b3b;
+  font-size: 24px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+  transition: background 0.5s;
+}
+
+.add-appt-btn:hover {
+  color: #6440b4;
+  box-shadow: 0 0 20px 0px #ad8df0; /**top right bot left**/
+}
+/**-----------appointment manager section----------*/
 /**-----------introductory section----------*/
 .welcome-container {
   max-width: 500px;
@@ -827,10 +911,6 @@ textarea.form-control:focus {
 }
 
 /* make all button text white for consistency */
-.btn,
-.btn-sm {
-  color: #ffffff !important;
-}
 
 /* soften all cell borders */
 table.table-outline-dark th,
@@ -861,13 +941,13 @@ table.table-outline-dark .btn {
 }
 
 /* increase row height */
-.table tbody tr td,
-.table tbody tr th {
+.member-timetable-page .table tbody tr td,
+.member-timetable-page .table tbody tr th {
   padding: 1.2rem 0.75rem;
 }
 
 /* bigger status badges */
-.table .badge {
+.member-timetable-page .table .badge {
   font-size: 0.9rem;
   padding: 0.5em 0.9em;
   border-radius: 0.5rem;
