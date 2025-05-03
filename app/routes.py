@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Document, Appointment
+from datetime import datetime
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -99,6 +100,46 @@ def appointment_manager():
 
     return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
 
+@app.route("/appointment/add", methods=["GET", "POST"])
+def add_appointment():
+    if request.method == "POST":
+        # Directly get start_time and end_time from the form
+        start_time_str = request.form['starting_time']
+        end_time_str = request.form['ending_time']
+
+        # Parse them properly
+        starting_time = datetime.strptime(start_time_str, "%H:%M").time()
+        ending_time = datetime.strptime(end_time_str, "%H:%M").time()
+
+        # Reminder handling
+        reminder = ",".join(request.form.getlist("reminder"))
+        reminder_custom_str = request.form.get("custom_reminder")
+        custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
+
+        # Create the appointment
+        new_appointment = Appointment(
+            user_id=session["user_id"],
+            appointment_date=datetime.strptime(request.form['date'], "%Y-%m-%d").date(),
+            starting_time=starting_time,
+            ending_time=ending_time,
+            practitioner_name=request.form['practitioner_name'],
+            practitioner_type=request.form['practitioner_type'],
+            location=request.form['location'],
+            appointment_notes=request.form['appointment_notes'],
+            appointment_type=request.form['appointment_type'],
+            provider_number=request.form.get('provider_number'),
+            reminder=reminder,
+            custom_reminder=custom_reminder
+        )
+
+        # Save to DB
+        db.session.add(new_appointment)
+        db.session.commit()
+
+        return redirect(url_for("appointment_manager"))
+
+    # GET method — show blank form
+    return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
