@@ -119,7 +119,7 @@ def add_appointment():
         # Create the appointment
         new_appointment = Appointment(
             user_id=session["user_id"],
-            appointment_date=datetime.strptime(request.form['date'], "%Y-%m-%d").date(),
+            appointment_date=datetime.strptime(request.form['appointment_date'], "%Y-%m-%d").date(),
             starting_time=starting_time,
             ending_time=ending_time,
             practitioner_name=request.form['practitioner_name'],
