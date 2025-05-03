@@ -16,3 +16,4 @@ class Document(db.Model):
     filename = db.Column(db.String(200), nullable=False)
     filepath = db.Column(db.String(300), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+
