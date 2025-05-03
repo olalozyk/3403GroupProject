@@ -41,8 +41,8 @@
                             class="nav-item1 {% if request.endpoint == 'dashboard' %}active-link{% endif %}">Home</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('appointments') }}"
-                            class="nav-item1 {% if request.endpoint == 'appointments' %}active-link{% endif %}">Appointment</a>
+                        <a href="{{ url_for('appointment_manager') }}"
+                            class="nav-item1 {% if request.endpoint == 'appointment_manager' %}active-link{% endif %}">Appointment</a>
                     </li>
                     <li class="nav-item nav1">
                         <a href="{{ url_for('calendar') }}"
