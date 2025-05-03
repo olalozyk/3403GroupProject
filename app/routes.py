@@ -141,6 +141,41 @@ def add_appointment():
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
 
+@app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
+def edit_appointment(appointment_id):
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    if session.get("role") != "member" or appt.user_id != session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        # NEW: Fetch start_time and end_time separately (NO more time split)
+        start_time_str = request.form["starting_time"]
+        end_time_str = request.form["ending_time"]
+
+        starting_time = datetime.strptime(start_time_str.strip(), "%H:%M").time()
+        ending_time = datetime.strptime(end_time_str.strip(), "%H:%M").time()
+
+        # Update appointment fields
+        appt.appointment_date = datetime.strptime(request.form["appointment_date"], "%Y-%m-%d").date()
+        appt.starting_time = starting_time
+        appt.ending_time = ending_time
+        appt.practitioner_name = request.form["practitioner_name"]
+        appt.practitioner_type = request.form["practitioner_type"]
+        appt.location = request.form["location"]
+        appt.appointment_notes = request.form["appointment_notes"]
+        appt.appointment_type = request.form["appointment_type"]
+        appt.provider_number = request.form.get("provider_number")
+        appt.reminder = ",".join(request.form.getlist("reminder"))
+
+        reminder_custom_str = request.form.get("custom_reminder")
+        appt.custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
+
+        db.session.commit()
+        return redirect(url_for("appointment_manager"))
+
+    return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
+
 # Page 7 - Calendar View Page
 @app.route("/calendar")
 @login_required
