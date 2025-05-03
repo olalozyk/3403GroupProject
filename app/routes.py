@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import Users, Document
+from app.models import User, Document
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -21,9 +21,10 @@ def login():
     msg = ""
 
     if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user and check_password_hash(user.password, form.password.data):
-            session['first_name'] = user.first_name  # add this
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.check_password(form.password.data):  # use method
+            login_user(user)  # Flask-Login login
+            session['first_name'] = user.first_name
             session['role'] = user.role
             flash("Login successful", "success")
             return redirect(url_for('dashboard'))
@@ -31,6 +32,12 @@ def login():
             msg = "Invalid email or password"
 
     return render_template("page_2_loginPage.html", form=form, msg=msg)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for("index"))
 
 # Page 3 - Register Page
 @app.route("/register", methods=["GET", "POST"])
@@ -40,7 +47,7 @@ def register():
     success_msg = None
 
     if form.validate_on_submit():
-        existing_user = Users.query.filter_by(email=form.email.data).first()
+        existing_user = User.query.filter_by(email=form.email.data).first()
 
         if existing_user:
             error_msg = "Email already exists."
@@ -52,7 +59,7 @@ def register():
 
         # If all validations pass
         hashed_pw = generate_password_hash(form.password.data)
-        new_user = Users(
+        new_user = User(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
@@ -86,9 +93,9 @@ def add_appointment():
     return render_template("page_6_AddAppointmentPage.html")
 
 # Page 7 - Calendar View Page
-@app.route("/calender")
+@app.route("/calendar")
 @login_required
-def calender():
+def calendar():
     return render_template("page_7_CalendarViewPage.html")
 
 # Page 8 - Medical Documents Manager Page
@@ -162,9 +169,9 @@ def share_document():
     return render_template("page_10_SelectDocumentsToSharePage.html")
 
 # Page 11 - User Profile Settings Page
-@app.route("/user_Profile")
+@app.route("/user_profile")
 @login_required
-def user_Profile():
+def user_profile():
     return render_template("page_11_UserProfileSettingsPage.html")
 
 # Page 12 - Edit Appointment Page
