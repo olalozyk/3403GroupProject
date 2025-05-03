@@ -13,3 +13,26 @@ document.querySelectorAll(".toggle-password").forEach(function (toggleIcon) {
   });
 });
 //---------------eye icon--------------------------
+
+//-------------------for deletion--------------------
+const csrfToken = document
+  .querySelector('meta[name="csrf-token"]')
+  .getAttribute("content");
+
+function deleteAppointment(appointmentId) {
+  fetch(`/appointment/delete/${appointmentId}`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": csrfToken,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}), // You can include data if needed
+  }).then((response) => {
+    if (response.ok) {
+      location.reload(); // or remove the row from the DOM
+    } else {
+      alert("Failed to delete appointment");
+    }
+  });
+}
+//-------------------for deletion--------------------
