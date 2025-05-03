@@ -21,6 +21,13 @@
                     {% if error_msg %}
                     <div class="error-msg">{{ error_msg }}</div>
                     {% endif %}
+                    {% if form.errors %}
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                                <div class="error-msg">{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 {{ form.hidden_tag() }}
 
@@ -71,6 +78,4 @@
         </div>
     </div>
 </div>
-
-
 {% endblock %}

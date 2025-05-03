@@ -45,27 +45,16 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    error_msg = None
-    success_msg = None
-
+    
     if form.validate_on_submit():
-        existing_user = User.query.filter_by(email=form.email.data).first()
-
-        if existing_user:
-            error_msg = "Email already exists."
-            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
-
-        if form.password.data != form.confirm_password.data:
-            error_msg = "Passwords do not match. Please try again."
-            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
-
-        # If all validations pass
+        # All validations passed, create new user
         hashed_pw = generate_password_hash(form.password.data)
         new_user = User(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            password=hashed_pw
+            password=hashed_pw,
+            role="member"  # Make sure to set a default role
         )
 
         db.session.add(new_user)
