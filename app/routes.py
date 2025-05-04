@@ -112,6 +112,24 @@ def dashboard():
         # no need to pass notifications or n_not here anymore
     )
 
+@app.route("/notifications/read", methods=["POST"])
+def mark_notifications_read():
+    try:
+        csrf_token = request.headers.get("X-CSRFToken")
+        validate_csrf(csrf_token)
+    except CSRFError:
+        return "CSRF token invalid or missing", 400
+
+    timestamp = datetime.utcnow()
+    session["notifications_viewed_at"] = timestamp.isoformat()
+
+    if current_user.is_authenticated:
+        current_user.notifications_viewed_at = timestamp
+        db.session.commit()
+
+    session.modified = True
+    return jsonify({"success": True})
+
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
 def appointment_manager():
