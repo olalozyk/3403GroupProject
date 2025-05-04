@@ -40,7 +40,7 @@ class Appointment(db.Model):
     appointment_type = db.Column(db.String(100), nullable=False)
     appointment_notes = db.Column(db.String(1000), nullable=False)
     reminder = db.Column(db.Text)  # store comma-separated reminders
-    custom_reminder = db.Column(db.Date, nullable=False)
+    custom_reminder = db.Column(db.Date, nullable=True)
 
 
 class Document(db.Model):
