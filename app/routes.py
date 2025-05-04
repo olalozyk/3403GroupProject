@@ -130,6 +130,64 @@ def mark_notifications_read():
     session.modified = True
     return jsonify({"success": True})
 
+
+@app.context_processor
+def inject_notifications():
+    notifications = []
+    n_not = 0
+
+    if session.get("role") == "member" and "user_id" in session:
+        user_id = session["user_id"]
+        now = datetime.now()
+
+        appointments = Appointment.query.filter(
+            Appointment.user_id == user_id,
+            Appointment.appointment_date >= now.date()
+        ).all()
+
+        reminder_options = {
+            "2 hours before": timedelta(hours=2),
+            "12 hours before": timedelta(hours=12),
+            "1 day before": timedelta(days=1),
+            "1 week before": timedelta(weeks=1),
+        }
+
+        for appt in appointments:
+            appt_datetime = datetime.combine(appt.appointment_date, appt.starting_time)
+
+            # Standard reminders
+            reminder_list = appt.reminder.split(",") if appt.reminder else []
+            for rem in reminder_list:
+                rem = rem.strip()
+                if rem in reminder_options:
+                    reminder_time = appt_datetime - reminder_options[rem]
+                    if reminder_time <= now:
+                        notifications.append({
+                            "title": "Upcoming Appointment",
+                            "body": f"{appt.practitioner_name} ({appt.practitioner_type})",
+                            "date": appt.appointment_date.strftime("%b %d"),  # Correct: appointment date
+                            "reminder_info": f"{rem}",  # e.g. "1 day before"
+                            "triggered_on": reminder_time.strftime("%b %d"),  # the day it popped up
+                        })
+
+            # Custom reminder
+            if appt.custom_reminder:
+                custom_reminder_time = datetime.combine(appt.custom_reminder, time.min)
+                if custom_reminder_time <= now:
+                    notifications.append({
+                        "title": "Reminder",
+                        "body": f"{appt.practitioner_name}",
+                        "date": appt.appointment_date.strftime("%b %d"),
+                        "reminder_info": "Custom reminder for",
+                        "reminder_date": appt.custom_reminder.strftime("%b %d"),
+                        "triggered_on": custom_reminder_time.strftime("%b %d"),
+                        "timestamp": custom_reminder_time
+                    })
+
+        n_not = len(notifications)  # badge will now show ALL relevant notifications
+
+    return dict(n_not=n_not, notifications=notifications)
+
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
 def appointment_manager():
