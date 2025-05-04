@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Document, Appointment
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -106,10 +106,34 @@ def dashboard():
             "end_time": appt.ending_time.strftime("%I:%M%p").lower()
         })
 
+    # Expiring documents
+    expiring_docs = (
+        db.session.query(Document, Appointment)
+        .join(Appointment, Document.appointment_id == Appointment.id)
+        .filter(
+            Document.user_id == session["user_id"],
+            Document.expiration_date != None,
+            Document.expiration_date >= today
+        )
+        .order_by(Document.expiration_date.asc())  # sort by soonest
+        .limit(5)  # <- only top 5
+        .all()
+    )
+
+    expiring_data = []
+    for doc, appt in expiring_docs:
+        days_left = (doc.expiration_date - today).days
+        expiring_data.append({
+            "days_left": days_left,
+            "document_type": doc.document_type,
+            "practitioner_type": appt.practitioner_type,
+            "expires_on": doc.expiration_date.strftime("%b %d")
+        })
+
     return render_template(
         "page_4_dashboardPage.html",
-        upcoming_appointments=upcoming_data
-        # no need to pass notifications or n_not here anymore
+        upcoming_appointments=upcoming_data,
+        expiring_docs=expiring_data  # Include this line
     )
 
 @app.route("/notifications/read", methods=["POST"])
@@ -241,7 +265,8 @@ def add_appointment():
         # Save to DB
         db.session.add(new_appointment)
         db.session.commit()
-
+        
+        
         return redirect(url_for("appointment_manager"))
 
     # GET method — show blank form
@@ -279,6 +304,7 @@ def edit_appointment(appointment_id):
         appt.custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
 
         db.session.commit()
+        
         return redirect(url_for("appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
@@ -293,6 +319,7 @@ def delete_appointment(appointment_id):
 
     db.session.delete(appt)
     db.session.commit()
+    
     return jsonify({"success": True})
 
 
