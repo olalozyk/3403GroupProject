@@ -2,13 +2,9 @@
 {% block title %}Medical Documents{% endblock %}
 {% block content %}
 
-
 <div class="container py-4">
   <div class="text-center mb-4">
     <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
-
-
-
     <div class="d-flex justify-content-center gap-3 mt-3">
       <button class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2"
         onclick="location.href='/medical_document/upload_document'">
@@ -20,6 +16,24 @@
       </button>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <form method="get" action="/documents/search" class="mb-4">
+      <div class="row g-2">
+          <div class="col-md-4">
+              <input type="text" name="q" class="form-control" placeholder="Search documents (name or notes)">
+          </div>
+          <div class="col-md-3">
+              <input type="text" name="type" class="form-control" placeholder="Document type">
+          </div>
+          <div class="col-md-3">
+              <input type="date" name="expiration" class="form-control">
+          </div>
+          <div class="col-md-2">
+              <button type="submit" class="btn btn-purple-calender w-100">Search</button>
+          </div>
+      </div>
+  </form>
 
   <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
     <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
@@ -104,4 +118,3 @@
 </div>
 
 {% endblock %}
-

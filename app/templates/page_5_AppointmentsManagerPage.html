@@ -14,19 +14,18 @@
   </a>
 </div>
 
+<!-- Main Content -->
 <form method="get" class="d-flex justify-content-center align-items-center gap-2 mb-3" id="sortForm">
   <label class="me-2 fw-semibold" for="sort">Order your appointments by</label>
   <select name="order" class="form-select w-auto" id="sort" onchange="document.getElementById('sortForm').submit()">
-    <option value="asc" {% if request.args.get('order')=='asc' %}selected{% endif %}>Date (ascending)</option>
-    <option value="desc" {% if request.args.get('order')=='desc' %}selected{% endif %}>Date (descending)
-    </option>
+    <option> value="asc" {% if request.args.get('order')=='asc' %}selected{% endif %}&gt;Date (ascending)</option>
+    <option> value="desc" {% if request.args.get('order')=='desc' %}selected{% endif %}&gt;Date (descending)</option>
   </select>
 </form>
 
 <div class="appt-manager">
   <div class="small-container">
     <div class="row">
-
       <div class="table-responsive col-md-12 appt-manager-col">
         <table class="table appt-manager-table">
           <thead class="table-light">
@@ -55,8 +54,7 @@
               </td>
               <td class="text-nowrap">
                 <a href="{{ url_for('edit_appointment', appointment_id=appt.id) }}" class="btn edit-btn btn-sm">Edit</a>
-
-                <button onclick="deleteAppointment({{ appt.id }})" class="btn cancel-btn btn-sm">
+                <button data-id="{{ appt.id }}" onclick="deleteAppointment(this)" class="btn cancel-btn btn-sm">
                   Cancel
                 </button>
               </td>
@@ -72,4 +70,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
