@@ -1,10 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, g, current_app
 from flask_login import login_user, logout_user, current_user, login_required
+from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Document, Appointment
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -23,11 +24,19 @@ def login():
 
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):  # use method
-            login_user(user)  # Flask-Login login
+        if user and user.check_password(form.password.data):
+            login_user(user)
+
             session['user_id'] = user.id
             session['first_name'] = user.first_name
             session['role'] = user.role
+
+            # Sync session with DB-stored notification viewed_at
+            session['notifications_viewed_at'] = (
+                user.notifications_viewed_at.isoformat()
+                if user.notifications_viewed_at else datetime.min.isoformat()
+            )
+
             flash("Login successful", "success")
             return redirect(url_for('dashboard'))
         else:
@@ -45,27 +54,16 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    error_msg = None
-    success_msg = None
 
     if form.validate_on_submit():
-        existing_user = User.query.filter_by(email=form.email.data).first()
-
-        if existing_user:
-            error_msg = "Email already exists."
-            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
-
-        if form.password.data != form.confirm_password.data:
-            error_msg = "Passwords do not match. Please try again."
-            return render_template("page_3_registerPage.html", form=form, error_msg=error_msg)
-
-        # If all validations pass
+        # All validations passed, create new user
         hashed_pw = generate_password_hash(form.password.data)
         new_user = User(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            password=hashed_pw
+            password=hashed_pw,
+            role="member"  # Make sure to set a default role
         )
 
         db.session.add(new_user)
@@ -92,7 +90,7 @@ def dashboard():
             Appointment.appointment_date >= today
         )
         .order_by(Appointment.appointment_date.asc())
-        .limit(5) # return the next 5 upcoming appointments, ordered by the nearest appointment_date
+        .limit(5)
         .all()
     )
 
@@ -108,7 +106,11 @@ def dashboard():
             "end_time": appt.ending_time.strftime("%I:%M%p").lower()
         })
 
-    return render_template("page_4_dashboardPage.html", upcoming_appointments=upcoming_data)
+    return render_template(
+        "page_4_dashboardPage.html",
+        upcoming_appointments=upcoming_data
+        # no need to pass notifications or n_not here anymore
+    )
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
@@ -230,10 +232,10 @@ def calendar():
 def medical_document():
     # Get all documents for the current user
     documents = Document.query.filter_by(user_id=current_user.id).all()
-    
+
     # Handle sorting parameter if provided
     sort_by = request.args.get('sort', 'upload-desc')
-    
+
     if sort_by == 'upload-asc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
     elif sort_by == 'upload-desc':
@@ -242,7 +244,7 @@ def medical_document():
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
     elif sort_by == 'expiry-desc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
-    
+
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
 # View document route
@@ -278,7 +280,7 @@ def delete_document(doc_id):
         return redirect(url_for('medical_document'))
     db.session.delete(document)
     db.session.commit()
-    
+
     flash(f"Document '{document.document_name}' has been deleted")
     return redirect(url_for('medical_document'))
 
