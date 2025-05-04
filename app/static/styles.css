@@ -23,7 +23,7 @@ img.logo {
   margin-left: 18px;
 }
 
-a.nav-link {
+.navbar-nav .nav-link {
   color: #6440b4;
   font-size: 14px;
   font-weight: 500;
