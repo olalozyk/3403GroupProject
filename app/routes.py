@@ -45,7 +45,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    
+
     if form.validate_on_submit():
         # All validations passed, create new user
         hashed_pw = generate_password_hash(form.password.data)
@@ -188,10 +188,10 @@ def calendar():
 def medical_document():
     # Get all documents for the current user
     documents = Document.query.filter_by(user_id=current_user.id).all()
-    
+
     # Handle sorting parameter if provided
     sort_by = request.args.get('sort', 'upload-desc')
-    
+
     if sort_by == 'upload-asc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
     elif sort_by == 'upload-desc':
@@ -200,7 +200,7 @@ def medical_document():
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
     elif sort_by == 'expiry-desc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
-    
+
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
 # View document route
@@ -236,7 +236,7 @@ def delete_document(doc_id):
         return redirect(url_for('medical_document'))
     db.session.delete(document)
     db.session.commit()
-    
+
     flash(f"Document '{document.document_name}' has been deleted")
     return redirect(url_for('medical_document'))
 
