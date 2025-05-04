@@ -1,9 +1,12 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
+import os
+import zipfile
+import io
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document, Appointment
+from app.models import User, Document, Appointment, Users
 from datetime import datetime
 
 # Page 1 - Landing Page
@@ -252,6 +255,60 @@ def upload_document():
 def share_document():
     return render_template("page_10_SelectDocumentsToSharePage.html")
 
+@app.route('/documents/export', methods=['POST'])
+@login_required
+def export_documents():
+    selected_ids = request.form.getlist('document_ids')
+    include_personal_summary = request.form.get('include_personal_summary')
+
+    if not selected_ids:
+        flash('No documents selected for export.', 'danger')
+        return redirect(url_for('share_document'))
+
+    # Set up an in-memory ZIP
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for doc_id in selected_ids:
+            doc = Document.query.filter_by(id=doc_id, owner_id=current_user.id).first()
+            if not doc:
+                continue  # skip if doc not found or not owned by user
+
+            file_path = os.path.join(app.root_path, 'static', 'documents', doc.filename)
+            if os.path.exists(file_path):
+                zipf.write(file_path, arcname=doc.filename)
+            else:
+                app.logger.warning(f"File not found: {file_path}")
+
+        # Add personal summary if requested
+        if include_personal_summary:
+            personal_details = generate_personal_summary(current_user)
+            zipf.writestr('PersonalDetails.txt', personal_details)
+
+    zip_buffer.seek(0)
+    filename = f"SharedDocuments_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.zip"
+
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=filename
+    )
+
+def generate_personal_summary(user):
+    summary = f"""
+    Personal Details Summary
+    ------------------------
+    Name: {user.first_name} {user.last_name}
+    Email: {user.email}
+    Date of Birth: {user.date_of_birth}
+    Contact Number: {user.contact_number}
+    Medical Summary:
+    {user.medical_summary}
+
+    Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
+    """
+    return summary
+
 # Page 11 - User Profile Settings Page
 @app.route("/user_profile")
 @login_required
@@ -264,3 +321,21 @@ def user_profile():
 @login_required
 def edit_document():
     return render_template("page_13_EditDocumentPage.html")
+
+# Page 14 - Edit Personalised User Analytics Page
+@app.route("/insights")
+@login_required
+def insights():
+    # Placeholder summary data
+    total_appointments = 12
+    documents_expiring_soon = 3
+    most_frequent_practitioner = "Dr Jessica Adams"
+
+    # (Later: Replace these with real database queries!)
+
+    return render_template(
+        "page_14_PersonalisedUserAnalytics.html",
+        total_appointments=total_appointments,
+        documents_expiring_soon=documents_expiring_soon,
+        most_frequent_practitioner=most_frequent_practitioner
+    )

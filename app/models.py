@@ -42,7 +42,7 @@ class Appointment(db.Model):
     reminder = db.Column(db.Text)  # store comma-separated reminders
     custom_reminder = db.Column(db.Date, nullable=False)
 
-
+    
 class Document(db.Model):
     __tablename__ = 'documents'
 
@@ -65,10 +65,19 @@ class UserProfile(db.Model):
     mobile_number = db.Column(db.String(15), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    confirm_password = db.Column(db.String(100), nullable=False)
+    date_of_birth = db.Column(db.Date)
+    contact_number = db.Column(db.String(20))
+    medical_summary = db.Column(db.Text)
 
+    
+class Document(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(200), nullable=False)
+    filepath = db.Column(db.String(300), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
 # Required by Flask-Login
 @login.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
