@@ -266,7 +266,7 @@ def add_appointment():
         db.session.add(new_appointment)
         db.session.commit()
         
-        
+        flash("Appointment successfully created", "success")
         return redirect(url_for("appointment_manager"))
 
     # GET method — show blank form
@@ -304,7 +304,7 @@ def edit_appointment(appointment_id):
         appt.custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
 
         db.session.commit()
-        
+        flash("Appointment successfully updated", "success")
         return redirect(url_for("appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
@@ -319,7 +319,7 @@ def delete_appointment(appointment_id):
 
     db.session.delete(appt)
     db.session.commit()
-    
+    flash("Appointment successfully deleted", "success")
     return jsonify({"success": True})
 
 
