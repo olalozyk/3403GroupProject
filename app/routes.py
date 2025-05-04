@@ -307,7 +307,35 @@ def upload_document():
 @app.route("/medical_document/share_document")
 @login_required
 def share_document():
-    return render_template("page_10_SelectDocumentsToSharePage.html")
+    # by default, show all documents for the user
+    documents = Document.query.filter_by(user_id=current_user.id).all()
+    return render_template("page_10_SelectDocumentsToSharePage.html", documents=documents)
+
+@app.route('/documents/share/search', methods=['GET'])
+@login_required
+def search_documents_to_share():
+    query = request.args.get('q', '').strip()
+    doc_type = request.args.get('type', '')
+    expiration = request.args.get('expiration', '')
+
+    documents = Document.query.filter_by(user_id=current_user.id)
+
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%'))
+        )
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+    if expiration:
+        try:
+            expiration_obj = datetime.strptime(expiration, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_obj)
+        except ValueError:
+            pass  # skip if date is invalid
+
+    documents = documents.all()
+    return render_template('page_10_SelectDocumentsToSharePage.html', documents=documents)
 
 @app.route('/documents/export', methods=['POST'])
 @login_required
@@ -333,7 +361,7 @@ def export_documents():
             else:
                 app.logger.warning(f"File not found: {file_path}")
 
-        # Add personal summary if requested
+        # add personal summary if requested
         if include_personal_summary:
             personal_details = generate_personal_summary(current_user)
             zipf.writestr('PersonalDetails.txt', personal_details)
@@ -359,8 +387,7 @@ def generate_personal_summary(user):
     Medical Summary:
     {user.medical_summary}
 
-    Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
-    """
+    Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC"""
     return summary
 
 # Page 11 - User Profile Settings Page
