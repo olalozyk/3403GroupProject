@@ -2,6 +2,19 @@
 {% block title %}Edit Document{% endblock %}
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="container mt-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
 <div class="container">
     <div class="text-center">
         <h1 class="h1-title">Welcome back, {{ session['first_name'] }}!</h1>
@@ -42,25 +55,18 @@
             <div class="text-center col-md-12 upcoming-appt-col">
                 <h2 class="h2-title mb-4">Your Expiring Referrals / Insurance</h2>
                 <div class="d-grid gap-3">
-
+                    {% for doc in expiring_docs %}
                     <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
                         <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">7 Days Left →</div>
-                            <div class="col-md-3">Referral</div>
-                            <div class="col-md-3">Pain Specialist</div>
-                            <div class="col-md-3">Expires May 3rd</div>
+                            <div class="col-md-3 fw-bold">{{ doc.days_left }} Days Left →</div>
+                            <div class="col-md-3">{{ doc.document_type }}</div>
+                            <div class="col-md-3">{{ doc.practitioner_type }}</div>
+                            <div class="col-md-3">Expires {{ doc.expires_on }}</div>
                         </div>
                     </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">15 Days Left →</div>
-                            <div class="col-md-3">Insurance</div>
-                            <div class="col-md-3">ABC Health</div>
-                            <div class="col-md-3">Expires May 11th</div>
-                        </div>
-                    </div>
-
+                    {% else %}
+                    <p class="text-muted">No upcoming document expirations.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
