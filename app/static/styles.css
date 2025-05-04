@@ -33,10 +33,6 @@ a.nav-link {
   font-size: 20px;
 }
 
-.notification-num {
-  color: #783c26;
-  text-decoration: none;
-}
 .nav-item1 {
   text-decoration: none;
   font-size: 15px;
@@ -60,7 +56,19 @@ a.nav-item1.active-link {
   box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 .dropdown-menu.notification-menu {
-  min-width: 360px;
+  min-width: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.notif-bold-text {
+  color: #6f42c1;
+  font-weight: 700;
+  font-size: 16px;
+}
+.notif-small-text {
+  color: #6f42c1;
+  font-weight: 600;
+  font-size: 14px;
 }
 /**-----------general section--------**/
 .container {
