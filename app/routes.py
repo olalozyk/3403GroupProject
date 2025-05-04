@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Document, Appointment
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -80,7 +80,35 @@ def register():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("page_4_dashboardPage.html")
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
+
+    today = datetime.today().date()
+
+    upcoming_appointments = (
+        Appointment.query
+        .filter(
+            Appointment.user_id == session["user_id"],
+            Appointment.appointment_date >= today
+        )
+        .order_by(Appointment.appointment_date.asc())
+        .limit(5) # return the next 5 upcoming appointments, ordered by the nearest appointment_date
+        .all()
+    )
+
+    upcoming_data = []
+    for appt in upcoming_appointments:
+        days_away = (appt.appointment_date - today).days
+        upcoming_data.append({
+            "days_away": days_away,
+            "date": appt.appointment_date.strftime("%b %d"),
+            "practitioner": appt.practitioner_name,
+            "type": appt.practitioner_type,
+            "start_time": appt.starting_time.strftime("%I:%M%p").lower(),
+            "end_time": appt.ending_time.strftime("%I:%M%p").lower()
+        })
+
+    return render_template("page_4_dashboardPage.html", upcoming_appointments=upcoming_data)
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
@@ -141,6 +169,7 @@ def add_appointment():
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
 
+
 @app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
 def edit_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
@@ -176,6 +205,7 @@ def edit_appointment(appointment_id):
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
+
 @app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
 def delete_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
@@ -186,6 +216,7 @@ def delete_appointment(appointment_id):
     db.session.delete(appt)
     db.session.commit()
     return jsonify({"success": True})
+
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
