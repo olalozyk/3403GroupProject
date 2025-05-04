@@ -46,6 +46,12 @@
   </div>
 </form>
 
+{% if appointments %}
+  <p class="text-center text-muted">{{ appointments|length }} appointment(s) found</p>
+{% else %}
+  <p class="text-center text-danger">No matching appointments found.</p>
+{% endif %}
+
 <div class="appt-manager">
   <div class="small-container">
     <div class="row">

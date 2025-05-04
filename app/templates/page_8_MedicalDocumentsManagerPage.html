@@ -46,6 +46,12 @@
     <button class="btn btn-purple-calender px-4">Display</button>
   </div>
 
+  {% if documents %}
+    <p class="text-center text-muted">{{ documents|length }} document(s) found</p>
+  {% else %}
+    <p class="text-center text-danger">No matching documents found.</p>
+  {% endif %}
+
   <!-- Scrollable timetable-style table -->
   <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
     <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
