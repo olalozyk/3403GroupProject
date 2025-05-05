@@ -1,13 +1,10 @@
-import os
-import zipfile
-import io
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document, Appointment, Users
-from datetime import datetime
+from app.models import User, Document, Appointment
+from datetime import datetime, timedelta
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -48,7 +45,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    
+
     if form.validate_on_submit():
         # All validations passed, create new user
         hashed_pw = generate_password_hash(form.password.data)
@@ -72,7 +69,35 @@ def register():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("page_4_dashboardPage.html")
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
+
+    today = datetime.today().date()
+
+    upcoming_appointments = (
+        Appointment.query
+        .filter(
+            Appointment.user_id == session["user_id"],
+            Appointment.appointment_date >= today
+        )
+        .order_by(Appointment.appointment_date.asc())
+        .limit(5) # return the next 5 upcoming appointments, ordered by the nearest appointment_date
+        .all()
+    )
+
+    upcoming_data = []
+    for appt in upcoming_appointments:
+        days_away = (appt.appointment_date - today).days
+        upcoming_data.append({
+            "days_away": days_away,
+            "date": appt.appointment_date.strftime("%b %d"),
+            "practitioner": appt.practitioner_name,
+            "type": appt.practitioner_type,
+            "start_time": appt.starting_time.strftime("%I:%M%p").lower(),
+            "end_time": appt.ending_time.strftime("%I:%M%p").lower()
+        })
+
+    return render_template("page_4_dashboardPage.html", upcoming_appointments=upcoming_data)
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
@@ -160,6 +185,7 @@ def add_appointment():
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
 
+
 @app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
 def edit_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
@@ -195,6 +221,7 @@ def edit_appointment(appointment_id):
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
+
 @app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
 def delete_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
@@ -205,6 +232,7 @@ def delete_appointment(appointment_id):
     db.session.delete(appt)
     db.session.commit()
     return jsonify({"success": True})
+
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
@@ -218,10 +246,10 @@ def calendar():
 def medical_document():
     # Get all documents for the current user
     documents = Document.query.filter_by(user_id=current_user.id).all()
-    
+
     # Handle sorting parameter if provided
     sort_by = request.args.get('sort', 'upload-desc')
-    
+
     if sort_by == 'upload-asc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
     elif sort_by == 'upload-desc':
@@ -230,7 +258,7 @@ def medical_document():
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
     elif sort_by == 'expiry-desc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
-    
+
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
 # search function for documents manager page
@@ -293,7 +321,7 @@ def delete_document(doc_id):
         return redirect(url_for('medical_document'))
     db.session.delete(document)
     db.session.commit()
-    
+
     flash(f"Document '{document.document_name}' has been deleted")
     return redirect(url_for('medical_document'))
 
@@ -402,21 +430,3 @@ def user_profile():
 @login_required
 def edit_document():
     return render_template("page_13_EditDocumentPage.html")
-
-# Page 14 - Edit Personalised User Analytics Page
-@app.route("/insights")
-@login_required
-def insights():
-    # Placeholder summary data
-    total_appointments = 12
-    documents_expiring_soon = 3
-    most_frequent_practitioner = "Dr Jessica Adams"
-
-    # (Later: Replace these with real database queries!)
-
-    return render_template(
-        "page_14_PersonalisedUserAnalytics.html",
-        total_appointments=total_appointments,
-        documents_expiring_soon=documents_expiring_soon,
-        most_frequent_practitioner=most_frequent_practitioner
-    )
