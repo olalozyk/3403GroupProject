@@ -7,10 +7,9 @@ class Config(object):
         os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'instance')),
         'ChronicCare.db'
     )
-
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     # File upload configuration
     UPLOAD_FOLDER = os.path.join(
         os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app','static', 'uploads'))
+
     )
