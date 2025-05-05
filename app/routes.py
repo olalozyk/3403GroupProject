@@ -253,6 +253,7 @@ def appointment_manager():
     return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
 
 
+
 @app.route("/appointment/add", methods=["GET", "POST"])
 def add_appointment():
     if request.method == "POST":

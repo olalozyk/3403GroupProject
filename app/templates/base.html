@@ -52,6 +52,12 @@
                         <a href="{{ url_for('medical_document') }}"
                             class="nav-item1 {% if request.endpoint == 'medical_document' %}active-link{% endif %}">Documents</a>
                     </li>
+
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('insights') }}"
+                           class="nav-item1 {% if request.endpoint == 'insights' %}active-link{% endif %}">Insights</a>
+                    </li>
+
                     <li class="nav-item nav1">
                         <a href="{{ url_for('user_profile') }}"
                             class="nav-item1 {% if request.endpoint == 'user_profile' %}active-link{% endif %}">Profile</a>
