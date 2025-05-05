@@ -26,3 +26,22 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('This email is already registered. Please use a different email address.')
+
+
+class DocumentForm(FlaskForm):
+    upload_document = FileField(
+        'Choose File',
+        validators=[
+            FileRequired(message="A file is required."),
+            FileAllowed(['pdf', 'doc', 'docx', 'txt', 'jpg', 'png','zip'],
+                        message="Only PDF, DOC/DOCX, TXT, JPG or PNG allowed.")
+        ]
+    )
+    document_name = StringField("Document Name", validators=[DataRequired()])
+    upload_date = DateField("Upload Date", validators=[DataRequired()])
+    document_type = StringField("Document Type", validators=[DataRequired()])
+    document_notes = TextAreaField('Notes', validators=[Optional()])
+    practitioner_name = StringField("Practitioner Name", validators=[DataRequired()])
+    expiration_date = DateField("Expiration Date", validators=[Optional()])
+    practitioner_type = StringField("Practitioner Type", validators=[DataRequired()])
+
