@@ -113,7 +113,8 @@
               </td>
               <td class="text-nowrap">
                 <a href="{{ url_for('edit_appointment', appointment_id=appt.id) }}" class="btn edit-btn btn-sm">Edit</a>
-                <button data-id="{{ appt.id }}" onclick="deleteAppointment(this)" class="btn cancel-btn btn-sm">
+                <button data-id="{{ appt.id }}" onclick="deleteAppointment(this.dataset.id)"
+                  class="btn cancel-btn btn-sm">
                   Cancel
                 </button>
               </td>

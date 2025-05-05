@@ -212,6 +212,8 @@ def inject_notifications():
 
         n_not = len(notifications)  # badge will now show ALL relevant notifications
 
+    notifications.sort(key=lambda x: x.get("triggered_on"), reverse=True)
+
     return dict(n_not=n_not, notifications=notifications)
 
 # Page 5 - Appointments Manager Page
