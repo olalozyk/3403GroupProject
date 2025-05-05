@@ -416,10 +416,14 @@ h1.appt-manager-h1 {
 .appt-manager-table tbody tr:last-child td {
   border-bottom: none;
 }
-
+.appt-manager-field-col,
 .appt-manager-col {
   flex-basis: 100%; /** the smaller the %, the narrower the div column*/
   min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.appt-manager-field {
+  margin-top: 10px;
 }
 
 .edit-btn {
