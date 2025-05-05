@@ -111,15 +111,14 @@ def dashboard():
 
     # Expiring documents
     expiring_docs = (
-        db.session.query(Document, Appointment)
-        .join(Appointment, Document.appointment_id == Appointment.id)
+        db.session.query(Document)
         .filter(
             Document.user_id == session["user_id"],
             Document.expiration_date != None,
             Document.expiration_date >= today
         )
-        .order_by(Document.expiration_date.asc())  # sort by soonest
-        .limit(5)  # <- only top 5
+        .order_by(Document.expiration_date.asc())  # Soonest expiry first
+        .limit(5)  # Limit to top 5
         .all()
     )
 
@@ -616,3 +615,5 @@ def edit_document(doc_id):
         "page_13_EditDocumentPage.html",
         form=form,
         document=document
+    )
+
