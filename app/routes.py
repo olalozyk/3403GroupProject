@@ -230,6 +230,22 @@ def download_document(doc_id):
     flash("Document download functionality will be implemented soon")
     return redirect(url_for('medical_document'))
 
+# Delete document route
+
+
+@app.route("/medical_document/delete/<int:doc_id>")
+@login_required
+
+def delete_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    if document.user_id != current_user.id:
+        flash("You don't have permission to delete this document")
+        return redirect(url_for('medical_document'))
+    db.session.delete(document)
+    db.session.commit()
+
+    flash(f"Document '{document.document_name}' has been deleted")
+    return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
 
