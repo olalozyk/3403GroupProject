@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date, time
+from datetime import date, time, datetime
 
 
 class User(UserMixin, db.Model):
@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)  # still stores a hash!
+    notifications_viewed_at = db.Column(db.DateTime, default=datetime.min)
     role = db.Column(db.String(25), nullable=False, default="member")
 
     def set_password(self, password):
@@ -40,7 +41,7 @@ class Appointment(db.Model):
     appointment_type = db.Column(db.String(100), nullable=False)
     appointment_notes = db.Column(db.String(1000), nullable=False)
     reminder = db.Column(db.Text)  # store comma-separated reminders
-    custom_reminder = db.Column(db.Date, nullable=False)
+    custom_reminder = db.Column(db.Date, nullable=True)
 
 
 class Document(db.Model):

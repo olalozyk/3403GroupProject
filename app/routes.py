@@ -1,10 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, g, current_app
 from flask_login import login_user, logout_user, current_user, login_required
+from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Document, Appointment
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time, date
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -23,11 +24,19 @@ def login():
 
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):  # use method
-            login_user(user)  # Flask-Login login
+        if user and user.check_password(form.password.data):
+            login_user(user)
+
             session['user_id'] = user.id
             session['first_name'] = user.first_name
             session['role'] = user.role
+
+            # Sync session with DB-stored notification viewed_at
+            session['notifications_viewed_at'] = (
+                user.notifications_viewed_at.isoformat()
+                if user.notifications_viewed_at else datetime.min.isoformat()
+            )
+
             flash("Login successful", "success")
             return redirect(url_for('dashboard'))
         else:
@@ -81,7 +90,7 @@ def dashboard():
             Appointment.appointment_date >= today
         )
         .order_by(Appointment.appointment_date.asc())
-        .limit(5) # return the next 5 upcoming appointments, ordered by the nearest appointment_date
+        .limit(5)
         .all()
     )
 
@@ -97,7 +106,111 @@ def dashboard():
             "end_time": appt.ending_time.strftime("%I:%M%p").lower()
         })
 
-    return render_template("page_4_dashboardPage.html", upcoming_appointments=upcoming_data)
+    # Expiring documents
+    expiring_docs = (
+        db.session.query(Document, Appointment)
+        .join(Appointment, Document.appointment_id == Appointment.id)
+        .filter(
+            Document.user_id == session["user_id"],
+            Document.expiration_date != None,
+            Document.expiration_date >= today
+        )
+        .order_by(Document.expiration_date.asc())  # sort by soonest
+        .limit(5)  # <- only top 5
+        .all()
+    )
+
+    expiring_data = []
+    for doc, appt in expiring_docs:
+        days_left = (doc.expiration_date - today).days
+        expiring_data.append({
+            "days_left": days_left,
+            "document_type": doc.document_type,
+            "practitioner_type": appt.practitioner_type,
+            "expires_on": doc.expiration_date.strftime("%b %d")
+        })
+
+    return render_template(
+        "page_4_dashboardPage.html",
+        upcoming_appointments=upcoming_data,
+        expiring_docs=expiring_data  # Include this line
+    )
+
+@app.route("/notifications/read", methods=["POST"])
+def mark_notifications_read():
+    try:
+        csrf_token = request.headers.get("X-CSRFToken")
+        validate_csrf(csrf_token)
+    except CSRFError:
+        return "CSRF token invalid or missing", 400
+
+    timestamp = datetime.utcnow()
+    session["notifications_viewed_at"] = timestamp.isoformat()
+
+    if current_user.is_authenticated:
+        current_user.notifications_viewed_at = timestamp
+        db.session.commit()
+
+    session.modified = True
+    return jsonify({"success": True})
+
+
+@app.context_processor
+def inject_notifications():
+    notifications = []
+    n_not = 0
+
+    if session.get("role") == "member" and "user_id" in session:
+        user_id = session["user_id"]
+        now = datetime.now()
+
+        appointments = Appointment.query.filter(
+            Appointment.user_id == user_id,
+            Appointment.appointment_date >= now.date()
+        ).all()
+
+        reminder_options = {
+            "2 hours before": timedelta(hours=2),
+            "12 hours before": timedelta(hours=12),
+            "1 day before": timedelta(days=1),
+            "1 week before": timedelta(weeks=1),
+        }
+
+        for appt in appointments:
+            appt_datetime = datetime.combine(appt.appointment_date, appt.starting_time)
+
+            # Standard reminders
+            reminder_list = appt.reminder.split(",") if appt.reminder else []
+            for rem in reminder_list:
+                rem = rem.strip()
+                if rem in reminder_options:
+                    reminder_time = appt_datetime - reminder_options[rem]
+                    if reminder_time <= now:
+                        notifications.append({
+                            "title": "Upcoming Appointment",
+                            "body": f"{appt.practitioner_name} ({appt.practitioner_type})",
+                            "date": appt.appointment_date.strftime("%b %d"),  # Correct: appointment date
+                            "reminder_info": f"{rem}",  # e.g. "1 day before"
+                            "triggered_on": reminder_time.strftime("%b %d"),  # the day it popped up
+                        })
+
+            # Custom reminder
+            if appt.custom_reminder:
+                custom_reminder_time = datetime.combine(appt.custom_reminder, time.min)
+                if custom_reminder_time <= now:
+                    notifications.append({
+                        "title": "Reminder",
+                        "body": f"{appt.practitioner_name}",
+                        "date": appt.appointment_date.strftime("%b %d"),
+                        "reminder_info": "Custom reminder for",
+                        "reminder_date": appt.custom_reminder.strftime("%b %d"),
+                        "triggered_on": custom_reminder_time.strftime("%b %d"),
+                        "timestamp": custom_reminder_time
+                    })
+
+        n_not = len(notifications)  # badge will now show ALL relevant notifications
+
+    return dict(n_not=n_not, notifications=notifications)
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
@@ -179,7 +292,8 @@ def add_appointment():
         # Save to DB
         db.session.add(new_appointment)
         db.session.commit()
-
+        
+        flash("Appointment successfully created", "success")
         return redirect(url_for("appointment_manager"))
 
     # GET method — show blank form
@@ -217,6 +331,7 @@ def edit_appointment(appointment_id):
         appt.custom_reminder = datetime.strptime(reminder_custom_str, "%Y-%m-%d").date() if reminder_custom_str else None
 
         db.session.commit()
+        flash("Appointment successfully updated", "success")
         return redirect(url_for("appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
@@ -231,6 +346,7 @@ def delete_appointment(appointment_id):
 
     db.session.delete(appt)
     db.session.commit()
+    flash("Appointment successfully deleted", "success")
     return jsonify({"success": True})
 
 
