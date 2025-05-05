@@ -15,6 +15,10 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), nullable=False)  # still stores a hash!
     role = db.Column(db.String(25), nullable=False, default="member")
 
+    appointments = db.relationship("Appointment", backref="user", lazy='dynamic')
+    documents = db.relationship("Document", backref="user", lazy='dynamic')
+    profile = db.relationship("UserProfile", backref="user", uselist=False)
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
