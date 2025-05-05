@@ -1,11 +1,14 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, g, current_app
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
-from app.models import User, Document, Appointment
+from app.forms import LoginForm, RegistrationForm, DocumentForm
 from datetime import datetime, timedelta, time, date
+from app.models import User, Document, Appointment
+from sqlalchemy import asc, desc, nulls_last
+import os
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -108,25 +111,24 @@ def dashboard():
 
     # Expiring documents
     expiring_docs = (
-        db.session.query(Document, Appointment)
-        .join(Appointment, Document.appointment_id == Appointment.id)
+        db.session.query(Document)
         .filter(
             Document.user_id == session["user_id"],
             Document.expiration_date != None,
             Document.expiration_date >= today
         )
-        .order_by(Document.expiration_date.asc())  # sort by soonest
-        .limit(5)  # <- only top 5
+        .order_by(Document.expiration_date.asc())  # Soonest expiry first
+        .limit(5)  # Limit to top 5
         .all()
     )
 
     expiring_data = []
-    for doc, appt in expiring_docs:
+    for doc in expiring_docs:
         days_left = (doc.expiration_date - today).days
         expiring_data.append({
             "days_left": days_left,
             "document_type": doc.document_type,
-            "practitioner_type": appt.practitioner_type,
+            "practitioner_type": doc.practitioner_type,
             "expires_on": doc.expiration_date.strftime("%b %d")
         })
 
@@ -214,37 +216,25 @@ def inject_notifications():
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
+@login_required
 def appointment_manager():
     if session.get("role") != "member":
         return redirect(url_for("login"))
 
-    sort_by = request.args.get("sort", "appointment_date")
-    order = request.args.get("order", "asc")
-
-    appointments = Appointment.query.filter_by(user_id=session["user_id"])
-
-    if sort_by == "appointment_date":
-        appointments = appointments.order_by(
-            Appointment.appointment_date.asc() if order == "asc" else Appointment.appointment_date.desc()
-        )
-
-    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
-
-# search function for appointments manager page
-@app.route('/appointments/search', methods=['GET'])
-@login_required
-def search_appointments():
     query = request.args.get('q', '').strip()
     practitioner = request.args.get('practitioner', '')
     date = request.args.get('date', '')
+    appt_type = request.args.get('type', '')
+    order = request.args.get('order', 'asc')
 
-    appointments = Appointment.query.filter_by(user_id=current_user.id)
+    appointments = Appointment.query.filter_by(user_id=session["user_id"])
 
     if query:
         appointments = appointments.filter(
-            (Appointment.appointment_type.ilike(f'%{query}%')) |
-            (Appointment.appointment_notes.ilike(f'%{query}%'))
-        )
+        (Appointment.appointment_type.ilike(f'%{query}%')) |
+        (Appointment.appointment_notes.ilike(f'%{query}%')) |
+        (Appointment.practitioner_name.ilike(f'%{query}%'))  # Add this line
+    )
     if practitioner:
         appointments = appointments.filter(Appointment.practitioner_name.ilike(f'%{practitioner}%'))
     if date:
@@ -252,10 +242,16 @@ def search_appointments():
             date_obj = datetime.strptime(date, '%Y-%m-%d').date()
             appointments = appointments.filter(Appointment.appointment_date == date_obj)
         except ValueError:
-            pass  # skip if the date format is invalid
+            pass
+    if appt_type:
+        appointments = appointments.filter(Appointment.appointment_type.ilike(f'%{appt_type}%'))
 
-    appointments = appointments.all()
-    return render_template('page_5_AppointmentsManagerPage.html', appointments=appointments)
+    appointments = appointments.order_by(
+        Appointment.appointment_date.asc() if order == 'asc' else Appointment.appointment_date.desc()
+    )
+
+    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
+
 
 @app.route("/appointment/add", methods=["GET", "POST"])
 def add_appointment():
@@ -292,13 +288,12 @@ def add_appointment():
         # Save to DB
         db.session.add(new_appointment)
         db.session.commit()
-        
+
         flash("Appointment successfully created", "success")
         return redirect(url_for("appointment_manager"))
 
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
-
 
 @app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
 def edit_appointment(appointment_id):
@@ -336,7 +331,6 @@ def edit_appointment(appointment_id):
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
-
 @app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
 def delete_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
@@ -348,7 +342,6 @@ def delete_appointment(appointment_id):
     db.session.commit()
     flash("Appointment successfully deleted", "success")
     return jsonify({"success": True})
-
 
 # Page 7 - Calendar View Page
 @app.route("/calendar")
@@ -404,6 +397,7 @@ def search_documents():
     documents = documents.all()
     return render_template('page_8_MedicalDocumentsManagerPage.html', documents=documents)
 
+
 # View document route
 @app.route("/medical_document/view/<int:doc_id>")
 @login_required
@@ -442,10 +436,44 @@ def delete_document(doc_id):
     return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
-@app.route("/medical_document/upload_document")
+
+@app.route("/medical_document/upload_document", methods=["GET", "POST"])
 @login_required
 def upload_document():
-    return render_template("page_9_UploadNewDocumentPage.html")
+    form = DocumentForm()
+
+    if form.validate_on_submit():
+        # 1. Get the file and save it
+        file_field = form.upload_document.data
+        filename   = secure_filename(file_field.filename)
+        save_path  = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file_field.save(save_path)
+
+        # 2. Build your Document model from form data
+        new_doc = Document(
+            user_id=current_user.id,
+            file=filename,
+            document_name    = form.document_name.data,
+            upload_date      = form.upload_date.data,
+            document_type    = form.document_type.data,
+            document_notes   = form.document_notes.data,
+            practitioner_name= form.practitioner_name.data,
+            expiration_date  = form.expiration_date.data,
+            practitioner_type= form.practitioner_type.data
+        )
+
+        # 3. Commit to the database
+        db.session.add(new_doc)
+        db.session.commit()
+
+        flash("Document uploaded successfully!", "success")
+        return redirect(url_for("medical_document"))
+
+    # If GET, or if validation failed, render the template with the form
+    return render_template(
+        "page_9_UploadNewDocumentPage.html",
+        form=form
+    )
 
 # Page 10 - Select Documents to Share Page
 @app.route("/medical_document/share_document")
@@ -542,7 +570,50 @@ def user_profile():
 
 
 # Page 13 - Edit Document Page
-@app.route("/medical_document/edit_document")
+@app.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])
 @login_required
-def edit_document():
-    return render_template("page_13_EditDocumentPage.html")
+def edit_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+
+    form = DocumentForm(obj=document)
+
+    if form.validate_on_submit():
+        file_field = form.upload_document.data
+
+        # Check if the user selected a new file
+        if file_field:
+            filename = secure_filename(file_field.filename)
+            save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file_field.save(save_path)
+            document.file = filename  # Update the file field with the new file
+        else:
+            # If no new file is selected, retain the existing file in the database
+            document.file = document.file
+
+        # Update other fields
+        document.document_name = form.document_name.data
+        document.upload_date = form.upload_date.data
+        document.document_type = form.document_type.data
+        document.document_notes = form.document_notes.data
+        document.practitioner_name = form.practitioner_name.data
+        document.expiration_date = form.expiration_date.data
+        document.practitioner_type = form.practitioner_type.data
+
+        db.session.commit()
+
+        flash("Document edited successfully!", "success")
+        return redirect(url_for("medical_document"))
+
+    return render_template(
+        "page_13_EditDocumentPage.html",
+        form=form,
+        document=document
+    )
+
+# Page 14 - Personal Insights
+@app.route("/insights")
+@login_required
+def insights():
+    return render_template("page_14_PersonalisedUserAnalytics.html")
+
+
