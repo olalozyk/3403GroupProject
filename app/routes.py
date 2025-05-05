@@ -245,10 +245,44 @@ def delete_document(doc_id):
     return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
-@app.route("/medical_document/upload_document")
+
+@app.route("/medical_document/upload_document", methods=["GET", "POST"])
 @login_required
 def upload_document():
-    return render_template("page_9_UploadNewDocumentPage.html")
+    form = DocumentForm()
+
+    if form.validate_on_submit():
+        # 1. Get the file and save it
+        file_field = form.upload_document.data
+        filename   = secure_filename(file_field.filename)
+        save_path  = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file_field.save(save_path)
+
+        # 2. Build your Document model from form data
+        new_doc = Document(
+            user_id=current_user.id,
+            file=filename,
+            document_name    = form.document_name.data,
+            upload_date      = form.upload_date.data,
+            document_type    = form.document_type.data,
+            document_notes   = form.document_notes.data,
+            practitioner_name= form.practitioner_name.data,
+            expiration_date  = form.expiration_date.data,
+            practitioner_type= form.practitioner_type.data
+        )
+
+        # 3. Commit to the database
+        db.session.add(new_doc)
+        db.session.commit()
+
+        flash("Document uploaded successfully!", "success")
+        return redirect(url_for("medical_document"))
+
+    # If GET, or if validation failed, render the template with the form
+    return render_template(
+        "page_9_UploadNewDocumentPage.html",
+        form=form
+    )
 
 # Page 10 - Select Documents to Share Page
 @app.route("/medical_document/share_document")
