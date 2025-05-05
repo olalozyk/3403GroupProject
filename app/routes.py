@@ -117,6 +117,33 @@ def appointment_manager():
 
     return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
 
+# search function for appointments manager page
+@app.route('/appointments/search', methods=['GET'])
+@login_required
+def search_appointments():
+    query = request.args.get('q', '').strip()
+    practitioner = request.args.get('practitioner', '')
+    date = request.args.get('date', '')
+
+    appointments = Appointment.query.filter_by(user_id=current_user.id)
+
+    if query:
+        appointments = appointments.filter(
+            (Appointment.appointment_type.ilike(f'%{query}%')) |
+            (Appointment.appointment_notes.ilike(f'%{query}%'))
+        )
+    if practitioner:
+        appointments = appointments.filter(Appointment.practitioner_name.ilike(f'%{practitioner}%'))
+    if date:
+        try:
+            date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+            appointments = appointments.filter(Appointment.appointment_date == date_obj)
+        except ValueError:
+            pass  # skip if the date format is invalid
+
+    appointments = appointments.all()
+    return render_template('page_5_AppointmentsManagerPage.html', appointments=appointments)
+
 @app.route("/appointment/add", methods=["GET", "POST"])
 def add_appointment():
     if request.method == "POST":
@@ -234,6 +261,33 @@ def medical_document():
 
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
+# search function for documents manager page
+@app.route('/documents/search', methods=['GET'])
+@login_required
+def search_documents():
+    query = request.args.get('q', '').strip()
+    doc_type = request.args.get('type', '')
+    expiration = request.args.get('expiration', '')
+
+    documents = Document.query.filter_by(user_id=current_user.id)
+
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%'))
+        )
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+    if expiration:
+        try:
+            expiration_obj = datetime.strptime(expiration, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_obj)
+        except ValueError:
+            pass  # skip if date format is invalid
+
+    documents = documents.all()
+    return render_template('page_8_MedicalDocumentsManagerPage.html', documents=documents)
+
 # View document route
 @app.route("/medical_document/view/<int:doc_id>")
 @login_required
@@ -281,7 +335,88 @@ def upload_document():
 @app.route("/medical_document/share_document")
 @login_required
 def share_document():
-    return render_template("page_10_SelectDocumentsToSharePage.html")
+    # by default, show all documents for the user
+    documents = Document.query.filter_by(user_id=current_user.id).all()
+    return render_template("page_10_SelectDocumentsToSharePage.html", documents=documents)
+
+@app.route('/documents/share/search', methods=['GET'])
+@login_required
+def search_documents_to_share():
+    query = request.args.get('q', '').strip()
+    doc_type = request.args.get('type', '')
+    expiration = request.args.get('expiration', '')
+
+    documents = Document.query.filter_by(user_id=current_user.id)
+
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%'))
+        )
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+    if expiration:
+        try:
+            expiration_obj = datetime.strptime(expiration, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_obj)
+        except ValueError:
+            pass  # skip if date is invalid
+
+    documents = documents.all()
+    return render_template('page_10_SelectDocumentsToSharePage.html', documents=documents)
+
+@app.route('/documents/export', methods=['POST'])
+@login_required
+def export_documents():
+    selected_ids = request.form.getlist('document_ids')
+    include_personal_summary = request.form.get('include_personal_summary')
+
+    if not selected_ids:
+        flash('No documents selected for export.', 'danger')
+        return redirect(url_for('share_document'))
+
+    # Set up an in-memory ZIP
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for doc_id in selected_ids:
+            doc = Document.query.filter_by(id=doc_id, owner_id=current_user.id).first()
+            if not doc:
+                continue  # skip if doc not found or not owned by user
+
+            file_path = os.path.join(app.root_path, 'static', 'documents', doc.filename)
+            if os.path.exists(file_path):
+                zipf.write(file_path, arcname=doc.filename)
+            else:
+                app.logger.warning(f"File not found: {file_path}")
+
+        # add personal summary if requested
+        if include_personal_summary:
+            personal_details = generate_personal_summary(current_user)
+            zipf.writestr('PersonalDetails.txt', personal_details)
+
+    zip_buffer.seek(0)
+    filename = f"SharedDocuments_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.zip"
+
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=filename
+    )
+
+def generate_personal_summary(user):
+    summary = f"""
+    Personal Details Summary
+    ------------------------
+    Name: {user.first_name} {user.last_name}
+    Email: {user.email}
+    Date of Birth: {user.date_of_birth}
+    Contact Number: {user.contact_number}
+    Medical Summary:
+    {user.medical_summary}
+
+    Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC"""
+    return summary
 
 # Page 11 - User Profile Settings Page
 @app.route("/user_profile")

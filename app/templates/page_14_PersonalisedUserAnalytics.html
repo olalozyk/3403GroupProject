@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Your Insights{% endblock %}
+{% block content %}
+
+<div class="container py-4"> <!-- This page was written by the team members: Ola & Siena -->
+    <div class="text-center mb-4">
+        <h1 class="purple-text" style="font-size: 2.8rem;">Your Insights</h1>
+        <p class="fs-5">A summary of your appointments, documents, and trends</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="p-3 bg-white rounded shadow-sm text-center">
+                <h5 class="purple-text">Total Appointments</h5>
+                <p class="display-6 fw-bold">{{ total_appointments }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 bg-white rounded shadow-sm text-center">
+                <h5 class="purple-text">Documents Expiring Soon</h5>
+                <p class="display-6 fw-bold">{{ documents_expiring_soon }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 bg-white rounded shadow-sm text-center">
+                <h5 class="purple-text">Most Frequent Practitioner</h5>
+                <p class="display-6 fw-bold">{{ most_frequent_practitioner }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h3 class="purple-text mb-3">Activity Trends</h3>
+        <div class="p-4 bg-white rounded shadow-sm text-center">
+            <p class="text-muted">[Placeholder for charts or graphs?]</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
