@@ -230,19 +230,6 @@ def download_document(doc_id):
     flash("Document download functionality will be implemented soon")
     return redirect(url_for('medical_document'))
 
-# Delete document route
-@app.route("/medical_document/delete/<int:doc_id>")
-@login_required
-def delete_document(doc_id):
-    document = Document.query.get_or_404(doc_id)
-    if document.user_id != current_user.id:
-        flash("You don't have permission to delete this document")
-        return redirect(url_for('medical_document'))
-    db.session.delete(document)
-    db.session.commit()
-
-    flash(f"Document '{document.document_name}' has been deleted")
-    return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
 
@@ -298,7 +285,43 @@ def user_profile():
 
 
 # Page 13 - Edit Document Page
-@app.route("/medical_document/edit_document")
+# Page 13 - Edit Document Page
+@app.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])
 @login_required
-def edit_document():
-    return render_template("page_13_EditDocumentPage.html")
+def edit_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+
+    form = DocumentForm(obj=document)
+
+    if form.validate_on_submit():
+        file_field = form.upload_document.data
+
+        # Check if the user selected a new file
+        if file_field:
+            filename = secure_filename(file_field.filename)
+            save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file_field.save(save_path)
+            document.file = filename  # Update the file field with the new file
+        else:
+            # If no new file is selected, retain the existing file in the database
+            document.file = document.file
+
+        # Update other fields
+        document.document_name = form.document_name.data
+        document.upload_date = form.upload_date.data
+        document.document_type = form.document_type.data
+        document.document_notes = form.document_notes.data
+        document.practitioner_name = form.practitioner_name.data
+        document.expiration_date = form.expiration_date.data
+        document.practitioner_type = form.practitioner_type.data
+
+        db.session.commit()
+
+        flash("Document edited successfully!", "success")
+        return redirect(url_for("medical_document"))
+
+    return render_template(
+        "page_13_EditDocumentPage.html",
+        form=form,
+        document=document
+    )
