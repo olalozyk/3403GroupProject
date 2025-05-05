@@ -32,35 +32,33 @@
 
 <!-- Sort form -->
 <form method="get" class="d-flex justify-content-center align-items-center gap-2 mb-3" id="sortForm">
-  <label class="me-2 fw-semibold" for="sort">Order your appointments by</label>
-  <select name="order" class="form-select w-auto" id="sort" onchange="document.getElementById('sortForm').submit()">
-    <option> value="asc" {% if request.args.get('order')=='asc' %}selected{% endif %}&gt;Date (ascending)</option>
-    <option> value="desc" {% if request.args.get('order')=='desc' %}selected{% endif %}&gt;Date (descending)</option>
-  </select>
+    <label class="me-2 fw-semibold" for="sort">Order your appointments by</label>
+    <select name="order" class="form-select w-auto" id="sort" onchange="document.getElementById('sortForm').submit()">
+        <option value="asc" {% if request.args.get('order') == 'asc' %}selected{% endif %}>Date (ascending)</option>
+        <option value="desc" {% if request.args.get('order') == 'desc' %}selected{% endif %}>Date (descending)</option>
+    </select>
 </form>
-
 <!-- Search form -->
 <form method="get" action="/appointments/search" class="mb-4">
-  <div class="row g-2">
-      <div class="col-md-4">
-          <input type="text" name="q" class="form-control" placeholder="Search by practitioner, type, or notes">
-      </div>
-      <div class="col-md-3">
-          <input type="date" name="date" class="form-control" placeholder="Appointment date">
-      </div>
-      <div class="col-md-3">
-          <select name="type" class="form-select">
-              <option value="">All types</option>
-              <option value="consultation">Consultation</option>
-              <option value="follow-up">Follow-Up</option>
-              <option value="test">Test</option>
-              <!-- we can add more types as needed -->
-          </select>
-      </div>
-      <div class="col-md-2">
-          <button type="submit" class="btn btn-purple-calender w-100">Search</button>
-      </div>
-  </div>
+    <div class="row g-2 align-items-center justify-content-center">
+        <div class="col-md-3">
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search by practitioner, type, or notes">
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="date" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-2">
+            <select name="type" class="form-select form-select-sm">
+                <option value="">All types</option>
+                <option value="consultation">Consultation</option>
+                <option value="follow-up">Follow-Up</option>
+                <option value="test">Test</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-purple-calender btn-sm w-100">Search</button>
+        </div>
+    </div>
 </form>
 
 <!-- Appointment result count -->

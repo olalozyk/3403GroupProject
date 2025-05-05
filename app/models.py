@@ -16,6 +16,10 @@ class User(UserMixin, db.Model):
     notifications_viewed_at = db.Column(db.DateTime, default=datetime.min)
     role = db.Column(db.String(25), nullable=False, default="member")
 
+    appointments = db.relationship("Appointment", backref="user", lazy='dynamic')
+    documents = db.relationship("Document", backref="user", lazy='dynamic')
+    profile = db.relationship("UserProfile", backref="user", uselist=False)
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -49,14 +53,14 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    appointment_id = db.Column(db.Integer, db.ForeignKey("appointments.id"), nullable=False)
     file = db.Column(db.String(200), nullable=False)
     document_name = db.Column(db.String(100), nullable=False)
     upload_date = db.Column(db.Date, nullable=False)
     document_type = db.Column(db.String(100), nullable=False)
     document_notes = db.Column(db.String(1000), nullable=False)
+    practitioner_name = db.Column(db.String(100), nullable=False)
     expiration_date = db.Column(db.Date, nullable=True)
-
+    practitioner_type = db.Column(db.String(100), nullable=True)
 
 class UserProfile(db.Model):
     __tablename__ = 'user_profiles'
