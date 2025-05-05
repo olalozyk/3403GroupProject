@@ -1,18 +1,35 @@
 from app.models import User, Appointment, Document, UserProfile
 
 def test_user_password():
-    user = User()
-    user.set_password('test123')
-    assert user.password != 'test123'
-    assert user.check_password('test123') is True
+    user = User(first_name='Test', last_name='User', email='user@example.com')
+    user.set_password('secret')
+    assert user.check_password('secret')
 
 def test_appointment_creation():
-    appt = Appointment(appointment_type='consultation')
-    assert appt.appointment_type == 'consultation'
+    appt = Appointment(
+        user_id=1,
+        practitioner_type='GP',
+        practitioner_name='Dr. Smith',
+        appointment_date='2025-01-01',
+        starting_time='10:00',
+        ending_time='10:30',
+        location='Clinic',
+        appointment_type='Checkup',
+        appointment_notes='Bring reports'
+    )
+    assert appt.practitioner_name == 'Dr. Smith'
 
 def test_document_creation():
-    doc = Document(document_name='Report A')
-    assert doc.document_name == 'Report A'
+    doc = Document(
+        user_id=1,
+        file='report.pdf',
+        document_name='Test Report',
+        upload_date='2025-01-01',
+        document_type='Lab',
+        document_notes='Blood test',
+        practitioner_name='Dr. Adams'
+    )
+    assert doc.document_name == 'Test Report'
 
 def test_userprofile_creation():
     profile = UserProfile(

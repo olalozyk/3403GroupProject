@@ -1,9 +1,9 @@
+def login_test_user(client):
+    client.post('/login', data={'email': 'test@example.com', 'password': 'testpassword'})
+
 def test_index_route(client):
     response = client.get('/')
     assert response.status_code == 200
-
-def login_test_user(client):
-    client.post('/login', data={'email': 'test@example.com', 'password': 'testpassword'})
 
 def test_dashboard_route(client, login_test_user):
     login_test_user(client)
