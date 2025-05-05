@@ -216,37 +216,25 @@ def inject_notifications():
 
 # Page 5 - Appointments Manager Page
 @app.route("/appointments")
+@login_required
 def appointment_manager():
     if session.get("role") != "member":
         return redirect(url_for("login"))
 
-    sort_by = request.args.get("sort", "appointment_date")
-    order = request.args.get("order", "asc")
-
-    appointments = Appointment.query.filter_by(user_id=session["user_id"])
-
-    if sort_by == "appointment_date":
-        appointments = appointments.order_by(
-            Appointment.appointment_date.asc() if order == "asc" else Appointment.appointment_date.desc()
-        )
-
-    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
-
-# search function for appointments manager page
-@app.route('/appointments/search', methods=['GET'])
-@login_required
-def search_appointments():
     query = request.args.get('q', '').strip()
     practitioner = request.args.get('practitioner', '')
     date = request.args.get('date', '')
+    appt_type = request.args.get('type', '')
+    order = request.args.get('order', 'asc')
 
-    appointments = Appointment.query.filter_by(user_id=current_user.id)
+    appointments = Appointment.query.filter_by(user_id=session["user_id"])
 
     if query:
         appointments = appointments.filter(
-            (Appointment.appointment_type.ilike(f'%{query}%')) |
-            (Appointment.appointment_notes.ilike(f'%{query}%'))
-        )
+        (Appointment.appointment_type.ilike(f'%{query}%')) |
+        (Appointment.appointment_notes.ilike(f'%{query}%')) |
+        (Appointment.practitioner_name.ilike(f'%{query}%'))  # Add this line
+    )
     if practitioner:
         appointments = appointments.filter(Appointment.practitioner_name.ilike(f'%{practitioner}%'))
     if date:
@@ -254,10 +242,16 @@ def search_appointments():
             date_obj = datetime.strptime(date, '%Y-%m-%d').date()
             appointments = appointments.filter(Appointment.appointment_date == date_obj)
         except ValueError:
-            pass  # skip if the date format is invalid
+            pass
+    if appt_type:
+        appointments = appointments.filter(Appointment.appointment_type.ilike(f'%{appt_type}%'))
 
-    appointments = appointments.all()
-    return render_template('page_5_AppointmentsManagerPage.html', appointments=appointments)
+    appointments = appointments.order_by(
+        Appointment.appointment_date.asc() if order == 'asc' else Appointment.appointment_date.desc()
+    )
+
+    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
+
 
 
 @app.route("/appointment/add", methods=["GET", "POST"])
