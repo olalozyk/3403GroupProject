@@ -123,12 +123,12 @@ def dashboard():
     )
 
     expiring_data = []
-    for doc, appt in expiring_docs:
+    for doc in expiring_docs:
         days_left = (doc.expiration_date - today).days
         expiring_data.append({
             "days_left": days_left,
             "document_type": doc.document_type,
-            "practitioner_type": appt.practitioner_type,
+            "practitioner_type": doc.practitioner_type,
             "expires_on": doc.expiration_date.strftime("%b %d")
         })
 
