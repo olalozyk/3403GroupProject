@@ -3,12 +3,6 @@
 {% block content %}
 
 <div class="container py-4"> <!-- This page was written by the team member: Siena  -->
-    <h1 class="purple-text" style="font-size: 2.8rem;">Select Documents to Share</h1>
-    <p class="text-muted">Select the medical documents you’d like to send.</p>
-</div>
-
-<div class="container py-4">
-
   <h1 class="purple-text" style="font-size: 2.8rem;">Select Documents to Share</h1>
   <p class="text-muted">Select the medical documents you’d like to send.</p>
 </div>
@@ -67,84 +61,85 @@
 
   </div>
 
-<div class="mb-3">
+  <div class="mb-3">
     <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
     <input id="shareTo" type="text" class="form-control share-email-input" placeholder="e.g., admin@newclinic.com" />
-</div>
+  </div>
 
-<button class="btn user-submit-button w-100 py-2">Share Selected Documents</button>
+  <button class="btn user-submit-button w-100 py-2">Share Selected Documents</button>
 </div>
 
 <!-- Main Content -->
 <div class="container mt-4">
-    <form method="get" action="/documents/share/search" class="mb-4">
-        <div class="row g-2">
-            <div class="col-md-4">
-                <input type="text" name="q" class="form-control" placeholder="Search documents (name or notes)">
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="type" class="form-control" placeholder="Document type">
-            </div>
-            <div class="col-md-3">
-                <input type="date" name="expiration" class="form-control">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-purple-calender w-100">Search</button>
-            </div>
-        </div>
-    </form>
+  <form method="get" action="/documents/share/search" class="mb-4">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input type="text" name="q" class="form-control" placeholder="Search documents (name or notes)">
+      </div>
+      <div class="col-md-3">
+        <input type="text" name="type" class="form-control" placeholder="Document type">
+      </div>
+      <div class="col-md-3">
+        <input type="date" name="expiration" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-purple-calender w-100">Search</button>
+      </div>
+    </div>
+  </form>
 
-    {% if documents %}
-    <p class="text-muted mb-2">{{ documents|length }} document(s) found</p>
-    {% else %}
-    <p class="text-muted mb-2">No documents found.</p>
-    {% endif %}
+  {% if documents %}
+  <p class="text-muted mb-2">{{ documents|length }} document(s) found</p>
+  {% else %}
+  <p class="text-muted mb-2">No documents found.</p>
+  {% endif %}
 
-    <!-- Document selection table -->
-    <form method="POST" action="/documents/export">
-        <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
-            <table class="table table-bordered text-center mb-0">
-                <thead class="table-outline-dark">
-                    <tr>
-                        <th style="width: 6%;">Select</th>
-                        <th>Document</th>
-                        <th>Practitioner</th>
-                        <th>Type</th>
-                        <th>Uploaded</th>
-                        <th>Expiration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for doc in documents %}
-                    <tr class="{% if loop.index % 2 == 0 %}bg-light{% endif %}">
-                        <td><input type="checkbox" class="form-check-input" name="document_ids" value="{{ doc.id }}"></td>
-                        <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>{{ doc.document_name }}</td>
-                        <td>{{ doc.practitioner_name }}</td>
-                        <td>{{ doc.document_type }}</td>
-                        <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-                        <td>{{ doc.expiration_date.strftime('%d/%m/%Y') if doc.expiration_date else 'N/A' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+  <!-- Document selection table -->
+  <form method="POST" action="/documents/export">
+    <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
+      <table class="table table-bordered text-center mb-0">
+        <thead class="table-outline-dark">
+          <tr>
+            <th style="width: 6%;">Select</th>
+            <th>Document</th>
+            <th>Practitioner</th>
+            <th>Type</th>
+            <th>Uploaded</th>
+            <th>Expiration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+          <tr class="{% if loop.index % 2 == 0 %}bg-light{% endif %}">
+            <td><input type="checkbox" class="form-check-input" name="document_ids" value="{{ doc.id }}"></td>
+            <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>{{ doc.document_name }}</td>
+            <td>{{ doc.practitioner_name }}</td>
+            <td>{{ doc.document_type }}</td>
+            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+            <td>{{ doc.expiration_date.strftime('%d/%m/%Y') if doc.expiration_date else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="include_personal_summary" value="yes" id="personalSummary">
-            <label class="form-check-label" for="personalSummary" style="color:#6f42c1;">
-                Include Personal Details Summary
-            </label>
-        </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="include_personal_summary" value="yes" id="personalSummary">
+      <label class="form-check-label" for="personalSummary" style="color:#6f42c1;">
+        Include Personal Details Summary
+      </label>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
-            <input type="text" name="recipient_email" class="form-control share-email-input" placeholder="e.g., admin@newclinic.com" />
-        </div>
+    <div class="mb-3">
+      <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
+      <input type="text" name="recipient_email" class="form-control share-email-input"
+        placeholder="e.g., admin@newclinic.com" />
+    </div>
 
-        <button type="submit" class="btn btn-purple-calender w-100 py-2">
-            Download Selected Documents as ZIP
-        </button>
-    </form>
+    <button type="submit" class="btn btn-purple-calender w-100 py-2">
+      Download Selected Documents as ZIP
+    </button>
+  </form>
 </div>
 
 {% endblock %}
