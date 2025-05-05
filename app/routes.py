@@ -1,10 +1,14 @@
 from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm
 from app.models import User, Document, Appointment
 from datetime import datetime
+from sqlalchemy import asc, desc, nulls_last
+import os
+
 
 # Page 1 - Landing Page
 @app.route('/')
