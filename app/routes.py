@@ -617,3 +617,10 @@ def edit_document(doc_id):
         document=document
     )
 
+# Page 14 - Personal Insights
+@app.route("/insights")
+@login_required
+def insights():
+    return render_template("page_14_PersonalisedUserAnalytics.html")
+
+
