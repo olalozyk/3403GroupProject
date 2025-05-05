@@ -2,6 +2,19 @@
 {% block title %}Edit Document{% endblock %}
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="container mt-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
 <div class="container">
     <div class="text-center">
         <h1 class="h1-title">Welcome back, {{ session['first_name'] }}!</h1>
@@ -16,52 +29,18 @@
             <div class="text-center col-md-12 upcoming-appt-col">
                 <h2 class="h2-title mb-4">Your Upcoming Appointments</h2>
                 <div class="d-grid gap-3">
-
+                    {% for appt in upcoming_appointments %}
                     <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
                         <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">2 Days Away →</div>
-                            <div class="col-md-3">Apr 28th</div>
-                            <div class="col-md-4">Dr. Lim (Physiotherapy)</div>
-                            <div class="col-md-2">10:00am</div>
+                            <div class="col-md-3 fw-bold">{{ appt.days_away }} Days Away →</div>
+                            <div class="col-md-2">{{ appt.date }}</div>
+                            <div class="col-md-4">{{ appt.practitioner }} ({{ appt.type }})</div>
+                            <div class="col-md-3">{{ appt.start_time }} - {{ appt.end_time }}</div>
                         </div>
                     </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">5 Days Away →</div>
-                            <div class="col-md-3">May 1st</div>
-                            <div class="col-md-4">Dr. Tan (Cardiology)</div>
-                            <div class="col-md-2">1:30pm</div>
-                        </div>
-                    </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">7 Days Away →</div>
-                            <div class="col-md-3">May 3rd</div>
-                            <div class="col-md-4">Dr. Wong (Orthopedics)</div>
-                            <div class="col-md-2">11:00am</div>
-                        </div>
-                    </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">10 Days Away →</div>
-                            <div class="col-md-3">May 6th</div>
-                            <div class="col-md-4">Dr. Smith (Dentist)</div>
-                            <div class="col-md-2">9:00am</div>
-                        </div>
-                    </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">12 Days Away →</div>
-                            <div class="col-md-3">May 8th</div>
-                            <div class="col-md-4">Dr. Chua (General)</div>
-                            <div class="col-md-2">4:00pm</div>
-                        </div>
-                    </div>
-
+                    {% else %}
+                    <p class="text-muted">No upcoming appointments.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -76,25 +55,18 @@
             <div class="text-center col-md-12 upcoming-appt-col">
                 <h2 class="h2-title mb-4">Your Expiring Referrals / Insurance</h2>
                 <div class="d-grid gap-3">
-
+                    {% for doc in expiring_docs %}
                     <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
                         <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">7 Days Left →</div>
-                            <div class="col-md-3">Referral</div>
-                            <div class="col-md-3">Pain Specialist</div>
-                            <div class="col-md-3">Expires May 3rd</div>
+                            <div class="col-md-3 fw-bold">{{ doc.days_left }} Days Left →</div>
+                            <div class="col-md-3">{{ doc.document_type }}</div>
+                            <div class="col-md-3">{{ doc.practitioner_type }}</div>
+                            <div class="col-md-3">Expires {{ doc.expires_on }}</div>
                         </div>
                     </div>
-
-                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 fw-bold">15 Days Left →</div>
-                            <div class="col-md-3">Insurance</div>
-                            <div class="col-md-3">ABC Health</div>
-                            <div class="col-md-3">Expires May 11th</div>
-                        </div>
-                    </div>
-
+                    {% else %}
+                    <p class="text-muted">No upcoming document expirations.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>

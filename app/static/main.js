@@ -14,7 +14,7 @@ document.querySelectorAll(".toggle-password").forEach(function (toggleIcon) {
 });
 //---------------eye icon--------------------------
 
-//-------------------for deletion--------------------
+//-------------------for appointment deletion--------------------
 const csrfToken = document
   .querySelector('meta[name="csrf-token"]')
   .getAttribute("content");
@@ -35,4 +35,32 @@ function deleteAppointment(appointmentId) {
     }
   });
 }
-//-------------------for deletion--------------------
+//-------------------for appointment deletion--------------------
+
+//-------------------for notification--------------------
+document.addEventListener("DOMContentLoaded", function () {
+  const notificationLink = document.querySelector("#notification-link");
+  if (notificationLink) {
+    notificationLink.addEventListener("show.bs.dropdown", function () {
+      fetch("/notifications/read", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content"),
+        },
+        body: JSON.stringify({}),
+      }).then((res) => {
+        if (res.ok) {
+          // Hide badge immediately
+          const badge = document.querySelector(".badge.bg-danger");
+          if (badge) {
+            badge.remove();
+          }
+        }
+      });
+    });
+  }
+});
+//-------------------for notification--------------------

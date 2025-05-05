@@ -79,28 +79,54 @@
                 </ul>
 
                 <ul class="navbar-nav">
-                    <li class="nav-item d-flex align-items-center position-relative">
-                        <a class="nav-link" href="#" onclick="showNotifications()" id="notification-link">
-                            <span class="position-relative">
-                                <i class="fa-regular fa-bell fs-5"></i>
-                                {% if n_not %}
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                    <span class="visually-hidden">New notifications</span>
-                                </span>
-                                {% endif %}
+                    <!-- Notification Bell -->
+                    <li class="nav-item dropdown d-flex align-items-end">
+                        <a class="nav-link position-relative d-inline-block" href="#" id="notification-link"
+                            role="button" data-bs-toggle="dropdown">
+                            <i class="fa-regular fa-bell fs-5"></i>
+                            {% if n_not|default(0) > 0 %}
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ n_not }}
                             </span>
+                            {% endif %}
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow p-3 notification-menu">
+                            {% for note in notifications %}
+                            <li class="mb-3 border-bottom pb-2">
+                                <div>
+                                    {% if note.title == "Reminder" %}
+                                    <span class="notif-bold-text">Custom reminder</span> for {{ note.body }} appointment
+                                    at
+                                    <span class="notif-bold-text">{{ note.date }}</span><br>
+                                    <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
+                                    <small class="notif-small-text">Custom reminder: {{ note.reminder_date
+                                        }}</small><br>
+                                    <small>Notified on: {{ note.triggered_on }}</small>
+                                    {% else %}
+                                    <span class="notif-bold-text">{{ note.title }}:</span> {{ note.body }} appointment
+                                    at
+                                    <span class="notif-bold-text">{{ note.date }}</span><br>
+                                    <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
+                                    <small>Notified on: {{ note.triggered_on }}</small>
+                                    {% endif %}
+
+                                    {% if session.notifications_viewed_at %}
+                                    <div class="text-success mt-1"><small>✓ Seen</small></div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </li>
 
-                    <li class="nav-item nav2">
-
+                    <!-- Welcome Message -->
+                    <li class="nav-item nav2 d-flex align-items-center ms-3">
                         {% if session.get('role') == 'member' %}
-                        <a class="nav-link" href="#">Welcome
-                            <font color="#FC0C0C">{{ session.first_name }}</font>
-                        </a>
+                        <span class="nav-link">Welcome <strong class="text-danger">{{ session.first_name
+                                }}</strong></span>
                         {% else %}
-                        <a class="nav-link" href="#">Welcome <font color="#FC0C0C">Guest</font></a>
+                        <span class="nav-link">Welcome <strong class="text-danger">Guest</strong></span>
                         {% endif %}
                     </li>
                 </ul>
