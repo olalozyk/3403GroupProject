@@ -190,20 +190,28 @@ def calendar():
 @app.route("/medical_document")
 @login_required
 def medical_document():
-    # Get all documents for the current user
-    documents = Document.query.filter_by(user_id=current_user.id).all()
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
 
-    # Handle sorting parameter if provided
-    sort_by = request.args.get('sort', 'upload-desc')
+    print("Current user:", current_user.id, current_user.email)
+
+    # Get the sort criteria
+    sort_by = request.args.get('sort', 'upload-asc')
+    print(sort_by)
+    # Start with a base query from the relationship
+    query = current_user.documents  # works now because of lazy='dynamic'
 
     if sort_by == 'upload-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
+        query = query.order_by(Document.upload_date.asc())
     elif sort_by == 'upload-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.desc()).all()
+        print(query)
+        query = query.order_by(Document.upload_date.desc())
     elif sort_by == 'expiry-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
+        query = query.order_by(nulls_last(Document.expiration_date.asc()))
     elif sort_by == 'expiry-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
+        query = query.order_by(nulls_last(Document.expiration_date.desc()))
+
+    documents = query.all()
 
     return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
 
