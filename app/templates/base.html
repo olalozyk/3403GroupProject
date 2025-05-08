@@ -55,7 +55,7 @@
 
                     <li class="nav-item nav1">
                         <a href="{{ url_for('insights') }}"
-                           class="nav-item1 {% if request.endpoint == 'insights' %}active-link{% endif %}">Insights</a>
+                            class="nav-item1 {% if request.endpoint == 'insights' %}active-link{% endif %}">Insights</a>
                     </li>
 
                     <li class="nav-item nav1">
@@ -165,32 +165,11 @@
     <!-------for ads slider-------->
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <!-- Bootstrap Javascript bundle -->
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
         </script>
-
-
-    <script>
-        // -------for featured slider--------
-        const featuredSwiper = new Swiper('.featured-slider', {
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-            },
-            loop: true,
-            pagination: {
-                el: '.featured-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.featured-next',
-                prevEl: '.featured-prev',
-            },
-        });
-        // -------for featured slider--------
-    </script>
+    <!------- for socket -------->
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
 
 
     <script src={{url_for('static',filename='main.js' )}}></script>
