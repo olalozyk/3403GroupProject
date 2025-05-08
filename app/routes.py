@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from collections import Counter, defaultdict
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, DocumentForm
 from datetime import datetime, timedelta, time, date
@@ -110,15 +111,19 @@ def dashboard():
         })
 
     # Expiring documents
+    today = datetime.today().date()
+    soon = today + timedelta(days=14)
+
     expiring_docs = (
         db.session.query(Document)
         .filter(
             Document.user_id == session["user_id"],
             Document.expiration_date != None,
-            Document.expiration_date >= today
+            Document.expiration_date >= today,
+            Document.expiration_date <= soon  # add this
         )
-        .order_by(Document.expiration_date.asc())  # Soonest expiry first
-        .limit(5)  # Limit to top 5
+        .order_by(Document.expiration_date.asc())
+        .limit(5)
         .all()
     )
 
@@ -618,5 +623,3 @@ def edit_document(doc_id):
 @login_required
 def insights():
     return render_template("page_14_PersonalisedUserAnalytics.html")
-
-
