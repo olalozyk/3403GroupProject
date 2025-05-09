@@ -656,10 +656,10 @@ def insights():
     
     color_map = {
         "General": "#3B82F6",
-        "Follow-up": "#EF4444",
-        "Checkup": "#22C55E",
-        "Consultation": "#EAB308",
-        "Test": "#8B5CF6"
+        "Follow-up": "#22C55E",
+        "Checkup": "#EAB308",
+        "Consultation": "#8B5CF6",
+        "Test": "#EF4444"
     }
 
     return render_template("page_14_PersonalisedUserAnalytics.html",
