@@ -514,6 +514,23 @@ h1.appt-manager-h1 {
 .link-container {
   text-align: center;
 }
+
+/**-----------insight section----------*/
+.insight {
+  margin-top: 15px;
+}
+.insight .insight-col {
+  flex-basis: 88%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+.insight-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+/**-----------insight section----------*/
+
 /**-----------footer section--------**/
 
 .footer {

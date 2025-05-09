@@ -109,3 +109,58 @@ socket.on("disconnect", () => {
   console.log("Disconnected from server");
 });
 //-------------------for socket--------------------
+
+//-------------------for Appointment Frequency line chart--------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const raw = document.getElementById("line-data")?.textContent;
+  const chartData = JSON.parse(raw);
+  const ctx = document
+    .getElementById("appointmentFrequencyChart")
+    .getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "Appointment Frequencies",
+          font: { size: 24 },
+          color: "#4B0082",
+        },
+        legend: {
+          position: "bottom",
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 10, // force max range
+          ticks: {
+            stepSize: 2,
+          },
+          title: {
+            display: true,
+            text: "No. of Appointments",
+            font: {
+              size: 18,
+            },
+          },
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Months",
+            font: {
+              size: 18,
+            },
+          },
+        },
+      },
+    },
+  }); // close new Chart
+});
+//-------------------for Appointment Frequency line chart--------------------

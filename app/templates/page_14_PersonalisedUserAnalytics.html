@@ -8,33 +8,132 @@
         <p class="fs-5">A summary of your appointments, documents, and trends</p>
     </div>
 
+
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="p-3 bg-white rounded shadow-sm text-center">
+            <div class="p-2 bg-white rounded shadow-sm text-center">
                 <h5 class="purple-text">Total Appointments</h5>
                 <p class="display-6 fw-bold">{{ total_appointments }}</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 bg-white rounded shadow-sm text-center">
+            <div class="p-2 bg-white rounded shadow-sm text-center">
                 <h5 class="purple-text">Documents Expiring Soon</h5>
                 <p class="display-6 fw-bold">{{ documents_expiring_soon }}</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 bg-white rounded shadow-sm text-center">
+            <div class="p-2 bg-white rounded shadow-sm text-center">
                 <h5 class="purple-text">Most Frequent Practitioner</h5>
                 <p class="display-6 fw-bold">{{ most_frequent_practitioner }}</p>
             </div>
         </div>
     </div>
 
-    <div class="mb-5">
-        <h3 class="purple-text mb-3">Activity Trends</h3>
-        <div class="p-4 bg-white rounded shadow-sm text-center">
-            <p class="text-muted">[Placeholder for charts or graphs?]</p>
+
+    <h3 class="purple-text text-center mb-4">Activity Trends</h3>
+
+
+    <div class="insight">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-md-12 insight-col">
+                    <div class="insight-container text-center mb-4">
+                        <!------------for Appointment Type pie chart----------->
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 700px; width: 100%; height: 500px;">
+                                <canvas id="appointmentTypeChart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!------- for chart -------->
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script>
+                            const ctx = document.getElementById('appointmentTypeChart').getContext('2d');
+                            const appointmentChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: {{ chart_labels | tojson }},
+                            datasets: [{
+                                label: 'Appointment Types',
+                                data: {{ chart_data | tojson }},
+                                backgroundColor: [
+                                '#3B82F6', // General
+                                '#22C55E', // Follow-up
+                                '#EAB308', // Checkup
+                                '#8B5CF6', // Consultation
+                                '#EF4444'  // Test
+                            ]
+                }]
+            },
+                            options: {
+                                responsive: true,
+                                    maintainAspectRatio: false,
+                                        plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    },
+                                    title: {
+                                        display: true,
+                                            text: 'Appointment Types',
+                                                font: {
+                                            size: 24 // Adjust to your desired title size
+                                        },
+                                        color: '#4B0082'
+                                    }
+                                }
+                            }
+        });
+                            console.log("Chart labels:", {{ chart_labels | tojson }});
+                            console.log("Chart data:", {{ chart_data | tojson }});
+                        </script>
+                    </div>
+                    <!------------for Appointment Type pie chart----------->
+
+                    <!------------for Appointment Frequency line chart----------->
+                    <div class="insight-container text-center">
+
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 750px; width: 100%; height: 500px;">
+                                <canvas id="appointmentFrequencyChart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!------- for chart -------->
+                        <script id="line-data" type="application/json">
+                        {
+                            "labels": {{ months_labels | tojson }},
+                            "datasets": [
+                                {% for label, values in line_chart_data.items() %}
+                                {
+                                "label": "{{ label }}",
+                                "data": {{ values | tojson }},
+                                "backgroundColor": "{{ color_map[label] }}",
+                                "borderColor": "{{ color_map[label] }}",
+                                "tension": 0.4
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                        </script>
+                        <!-- prettier-ignore-end -->
+                    </div>
+                    <!------------for Appointment Frequency line chart----------->
+
+                </div>
+            </div>
         </div>
     </div>
+
+
+    <div class="insight">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-md-12 insight-col">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}
