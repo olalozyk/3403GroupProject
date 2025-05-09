@@ -355,7 +355,24 @@ def delete_appointment(appointment_id):
 @app.route("/calendar")
 @login_required
 def calendar():
-    return render_template("page_7_CalendarViewPage.html")
+    if session.get("role") != "member":
+        return redirect(url_for("login"))
+
+    appointments = Appointment.query.filter_by(user_id=session["user_id"]).all()
+
+    appt_data = [
+        {
+            "id": appt.id,
+            "title": f"{appt.practitioner_name} ({appt.appointment_type})",
+            "start": appt.appointment_date.strftime("%Y-%m-%d") + 'T' + appt.starting_time.strftime("%H:%M"),
+            "end": appt.appointment_date.strftime("%Y-%m-%d") + 'T' + appt.ending_time.strftime("%H:%M"),
+            "location": appt.location,
+            "description": appt.appointment_notes,
+            "type": appt.appointment_type
+        }
+        for appt in appointments
+    ]
+    return render_template("page_7_CalendarViewPage.html", appt_data=appt_data)
 
 # Page 8 - Medical Documents Manager Page
 @app.route("/medical_document")
