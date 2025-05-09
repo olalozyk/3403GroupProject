@@ -90,7 +90,32 @@
                     <!------------for Appointment Type pie chart----------->
 
                     <!------------for Appointment Frequency line chart----------->
+                    <div class="insight-container text-center">
 
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 750px; width: 100%; height: 500px;">
+                                <canvas id="appointmentFrequencyChart" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!------- for chart -------->
+                        <script id="line-data" type="application/json">
+                        {
+                            "labels": {{ months_labels | tojson }},
+                            "datasets": [
+                                {% for label, values in line_chart_data.items() %}
+                                {
+                                "label": "{{ label }}",
+                                "data": {{ values | tojson }},
+                                "backgroundColor": "{{ color_map[label] }}",
+                                "borderColor": "{{ color_map[label] }}",
+                                "tension": 0.4
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                        </script>
+                        <!-- prettier-ignore-end -->
+                    </div>
                     <!------------for Appointment Frequency line chart----------->
 
                 </div>
