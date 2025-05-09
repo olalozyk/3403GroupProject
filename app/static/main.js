@@ -164,3 +164,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }); // close new Chart
 });
 //-------------------for Appointment Frequency line chart--------------------
+
+//-------------------for counter effect--------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const counters = document.querySelectorAll(".counter");
+  const speed = 120; // lower = faster
+
+  counters.forEach((counter) => {
+    const updateCount = () => {
+      const target = +counter.getAttribute("data-target");
+      const count = +counter.innerText;
+      const increment = Math.ceil(target / speed);
+
+      if (count < target) {
+        counter.innerText = count + increment;
+        setTimeout(updateCount, 20);
+      } else {
+        counter.innerText = target;
+      }
+    };
+
+    updateCount();
+  });
+});
+//-------------------for counter effect--------------------
