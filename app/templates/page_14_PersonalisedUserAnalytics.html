@@ -13,13 +13,13 @@
         <div class="col-md-4">
             <div class="p-2 bg-white rounded shadow-sm text-center">
                 <h5 class="purple-text">Total Appointments</h5>
-                <p class="display-6 fw-bold">{{ total_appointments }}</p>
+                <p class="display-6 fw-bold counter" data-target="{{ total_appointments }}">0</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="p-2 bg-white rounded shadow-sm text-center">
                 <h5 class="purple-text">Documents Expiring Soon</h5>
-                <p class="display-6 fw-bold">{{ documents_expiring_soon }}</p>
+                <p class="display-6 fw-bold counter" data-target="{{ documents_expiring_soon }}">0</p>
             </div>
         </div>
         <div class="col-md-4">
@@ -47,6 +47,7 @@
                         </div>
                         <!------- for chart -------->
                         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
                         <script>
                             const ctx = document.getElementById('appointmentTypeChart').getContext('2d');
                             const appointmentChart = new Chart(ctx, {
@@ -63,8 +64,8 @@
                                 '#8B5CF6', // Consultation
                                 '#EF4444'  // Test
                             ]
-                }]
-            },
+                        }]
+                    },
                             options: {
                                 responsive: true,
                                     maintainAspectRatio: false,
@@ -76,13 +77,30 @@
                                         display: true,
                                             text: 'Appointment Types',
                                                 font: {
-                                            size: 24 // Adjust to your desired title size
+                                            size: 24
                                         },
                                         color: '#4B0082'
+                                    },
+                                    datalabels: {
+                                        formatter: (value, context) => {
+                                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            const percent = ((value / total) * 100).toFixed(0) + '%';
+                                            const label = context.chart.data.labels[context.dataIndex];
+                                            return label + '\n' + percent;
+                                        },
+                                            color: 'white',
+                                                font: {
+                                            weight: 'bold',
+                                                size: 14
+                                        },
+                                        anchor: 'center',
+                                            align: 'center',
+                                                textAlign: 'center'
                                     }
                                 }
-                            }
-        });
+                            },
+                            plugins: [ChartDataLabels]
+                        });
                             console.log("Chart labels:", {{ chart_labels | tojson }});
                             console.log("Chart data:", {{ chart_data | tojson }});
                         </script>
