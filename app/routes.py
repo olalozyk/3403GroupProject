@@ -359,6 +359,7 @@ def calendar():
         return redirect(url_for("login"))
 
     appointments = Appointment.query.filter_by(user_id=session["user_id"]).all()
+    documents = Document.query.filter_by(user_id=session["user_id"]).all()
 
     appt_data = [
         {
@@ -372,7 +373,21 @@ def calendar():
         }
         for appt in appointments
     ]
-    return render_template("page_7_CalendarViewPage.html", appt_data=appt_data)
+
+    doc_data = [
+        {
+            "id": doc.id,
+            "title": f"{doc.document_type} ({doc.document_name})",
+            "start": doc.upload_date.strftime("%Y-%m-%d") + 'T' + doc.upload_date.strftime("%H:%M"),
+            "end": doc.expiration_date.strftime("%Y-%m-%d") + 'T' + doc.expiration_date.strftime("%H:%M") if doc.expiration_date else None,
+            "type": doc.document_type,
+            "description": f"Uploaded on {doc.upload_date.strftime('%Y-%m-%d')}",
+            "expiration_date": doc.expiration_date.strftime("%Y-%m-%d") if doc.expiration_date else None
+        }
+        for doc in documents
+    ]
+
+    return render_template("page_7_CalendarViewPage.html", appt_data=appt_data, doc_data=doc_data)
 
 # Page 8 - Medical Documents Manager Page
 @app.route("/medical_document")
