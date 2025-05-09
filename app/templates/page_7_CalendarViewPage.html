@@ -2,21 +2,19 @@
 {% block title %}Your Calendar{% endblock %}
 {% block content %}
 
+
+<h1 class="calender-text text-center mt-5">Your Calendar</h1>
+
+<div class="d-flex justify-content-center align-items-center gap-3 mt-3 mb-5">
+    <h5 class="slightly-right-calender mb-0"><strong>View your Calendar with a</strong></h5>
+    <select class="form-select form-select-calender" id="viewSelector" disabled>
+        <option selected value="month">Month View</option>
+    </select>
+    <button class="btn btn-purple-calender">Display</button>
+</div>
+
 <!-- Main Content -->
 <div class="container mt-5 member-timetable-page ">
-
-    <h1 class="calender-text text-center">Your Calendar</h1>
-
-    <div class="d-flex justify-content-center align-items-center gap-3 mt-3 mb-5">
-        <h5 class="slightly-right-calender mb-0"><strong>View your Calendar with a</strong></h5>
-        <select class="form-select form-select-calender">
-            <option selected>Week View</option>
-            <option value="1">Day</option>
-            <option value="2">Week</option>
-            <option value="3">Month</option>
-        </select>
-        <button class="btn btn-purple-calender">Display</button>
-    </div>
 
     <div class="d-flex gap-3 mt-3 mb-5">
         <div class="week-slider d-flex align-items-center justify-content-center gap-3 p-3 shadow rounded">
