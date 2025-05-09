@@ -14,23 +14,14 @@
 </div>
 
 <!-- Main Content -->
-<div class="container mt-5 member-timetable-page ">
-
-    <div class="d-flex gap-3 mt-3 mb-5">
-        <div class="week-slider d-flex align-items-center justify-content-center gap-3 p-3 shadow rounded">
-            <button class="arrow-btn btn btn-outline-dark" id="prevWeek">
-                &#8592; <!-- Left Arrow -->
-            </button>
-            <form class="d-flex flex-column -left mt-4 week">
-                <div class="col-md-9 mb-2">
-                    <input type="text" name="Date" value="24/03/25 - 27/06/25">
-                </div>
-            </form>
-
-            <button class="arrow-btn btn btn-outline-dark" id="nextWeek">
-                &#8594; <!-- Right Arrow -->
-            </button>
-        </div>
+<div class="container mt-5 member-timetable-page">
+    <div id="month-timetable">
+        <div class="d-flex gap-3 mt-3 mb-4">
+            <div class="week-slider d-flex align-items-center justify-content-center gap-3 p-3 shadow rounded">
+                <button class="arrow-btn btn btn-outline-dark" id="prevMonth">&#8592;</button>
+                <h5 id="monthYearHeading" class="m-0"></h5>
+                <button class="arrow-btn btn btn-outline-dark" id="nextMonth">&#8594;</button>
+            </div>
         <div class="button-group-bg d-inline-flex justify-content-end gap-3 p-3 rounded shadow-sm mt-4 calender-appointment">
             <button class="btn btn-Appointment">Appointment</button>
             <button class="btn btn-Tests">Documents</button>
