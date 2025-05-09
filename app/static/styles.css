@@ -680,6 +680,55 @@ select option[disabled] {
 .user-submit-button:hover {
   background-color: #218838;
 }
+/* Month View Cells */
+.month-day-cell {
+  vertical-align: top;
+  min-height: 100px !important;
+  height: 120px !important;
+  padding: 9px;
+  width: 14.28%;
+  position: relative;
+  background-color: #f8f9fa;
+}
+.month-day-cell:hover {
+  background-color: #e2d8f3; /* A subtle purple shade for hover */
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(142, 96, 196, 0.4); /* Soft glow */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.month-day-cell .badge,
+.month-day-cell .card {
+  display: block;
+  width: 120%; !important;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Optional: If 2+ events, color the entire cell softly */
+.month-day-cell.has-events {
+  background-color: #f3e8ff;
+  transition: background-color 0.3s ease;
+}
+.tooltip-box {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  max-width: 300px;
+  font-size: 0.9rem;
+}
+
+.tooltip-header {
+  font-weight: bold;
+}
+
 
 /* Uploade documents Heading */
 /* Core Typography */
