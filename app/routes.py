@@ -622,4 +622,52 @@ def edit_document(doc_id):
 @app.route("/insights")
 @login_required
 def insights():
-    return render_template("page_14_PersonalisedUserAnalytics.html")
+    user_id = session.get("user_id")
+    appointments = Appointment.query.filter_by(user_id=user_id).all()
+    today = datetime.today().date()
+    soon = today + timedelta(days=14)
+
+    expiring_docs = (
+        db.session.query(Document)
+        .filter(
+            Document.user_id == user_id,
+            Document.expiration_date != None,
+            Document.expiration_date.between(today, soon)
+        )
+        .all()
+    )
+
+    documents_expiring_soon = len(expiring_docs)
+
+    # ==== Pie chart data ====
+    type_counts = Counter([appt.appointment_type for appt in appointments])
+    labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
+    data = [type_counts.get(label, 0) for label in labels]
+
+    # ==== Line chart data ====
+    counts = defaultdict(lambda: [0] * 12)  # 12 months
+    for appt in appointments:
+        month_index = appt.appointment_date.month - 1
+        counts[appt.appointment_type][month_index] += 1
+
+    line_chart_data = {t: counts[t] for t in labels}
+    months_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    
+    color_map = {
+        "General": "#3B82F6",
+        "Follow-up": "#EF4444",
+        "Checkup": "#22C55E",
+        "Consultation": "#EAB308",
+        "Test": "#8B5CF6"
+    }
+
+    return render_template("page_14_PersonalisedUserAnalytics.html",
+                       total_appointments=len(appointments),
+                       documents_expiring_soon=documents_expiring_soon,
+                       most_frequent_practitioner="TBD",
+                       chart_labels=labels,
+                       chart_data=data,
+                       line_chart_data=line_chart_data,
+                       months_labels=months_labels,
+                       color_map=color_map)
