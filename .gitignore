@@ -14,3 +14,6 @@ __pycache__/
 # Ignore compiled Alembic files
 migrations/__pycache__/
 migrations/versions/__pycache__/
+
+# Ignore VS Code SQLTools extension data
+**/vscode-sqltools/Data/.node-runtime
