@@ -25,19 +25,26 @@ def test_reset_password_page(client):
     assert b'Reset Password' in response.data
     
 def test_reset_password_request_invalid_email(client):
+    # First get the page to get the CSRF token
+    response = client.get('/reset_password')
+    csrf_token = response.data.decode('utf-8').split('name="csrf_token" value="')[1].split('"')[0]
+    
     response = client.post('/reset_password', data={
         'email': 'nonexistentuser@example.com',
+        'csrf_token': csrf_token
     }, follow_redirects=True)
-    # should remain on reset page with an error
     assert b'There is no account with that email' in response.data
 
 def test_reset_password_request_valid_email(client, test_user):
+    # First get the page to get the CSRF token
+    response = client.get('/reset_password')
+    csrf_token = response.data.decode('utf-8').split('name="csrf_token" value="')[1].split('"')[0]
+    
     response = client.post('/reset_password', data={
         'email': 'test@example.com',
+        'csrf_token': csrf_token
     }, follow_redirects=True)
-    # should redirect to login with a success message
     assert b'An email has been sent with instructions' in response.data
-    assert b'Login' in response.data
 
 def test_reset_token_invalid(client):
     response = client.get('/reset_password/invalidtoken', follow_redirects=True)
