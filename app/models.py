@@ -30,16 +30,32 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.email}>'
-    
+
     def get_reset_token(self, expires_sec=1800):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
-    
+        import jwt
+        import datetime
+        #create a JWT token with user ID and expiration time
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_sec)
+        }
+        #secret key should be a string
+        secret_key = current_app.config['SECRET_KEY']
+        if isinstance(secret_key, bytes):
+            secret_key = secret_key.decode('utf-8')
+        #create token
+        return jwt.encode(payload, secret_key, algorithm='HS256')
+
     @staticmethod
     def verify_reset_token(token):
-        s = Serializer(current_app.config['SECRET_KEY'])
+        import jwt
+        #secret key should be a string
+        secret_key = current_app.config['SECRET_KEY']
+        if isinstance(secret_key, bytes):
+            secret_key = secret_key.decode('utf-8')        
         try:
-            user_id = s.loads(token)['user_id']
+            payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+            user_id = payload['user_id']
         except:
             return None
         return User.query.get(user_id)
