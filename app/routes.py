@@ -672,6 +672,18 @@ def insights():
 
     documents_expiring_soon = len(expiring_docs)
 
+    total_documents = Document.query.filter_by(user_id=user_id).count()
+
+    # Count most frequent appointment type
+    type_counter = Counter([appt.appointment_type for appt in appointments])
+    top_type = type_counter.most_common(1)
+    top_appointment_type = f"{top_type[0][0]}: {top_type[0][1]}" if top_type else "N/A"
+
+    # Count most frequent practitioner
+    practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
+    top_practitioner = practitioner_counter.most_common(1)
+    most_frequent_practitioner = f"{top_practitioner[0][0]}: {top_practitioner[0][1]}" if top_practitioner else "N/A"
+
     # ==== Pie chart data ====
     type_counts = Counter([appt.appointment_type for appt in appointments])
     labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
