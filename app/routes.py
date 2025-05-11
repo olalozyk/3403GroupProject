@@ -742,3 +742,20 @@ def reset_token(token):
         flash('Your password has been updated! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
+
+# Page 17 - Change Password Page
+@app.route("/change_password", methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        user = User.query.get(session["user_id"])
+        if user.check_password(form.current_password.data):
+            hashed_password = generate_password_hash(form.new_password.data)
+            user.password = hashed_password
+            db.session.commit()
+            flash('Your password has been updated!', 'success')
+            return redirect(url_for('user_profile'))
+        else:
+            flash('Current password is incorrect', 'danger')
+    return render_template('change_password.html', title='Change Password', form=form)
