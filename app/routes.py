@@ -5,11 +5,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from collections import Counter, defaultdict
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, DocumentForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm
 from datetime import datetime, timedelta, time, date
 from app.models import User, Document, Appointment
 from sqlalchemy import asc, desc, nulls_last
 import os
+import zipfile
+import io
 
 # Page 1 - Landing Page
 @app.route('/')
