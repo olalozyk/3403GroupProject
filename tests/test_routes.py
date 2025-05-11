@@ -18,6 +18,7 @@ def test_login_page(client):
     response = client.get('/login')
     assert response.status_code == 200
 
+# Page 15 - Password Reset Page
 def test_reset_password_page(client):
     response = client.get('/reset_password')
     assert response.status_code == 200
@@ -42,3 +43,33 @@ def test_reset_token_invalid(client):
     response = client.get('/reset_password/invalidtoken', follow_redirects=True)
     assert b'That is an invalid or expired token' in response.data
     assert b'Reset Password' in response.data
+
+
+# Page 17 - Changing password
+def test_change_password(client, test_user, login_test_user):
+    login_test_user(client)
+    response = client.get('/change_password')
+    assert response.status_code == 200
+    assert b'Change Password' in response.data
+    
+    response = client.post('/change_password', data={
+        'current_password': 'wrongpassword',
+        'new_password': 'newpassword123',
+        'confirm_password': 'newpassword123'
+    }, follow_redirects=True)
+    assert b'Current password is incorrect' in response.data
+    
+    response = client.post('/change_password', data={
+        'current_password': 'testpassword',
+        'new_password': 'newpassword123',
+        'confirm_password': 'newpassword123'
+    }, follow_redirects=True)
+    assert b'Your password has been updated' in response.data
+    
+    #test login with new password
+    client.get('/logout', follow_redirects=True)
+    response = client.post('/login', data={
+        'email': 'test@example.com',
+        'password': 'newpassword123'
+    }, follow_redirects=True)
+    assert b'Login successful' in response.data
