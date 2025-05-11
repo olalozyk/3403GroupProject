@@ -45,3 +45,11 @@ class DocumentForm(FlaskForm):
     expiration_date = DateField("Expiration Date", validators=[Optional()])
     practitioner_type = StringField("Practitioner Type", validators=[DataRequired()])
 
+class RequestPasswordResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. You must register first.')
