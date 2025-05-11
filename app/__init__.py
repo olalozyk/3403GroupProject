@@ -24,7 +24,7 @@ def create_app():
     # Load config
     from app.config import Config
     app.config.from_object(Config)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key')
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key').encode('utf-8')
     
     # Initialize extensions with the app
     db.init_app(app)
