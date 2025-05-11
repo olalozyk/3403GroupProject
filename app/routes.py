@@ -703,3 +703,24 @@ def insights():
                        line_chart_data=line_chart_data,
                        months_labels=months_labels,
                        color_map=color_map)
+
+
+# Page 15 - Password Reset Page
+def send_reset_email(user):
+    token = user.get_reset_token()
+    # in real application, we would send an actual email but
+    # for this project, we'll flash the reset link for demonstration
+    reset_url = url_for('reset_token', token=token, _external=True)
+    flash(f'Password reset link (for testing only): {reset_url}', 'info')
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if session.get("role") == "member":
+        return redirect(url_for("dashboard"))
+    form = RequestPasswordResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
