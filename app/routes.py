@@ -25,28 +25,40 @@ def index():
 # Page 2 - Login Page
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
     form = LoginForm()
     msg = ""
 
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            
+            # Check if user exists and password is correct
+            if user and user.check_password(form.password.data):
+                login_user(user, remember=form.remember_me.data)
 
-            session['user_id'] = user.id
-            session['first_name'] = user.first_name
-            session['role'] = user.role
-
-            # Sync session with DB-stored notification viewed_at
-            session['notifications_viewed_at'] = (
-                user.notifications_viewed_at.isoformat()
-                if user.notifications_viewed_at else datetime.min.isoformat()
-            )
-
-            flash("Login successful", "success")
-            return redirect(url_for('dashboard'))
-        else:
-            msg = "Invalid email or password"
+                # Set up session data
+                session['user_id'] = user.id
+                session['first_name'] = user.first_name
+                session['role'] = user.role
+                session['notifications_viewed_at'] = (
+                    user.notifications_viewed_at.isoformat()
+                    if user.notifications_viewed_at else datetime.min.isoformat()
+                )
+                flash("Login successful", "success")
+                
+                # Redirect to 'next' parameter if it exists, otherwise to dashboard
+                next_page = request.args.get('next')
+                return redirect(next_page if next_page else url_for('dashboard'))
+            else:
+                if user:
+                    print("Password check failed")
+                msg = "Invalid email or password"
+        except Exception as e:
+            # Log any errors
+            print(f"Login error: {str(e)}")
+            msg = "An error occurred during login"
 
     return render_template("page_2_LoginPage.html", form=form, msg=msg)
 
@@ -54,30 +66,61 @@ def login():
 def logout():
     logout_user()
     session.clear()
+    flash("You have been logged out", "info")
     return redirect(url_for("index"))
 
 # Page 3 - Register Page
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+        
     form = RegistrationForm()
-
+    
+    # Print form data for debugging
+    if request.method == "POST":
+        print(f"Register form submitted with data: {request.form}")
+    
     if form.validate_on_submit():
-        # All validations passed, create new user
-        hashed_pw = generate_password_hash(form.password.data)
-        new_user = User(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-            password=hashed_pw,
-            role="member"  # Make sure to set a default role
-        )
+        try:
+            print("Form validation successful")
+            
+            # Create a new user object
+            print(f"Creating user with email: {form.email.data}")
+            hashed_pw = generate_password_hash(form.password.data)
+            new_user = User(
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                email=form.email.data,
+                password=hashed_pw,
+                role="member"
+            )
 
-        db.session.add(new_user)
-        db.session.commit()
+            # Add to database and commit
+            db.session.add(new_user)
+            db.session.commit()
 
-        success_msg = "Account has been created successfully! You can now login."
-        return render_template("page_3_RegisterPage.html", form=RegistrationForm(), success_msg=success_msg)
+            # Success message
+            flash("Account created successfully! You can now login.", "success")
+            
+            # Important: Redirect to login page, don't render template
+            print("Redirecting to login page")
+            return redirect(url_for("login"))
+            
+        except Exception as e:
+            # Roll back any changes and show error message
+            db.session.rollback()
+            print(f"ERROR in registration: {str(e)}")
+            import traceback
+            traceback.print_exc()  # Print full traceback for debugging
+            flash(f"Registration failed: {str(e)}", "danger")
 
+    # Print form errors if validation failed
+    if form.errors:
+        print(f"Form validation errors: {form.errors}")
+
+    # Render registration form
     return render_template("page_3_RegisterPage.html", form=form)
 
 # Page 4 - Dashboard Page
@@ -715,49 +758,75 @@ def send_reset_email(user):
     reset_url = url_for('reset_token', token=token, _external=True)
     flash(f'Password reset link (for testing only): {reset_url}', 'info')
 
-@app.route("/reset_password", methods=['GET', 'POST'])
+@app.route("/reset_request", methods=["GET", "POST"])
 def reset_request():
-    if session.get("role") == "member":
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
+        
     form = RequestPasswordResetForm()
+    
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
-        flash('An email has been sent with instructions to reset your password.', 'info')
-        return redirect(url_for('login'))
-    return render_template('page_15_PasswordResetRequest.html', title='Reset Password', form=form)
+        
+        # Send password reset email
+        # (In a real application, you would send an actual email here)
+        token = user.get_reset_token()
+        
+        # For demonstration, we'll just show a direct link
+        reset_url = url_for('reset_token', token=token, _external=True)
+        print(f"Password reset link: {reset_url}")
+        
+        flash("A password reset link has been sent to your email.", "info")
+        return redirect(url_for("login"))
+    
+    return render_template("page_15_PasswordResetRequest.html", form=form)
 
 # Page 16 - Password Reset Page
-@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+# Password reset with token
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_token(token):
-    if session.get("role") == "member":
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
+        
+    # Verify the token and get user
     user = User.verify_reset_token(token)
+    
     if user is None:
-        flash('That is an invalid or expired token', 'warning')
-        return redirect(url_for('reset_request'))
+        flash("That is an invalid or expired token", "warning")
+        return redirect(url_for("reset_request"))
+    
     form = ResetPasswordForm()
+    
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data)
-        user.password = hashed_password
+        # Update the user's password
+        user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been updated! You are now able to log in', 'success')
-        return redirect(url_for('login'))
-    return render_template('page_16_ResetToken.html', title='Reset Password', form=form)
+        
+        flash("Your password has been updated! You can now log in.", "success")
+        return redirect(url_for("login"))
+    
+    return render_template("page_16_ResetToken.html", form=form)
 
 # Page 17 - Change Password Page
-@app.route("/change_password", methods=['GET', 'POST'])
+# Change password (for logged-in users)
+@app.route("/change_password", methods=["GET", "POST"])
 @login_required
 def change_password():
     form = ChangePasswordForm()
+    
     if form.validate_on_submit():
-        user = User.query.get(session["user_id"])
-        if user.check_password(form.current_password.data):
-            hashed_password = generate_password_hash(form.new_password.data)
-            user.password = hashed_password
-            db.session.commit()
-            flash('Your password has been updated!', 'success')
-            return redirect(url_for('user_profile'))
-        else:
-            flash('Current password is incorrect', 'danger')
-    return render_template('page_17_ChangePassword.html', title='Change Password', form=form)
+        # Verify current password
+        if not current_user.check_password(form.current_password.data):
+            flash("Current password is incorrect", "danger")
+            return render_template("page_17_ChangePassword.html", form=form)
+        
+        # Set new password
+        current_user.set_password(form.new_password.data)
+        db.session.commit()
+        
+        flash("Your password has been changed successfully!", "success")
+        return redirect(url_for("user_profile"))
+    
+    return render_template("page_17_ChangePassword.html", form=form)
