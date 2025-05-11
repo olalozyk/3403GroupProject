@@ -48,7 +48,7 @@ def login():
         else:
             msg = "Invalid email or password"
 
-    return render_template("page_2_loginPage.html", form=form, msg=msg)
+    return render_template("page_2_LoginPage.html", form=form, msg=msg)
 
 @app.route("/logout")
 def logout():
@@ -76,9 +76,9 @@ def register():
         db.session.commit()
 
         success_msg = "Account has been created successfully! You can now login."
-        return render_template("page_3_registerPage.html", form=RegistrationForm(), success_msg=success_msg)
+        return render_template("page_3_RegisterPage.html", form=RegistrationForm(), success_msg=success_msg)
 
-    return render_template("page_3_registerPage.html", form=form)
+    return render_template("page_3_RegisterPage.html", form=form)
 
 # Page 4 - Dashboard Page
 @app.route("/dashboard")
