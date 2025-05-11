@@ -23,7 +23,7 @@ img.logo {
   margin-left: 18px;
 }
 
-a.nav-link {
+.navbar-nav .nav-link {
   color: #6440b4;
   font-size: 14px;
   font-weight: 500;
@@ -33,10 +33,6 @@ a.nav-link {
   font-size: 20px;
 }
 
-.notification-num {
-  color: #783c26;
-  text-decoration: none;
-}
 .nav-item1 {
   text-decoration: none;
   font-size: 15px;
@@ -60,7 +56,19 @@ a.nav-item1.active-link {
   box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 .dropdown-menu.notification-menu {
-  min-width: 360px;
+  min-width: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.notif-bold-text {
+  color: #6f42c1;
+  font-weight: 700;
+  font-size: 16px;
+}
+.notif-small-text {
+  color: #6f42c1;
+  font-weight: 600;
+  font-size: 14px;
 }
 /**-----------general section--------**/
 .container {
@@ -408,10 +416,14 @@ h1.appt-manager-h1 {
 .appt-manager-table tbody tr:last-child td {
   border-bottom: none;
 }
-
+.appt-manager-field-col,
 .appt-manager-col {
   flex-basis: 100%; /** the smaller the %, the narrower the div column*/
   min-width: 250px; /** the larger the px, the narrower*/
+}
+
+.appt-manager-field {
+  margin-top: 10px;
 }
 
 .edit-btn {
@@ -502,6 +514,21 @@ h1.appt-manager-h1 {
 .link-container {
   text-align: center;
 }
+/**-----------insight section----------*/
+.insight {
+  margin-top: 15px;
+}
+.insight .insight-col {
+  flex-basis: 88%; /** the smaller the %, the narrower the div column*/
+  min-width: 250px; /** the larger the px, the narrower*/
+}
+.insight-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+/**-----------insight section----------*/
 /**-----------footer section--------**/
 
 .footer {
@@ -576,18 +603,11 @@ select option[disabled] {
     opacity: 1;
   }
 }
-/* Calendar Heading */
-/* Core Typography */
+/* ================================ */
+/* Calender   */
+/* ================================ */
 
-/* Header Styling */
-.calender-text {
-  color: #6f42c1 !important;
-  font-weight: 700;
-  font-size: 2.5rem;
-  animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
+/* Animation Keyframe */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -599,7 +619,26 @@ select option[disabled] {
   }
 }
 
-/* Controls */
+/* Calendar Heading */
+.calender-text,.upload-document-text {
+  color: #6f42c1 !important;
+  font-weight: 700;
+  font-size: 2.5rem;
+  animation: fadeInUp 1s ease-in-out;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.upload-title {
+  color: rgba(
+          111,
+          66,
+          193,
+          0.6
+  ); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
+  margin-bottom: 8px;
+}
+
+/* Dropdown Select */
 .form-select-calender {
   width: 140px;
   font-size: 1rem;
@@ -608,14 +647,9 @@ select option[disabled] {
   padding: 6px 12px;
   border: 1px solid #ccc;
 }
-
 .form-select-calender:hover {
   transform: scale(1.05);
   box-shadow: 0 0 10px #c8a9ef;
-}
-
-.slightly-right-calender {
-  margin-right: 10px;
 }
 
 /* Buttons */
@@ -630,65 +664,112 @@ select option[disabled] {
   font-weight: bold;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
+.btn-purple-calender { background-color: #8e60c4; color: white; }
+.btn-Appointment { background-color: #b0e57c; }
+.btn-Tests { background-color: #8ddcff; }
+.btn-Expirations { background-color: #f7c06b; }
+.btn-Missed { background-color: #f59494; }
+.user-submit-button { background-color: #6f42c1; color: white; }
 
-.btn-purple-calender {
-  background-color: #8e60c4;
-  color: white;
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 5px 15px rgba(0, 0, 0, 0.1);
+}
+.user-submit-button:hover {
+  background-color: #218838;
 }
 
-.btn-Appointment {
-  background-color: #b0e57c;
+/* Month View Cells */
+.month-day-cell {
+  vertical-align: top;
+  min-height: 100px !important;
+  height: 120px !important;
+  padding: 9px;
+  width: 14.28%;
+  position: relative;
+  background-color: #f8f9fa;
+}
+.month-day-cell:hover {
+  background-color: #e2d8f3; /* A subtle purple shade for hover */
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(142, 96, 196, 0.4); /* Soft glow */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.month-day-cell .badge,
+.month-day-cell .card {
+  display: block;
+  width: 120%; !important;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.btn-Tests {
-  background-color: #8ddcff;
+/* Optional: If 2+ events, color the entire cell softly */
+.month-day-cell.has-events {
+  background-color: #f3e8ff;
+  transition: background-color 0.3s ease;
 }
-
-.btn-Expirations {
-  background-color: #f7c06b;
-}
-
-.btn-Missed {
-  background-color: #f59494;
-}
-
-.user-submit-button {
-  background-color: #6f42c1;
-  color: white;
-}
-
-.week-slider {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Timetable Styles */
-.scrollable-timetable {
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 15px;
-  border: 1px solid #ddd;
-  padding: 15px;
+.tooltip-box {
   background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  max-width: 300px;
+  font-size: 0.9rem;
 }
 
-/* Table */
-/* Darker table outlines (borders) */
+.tooltip-header {
+  font-weight: bold;
+}
+/* Events */
+.event-day { position: relative; }
+.event {
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: white;
+  margin-bottom: 5px;
+}
+.badge {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Limit to 3 events */
+.month-day-cell .badge:nth-child(n+4) {
+  display: none;
+}
+
+/* "Show more" link */
+.show-more {
+  font-size: 12px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.show-more:hover {
+  color: #0056b3;
+}
+
+/* Calendar Table Styles */
 .table-outline-dark th,
 .table-outline-dark td {
   border: 2px solid black;
   background-color: #f8f9fa;
 }
-
-/* Light purple for the first column and header row */
-.table-outline-dark th:first-child,
-.table-outline-dark td:first-child {
-  font-weight: bold;
-  background-color: #f2f3f5;
-}
-
-/* Sticky Header Row */
 .table-outline-dark thead th {
-  position: sticky !important;
+  position: sticky;
   top: 0;
   background-color: purple;
   color: white;
@@ -696,28 +777,29 @@ select option[disabled] {
   z-index: 2;
 }
 
-/* Timetable Cells */
-.rostercells td {
-  word-wrap: break-word;
-  white-space: normal;
-  vertical-align: middle;
-  max-width: 130px;
-  padding: 10px;
-}
-
-/* Purple hover effect on rows */
+/* Hover on rows */
 .table-outline-dark tbody tr:hover {
   background-color: #e1bee7 !important;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-/* Navbar */
-
-.calender-appointment {
-  margin-right: 60px;
+/* Calendar Grid Sizes */
+#month-timetable table td {
+  height: 80px;
+  font-size: 1rem;
+  padding: 10px;
+  vertical-align: top;
+}
+#month-timetable table th {
+  font-size: 1.1rem;
+  padding: 12px;
+}
+#monthCalendarBody {
+  min-height: 600px;
 }
 
+/* Calendar Container */
 .member-timetable-page {
   padding: 2rem;
   background-color: #fff;
@@ -725,172 +807,57 @@ select option[disabled] {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.member-timetable-page h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-}
-
-.member-timetable-page input[type="text"],
-.member-timetable-page input[type="date"] {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ced4da;
-  transition: box-shadow 0.3s;
-}
-
-.member-timetable-page input[type="text"]:focus,
-.member-timetable-page input[type="date"]:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.member-timetable-page .btn {
-  border-radius: 20px;
-  font-weight: 500;
-  transition: all 0.3s ease-in-out;
-}
-
-.member-timetable-page .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.member-timetable-page .user-submit-button:hover {
-  background-color: #218838;
-}
-
-.member-timetable-page .table-bordered th,
-.member-timetable-page .table-bordered td {
-  border: 1px solid #dee2e6;
-  padding: 1rem;
-  vertical-align: middle;
-}
-
-.member-timetable-page .table thead {
-  background-color: #f1f1f1;
-  font-weight: 600;
-}
-
-.member-timetable-page .table tbody tr {
-  transition: background-color 0.3s ease;
-}
-
-.member-timetable-page .table tbody tr:hover {
-  background-color: #e9f7ff;
-}
-
-.member-timetable-page .rostercells td {
-  height: 60px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  cursor: pointer;
-}
-
-.member-timetable-page .rostercells td:hover {
-  background-color: #e6e6fa;
-  transform: scale(1.05);
-  box-shadow: 0 0 5px rgba(0, 128, 0, 0.5);
-}
-
+/* Responsive Buttons */
 @media (max-width: 768px) {
-  .member-timetable-page .user-submit-button,
-  .member-timetable-page .user-edit-button,
-  .member-timetable-page .user-share-button {
+  .user-submit-button,
+  .user-edit-button,
+  .user-share-button {
     width: 100% !important;
   }
 }
 
-.occupation-cell {
-  background-color: lightcoral !important;
-  color: white;
-  font-weight: bold;
+/* Week Slider */
+.week-slider {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.physiotherapy-cell {
-  background-color: #b0e57c !important;
-  color: white;
-  font-weight: bold;
+.tooltip-box {
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Uploade documents Heading */
-/* Core Typography */
+.tooltip-header {
+  background-color: #6f42c1; /* purple */
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+  font-size: 16px;
+}
 
-.upload-document-text {
+#tooltipContent {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+#tooltipContent h5 {
   color: #6f42c1;
-  font-weight: 700;
-  font-size: 2.5rem;
-  animation: fadeInUp 1s ease-in-out;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 5px;
 }
 
-.upload-title {
-  color: rgba(
-    111,
-    66,
-    193,
-    0.6
-  ); /* 0.0 (fully transparent) to 1.0 (fully opaque) */
-  margin-bottom: 8px;
+#tooltipContent div {
+  margin-bottom: 10px;
 }
 
-.card {
-  border-radius: 1rem;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.3s ease-in-out;
+#tooltipContent strong {
+  color: #343a40;
 }
 
-.card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
-
-input.form-control,
-select.form-select,
-textarea.form-control {
-  border-radius: 0.5rem;
-  border: 1px solid #ced4da;
-  transition: all 0.2s ease-in-out;
-}
-
-input.form-control:focus,
-select.form-select:focus,
-textarea.form-control:focus {
-  box-shadow: 0 0 8px rgba(111, 66, 193, 0.3);
-  border-color: #6f42c1;
-}
-
-.btn-upload {
-  width: 100%;
-  background-color: #6f42c1;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-}
-
-.btn-upload:hover {
-  background-color: #5a35a0;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-  accent-color: #6f42c1;
-  transform: scale(1.5);
-  cursor: pointer;
-}
 
 /* Edit documents Heading */
 /* Core Typography */
@@ -956,4 +923,15 @@ table.table-outline-dark .btn {
 /* fix title colour */
 .select-docs-page .h1-title {
   color: #6f42c1;
+}
+
+
+.btn-upload {
+  width: 100%;
+  background-color: #6f42c1;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
 }

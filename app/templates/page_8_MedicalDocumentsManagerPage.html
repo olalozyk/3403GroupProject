@@ -2,106 +2,73 @@
 {% block title %}Medical Documents{% endblock %}
 {% block content %}
 
-
 <div class="container py-4">
-  <div class="text-center mb-4">
-    <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
+    <div class="text-center mb-4">
+        <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
 
-
-
-    <div class="d-flex justify-content-center gap-3 mt-3">
-      <button class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2"
-        onclick="location.href='/medical_document/upload_document'">
-        + Upload New Document
-      </button>
-      <button class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2"
-        onclick="location.href='/medical_document/share_document'">
-        ← Share Your Documents
-      </button>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{{ url_for('upload_document') }}" class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2">
+                + Upload New Document
+            </a>
+            <a href="{{ url_for('share_document') }}" class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2">
+                ← Share Your Documents
+            </a>
+        </div>
     </div>
-  </div>
 
-  <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
-    <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
-    <select id="sortDocs" class="form-select w-auto">
-      <option value="upload-asc">date uploaded ↑</option>
-      <option value="upload-desc">date uploaded ↓</option>
-      <option value="expiry-asc">expiration ↑</option>
-      <option value="expiry-desc">expiration ↓</option>
-    </select>
-    <button class="btn btn-purple-calender px-4">Display</button>
-  </div>
+    <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-4">
+        <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
+        <select id="sortDocs" name="sort" class="form-select w-auto">
+            <option value="upload-asc" {% if sort_by == 'upload-asc' %}selected{% endif %}>date uploaded ↑</option>
+            <option value="upload-desc" {% if sort_by == 'upload-desc' %}selected{% endif %}>date uploaded ↓</option>
+            <option value="expiry-asc" {% if sort_by == 'expiry-asc' %}selected{% endif %}>expiration ↑</option>
+            <option value="expiry-desc" {% if sort_by == 'expiry-desc' %}selected{% endif %}>expiration ↓</option>
+        </select>
+        <button type="submit" class="btn btn-purple-calender px-4">Display</button>
+    </form>
 
-  <!-- Scrollable timetable-style table -->
-  <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
-    <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
-      <thead class="table-outline-dark">
-        <tr>
-          <th>Document</th>
-          <th>Practitioner</th>
-          <th>Type</th>
-          <th>Uploaded</th>
-          <th>Expiration</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="rostercells">
-          <td>📄 LDN Script - S4</td>
-          <td>Dr Jake Croll</td>
-          <td>Script</td>
-          <td>02/02/2025</td>
-          <td>N/A</td>
-          <td>
-            <button class="btn btn-purple-calender btn-sm me-1"
-              onclick="location.href='/medical_document/edit_document'">Edit</button>
-            <button class="btn btn-Appointment btn-sm me-1">Download</button>
-            <button class="btn btn-Missed btn-sm">Delete</button>
-          </td>
-        </tr>
-        <tr class="rostercells">
-          <td>📄 Pain Specialist Referral</td>
-          <td>Dr Jessica Adams</td>
-          <td>Referral</td>
-          <td>03/02/2025</td>
-          <td>03/05/2025</td>
-          <td>
-            <button class="btn btn-purple-calender btn-sm me-1"
-              onclick="location.href='/medical_document/edit_document'">Edit</button>
-            <button class="btn btn-Appointment btn-sm me-1">Download</button>
-            <button class="btn btn-Missed btn-sm">Delete</button>
-          </td>
-        </tr>
-        <tr class="rostercells">
-          <td>📄 SKG Blood Test Results</td>
-          <td>Dr Claire Willby</td>
-          <td>Report</td>
-          <td>29/04/2025</td>
-          <td>N/A</td>
-          <td>
-            <button class="btn btn-purple-calender btn-sm me-1"
-              onclick="location.href='/medical_document/edit_document'">Edit</button>
-            <button class="btn btn-Appointment btn-sm me-1">Download</button>
-            <button class="btn btn-Missed btn-sm">Delete</button>
-          </td>
-        </tr>
-        <tr class="rostercells">
-          <td>📄 Photo of Medicare Card</td>
-          <td>Dr Dan Dell</td>
-          <td>Insurance</td>
-          <td>29/04/2025</td>
-          <td>08/2029</td>
-          <td>
-            <button class="btn btn-purple-calender btn-sm me-1"
-              onclick="location.href='/medical_document/edit_document'">Edit</button>
-            <button class="btn btn-Appointment btn-sm me-1">Download</button>
-            <button class="btn btn-Missed btn-sm">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+
+
+    <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
+        <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
+            <thead class="table-outline-dark">
+            <tr>
+                <th>Document</th>
+                <th>Practitioner</th>
+                <th>Type</th>
+                <th>Uploaded</th>
+                <th>Expiration</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for doc in documents %}
+            <tr class="rostercells">
+                <td>📄 <a href="{{ url_for('view_document', doc_id=doc.id) }}">{{ doc.document_name }}</a></td>
+                <td>{{ doc.practitioner_name or 'N/A' }}</td>
+                <td>{{ doc.document_type }}</td>
+                <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+                <td>{% if doc.expiration_date %}{{ doc.expiration_date.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</td>
+                <td>
+                    <a href="{{ url_for('edit_document', doc_id=doc.id) }}" class="btn btn-purple-calender btn-sm me-1">
+                        Edit
+                    </a>
+                    <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-Appointment btn-sm me-1">
+                        Download
+                    </a>
+                    <a href="{{ url_for('delete_document', doc_id=doc.id) }}"
+                       class="btn btn-Missed btn-sm"
+                       onclick="return confirm('Delete this document?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">No documents found. Upload one to get started!</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}
-
