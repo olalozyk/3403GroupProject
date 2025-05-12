@@ -121,23 +121,21 @@ function filterChart(range) {
     document.getElementById("month-keys").textContent
   );
 
-  const rangeMap = {
-    year: 12,
-    "6months": 6,
-    "3months": 3,
-    month: 1,
-  };
-
-  if (range === "week") {
+  if (range === "week" || range === "month") {
     const dayRaw = document.getElementById("day-data")?.textContent;
     const dayData = JSON.parse(dayRaw);
     const allLabels = dayData.labels;
 
-    const endDate = new Date(allLabels[allLabels.length - 1]); // latest date
+    const endDate = new Date(allLabels[allLabels.length - 1]);
     const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - 7); // full 7 days including end
 
-    // Filter labels that fall within the last 7 days
+    if (range === "week") {
+      startDate.setDate(endDate.getDate() - 7);
+    } else if (range === "month") {
+      startDate.setMonth(endDate.getMonth() - 1);
+    }
+
+    // Filter labels that fall within the range
     const filteredLabels = allLabels.filter((label) => {
       const d = new Date(label);
       return d >= startDate && d <= endDate;
@@ -156,14 +154,11 @@ function filterChart(range) {
     });
 
     // Format range string
-    const filteredStart = new Date(filteredLabels[0]);
-    const filteredEnd = new Date(filteredLabels[filteredLabels.length - 1]);
-
     const options = { month: "short", day: "numeric" };
-    const rangeStr = `${filteredStart.toLocaleDateString(
+    const rangeStr = `${startDate.toLocaleDateString(
       "en-US",
       options
-    )} – ${filteredEnd.toLocaleDateString("en-US", options)}`;
+    )} – ${endDate.toLocaleDateString("en-US", options)}`;
     document.getElementById(
       "date-range-label"
     ).textContent = `Showing data from: ${rangeStr}`;
@@ -174,7 +169,13 @@ function filterChart(range) {
     chartInstance.update();
 
     // Hide warning
-    document.getElementById("chart-warning").style.display = "none";
+    document.getElementById("chart-warning").style.display =
+      filteredLabels.length < 2 ? "block" : "none";
+
+    if (range === "month") {
+      console.log("End date:", endDate.toISOString());
+      console.log("Start date:", startDate.toISOString());
+    }
 
     return;
   }
@@ -189,21 +190,23 @@ function filterChart(range) {
 
   function subtractMonths(date, numMonths) {
     const newDate = new Date(date);
-    newDate.setMonth(newDate.getMonth() - numMonths);
+    newDate.setMonth(date.getMonth() - numMonths);
     return newDate;
   }
 
   const daysBack = rangeDaysMap[range] || 365;
   const latestDateStr = document.getElementById("latest-date")?.textContent;
   const latestDate = new Date(latestDateStr);
+
+  // Determine cutoff based on range
   let cutoff;
   if (range === "year") cutoff = subtractMonths(latestDate, 12);
   else if (range === "6months") cutoff = subtractMonths(latestDate, 6);
   else if (range === "3months") cutoff = subtractMonths(latestDate, 3);
-  else if (range === "month") cutoff = subtractMonths(latestDate, 1);
+  //else if (range === "month") cutoff = subtractMonths(latestDate, 1);
   else cutoff = subtractMonths(latestDate, 12); // fallback
 
-  // Filter labels based on actual dates in monthKeys[]
+  // Filter valid month indexes
   const filteredIndexes = monthKeys
     .map((key, idx) => {
       const date = new Date(key + "-01");
@@ -213,6 +216,7 @@ function filterChart(range) {
     .filter((entry) => entry.end >= cutoff && entry.start <= latestDate)
     .map((entry) => entry.idx);
 
+  // Extract filtered labels and datasets
   const filteredLabels = filteredIndexes.map((i) => fullData.labels[i]);
   const filteredDatasets = fullData.datasets.map((ds) => ({
     ...ds,
@@ -222,14 +226,26 @@ function filterChart(range) {
   chartInstance.data.labels = filteredLabels;
   chartInstance.data.datasets = filteredDatasets;
 
-  // Insert this block here
-  if (filteredIndexes.length >= 1) {
-    const firstDate = new Date(monthKeys[filteredIndexes[0]] + "-01");
-    const lastKey = monthKeys[filteredIndexes.at(-1)];
-    const lastDate = new Date(lastKey + "-01");
-    lastDate.setMonth(lastDate.getMonth() + 1); // move to next month
-    lastDate.setDate(0); // go back one day to get last day of month
+  // Custom tick display for "month" range
+  if (range === "month" && filteredLabels.length >= 4) {
+    const gap = Math.floor(filteredLabels.length / 3); // 3 gaps = 4 points
+    const tickIndexes = [0, gap, gap * 2, filteredLabels.length - 1];
+    const forcedTicks = tickIndexes.map((i) => filteredLabels[i]);
 
+    chartInstance.options.scales.x.ticks = {
+      callback: function (_, index) {
+        return forcedTicks.includes(filteredLabels[index])
+          ? filteredLabels[index]
+          : "";
+      },
+      autoSkip: false,
+    };
+  } else {
+    chartInstance.options.scales.x.ticks = { autoSkip: true }; // fallback to default
+  }
+
+  // Format and set date range label
+  if (filteredIndexes.length >= 1) {
     const rangeStr = `${cutoff.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -248,7 +264,7 @@ function filterChart(range) {
 
   chartInstance.update();
 
-  // Warning for too few points
+  // Show warning if too few points
   const warning = document.getElementById("chart-warning");
   warning.style.display = filteredLabels.length < 2 ? "block" : "none";
 }
