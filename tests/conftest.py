@@ -11,6 +11,7 @@ from app.models import User, Appointment, Document, UserProfile
 def app():
     flask_app.config.update({
         "TESTING": True,
+        "WTF_CSRF_ENABLED": False  # disable CSRF protection in tests
     })
     return flask_app
 
