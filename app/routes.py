@@ -428,16 +428,28 @@ def medical_document():
         except ValueError:
             pass  # If the date format is incorrect, it will not filter by expiration date
 
+    # Handle sorting
     if sort_by == 'upload-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
+        documents = documents.order_by(Document.upload_date.asc())
     elif sort_by == 'upload-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.desc()).all()
+        documents = documents.order_by(Document.upload_date.desc())
     elif sort_by == 'expiry-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
+        documents = documents.order_by(Document.expiration_date.asc())
     elif sort_by == 'expiry-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
+        documents = documents.order_by(Document.expiration_date.desc())
 
-    return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
+    # Execute the query
+    documents = documents.all()
+
+    return render_template(
+        "page_8_MedicalDocumentsManagerPage.html",
+        documents=documents,
+        sort_by=sort_by,
+        query=query,
+        practitioner=practitioner,
+        doc_type=doc_type,
+        expiration_date=expiration_date
+    )
 
 # search function for documents manager page
 @app.route('/documents/search', methods=['GET'])
