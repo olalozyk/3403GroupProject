@@ -677,7 +677,7 @@ def insights():
     # Count most frequent appointment type
     type_counter = Counter([appt.appointment_type for appt in appointments])
     top_type = type_counter.most_common(1)
-    top_appointment_type = f"{top_type[0][0]}: {top_type[0][1]}" if top_type else "N/A"
+    top_appointment_type = f"{top_type[0][0]}" if top_type else "N/A"
 
     # Count most frequent practitioner
     practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
@@ -696,6 +696,9 @@ def insights():
     type_counts = Counter([appt.appointment_type for appt in appointments])
     labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
     data = [type_counts.get(label, 0) for label in labels]
+
+    # Define distinct colors (adjust or expand this list as needed)
+    bar_chart_colors = ['#3B82F6', '#22C55E', '#EAB308', '#8B5CF6', '#EF4444', '#F97316']
 
     # ==== Line chart data ====
 
@@ -771,6 +774,9 @@ def insights():
                     chart_month_labels=display_labels,
                     latest_date=latest_date_iso,
                     color_map=color_map,
-                    latest_month_index=len(all_months) - 1  # corrected here
+                    latest_month_index=len(all_months) - 1, # corrected here
+                    bar_chart_labels=bar_chart_labels,
+                    bar_chart_values=bar_chart_values,
+                    bar_chart_colors=bar_chart_colors
                 )
     
