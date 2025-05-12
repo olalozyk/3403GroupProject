@@ -404,6 +404,29 @@ def medical_document():
     # Start querying the documents
     documents = Document.query.filter_by(user_id=current_user.id)
 
+    # Apply search filters if any
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%')) |
+            (Document.practitioner_name.ilike(f'%{query}%'))
+        )
+
+    # Filter by practitioner name
+    if practitioner:
+        documents = documents.filter(Document.practitioner_name.ilike(f'%{practitioner}%'))
+
+    # Filter by document type
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+
+    # Filter by expiration date
+    if expiration_date:
+        try:
+            expiration_date_obj = datetime.strptime(expiration_date, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_date_obj)
+        except ValueError:
+            pass  # If the date format is incorrect, it will not filter by expiration date
 
     if sort_by == 'upload-asc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
