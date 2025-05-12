@@ -16,6 +16,39 @@
         </div>
     </div>
 
+    <!-- Search Form -->
+    <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-4">
+        <div class="row g-2">
+            <!-- Search query for document name or notes -->
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="Search document name or notes" value="{{ query }}">
+            </div>
+            <!-- Filter by practitioner -->
+            <div class="col-md-2">
+                <input type="text" name="practitioner" class="form-control" placeholder="Practitioner" value="{{ practitioner }}">
+            </div>
+            <!-- Filter by document type -->
+            <div class="col-md-2">
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="Referral" {% if type == 'general' %}selected{% endif %}>General</option>
+                    <option value="Report" {% if type == 'report' %}selected{% endif %}>Report</option>
+                    <option value="test" {% if type == 'test' %}selected{% endif %}>Test</option>
+                    <option value="prescription" {% if type == 'prescription' %}selected{% endif %}>Prescription</option>
+                </select>
+            </div>
+            <!-- Filter by expiration date -->
+            <div class="col-md-2">
+                <input type="date" name="expiration_date" class="form-control" value="{{ expiration_date }}">
+            </div>
+            <!-- Search button -->
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-purple-calender w-100">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Sorting Form -->
     <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-4">
         <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
         <select id="sortDocs" name="sort" class="form-select w-auto">
@@ -27,8 +60,7 @@
         <button type="submit" class="btn btn-purple-calender px-4">Display</button>
     </form>
 
-
-
+    <!-- Document Table -->
     <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
         <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
             <thead class="table-outline-dark">
