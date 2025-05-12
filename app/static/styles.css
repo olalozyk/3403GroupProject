@@ -72,7 +72,7 @@ a.nav-item1.active-link {
 }
 /**-----------general section--------**/
 .container {
-  max-width: 1300px;
+  max-width: 1320px;
   margin: auto;
   padding-left: 0px;
   padding-right: 0px;
@@ -426,7 +426,7 @@ h1.appt-manager-h1 {
   margin-top: 10px;
 }
 
-.edit-btn {
+.appt-manager .edit-btn {
   display: inline-block;
   background-color: #66b986;
   color: #fff;
@@ -435,11 +435,11 @@ h1.appt-manager-h1 {
   transition: background 0.5s;
 }
 
-.edit-btn:hover {
+.appt-manager .edit-btn:hover {
   background-color: #4b8862;
   color: #2c2c2c;
 }
-.cancel-btn {
+.appt-manager .cancel-btn {
   display: inline-block;
   background-color: #e27676;
   color: #fff;
@@ -448,7 +448,7 @@ h1.appt-manager-h1 {
   transition: background 0.5s;
 }
 
-.cancel-btn:hover {
+.appt-manager .cancel-btn:hover {
   background-color: #be5d5d;
   color: #2c2c2c;
 }
@@ -527,6 +527,13 @@ h1.appt-manager-h1 {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1); /**top right bot left**/
+}
+.chart-title{
+  font-size: 24px;
+  color: #4B0082;
+}
+.dashboard-p{
+  font-size: 24px;
 }
 /**-----------insight section----------*/
 /**-----------footer section--------**/
