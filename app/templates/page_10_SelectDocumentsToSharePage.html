@@ -3,101 +3,123 @@
 {% block content %}
 
 <div class="container py-5">
-    <div class="text-center mb-4">
-        <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Share and Receive Documents</h1>
-        <p class="lead">Select the medical documents you’d like to send.</p>
-    </div>
+  <div class="text-center mb-4">
+    <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Share and Receive Documents</h1>
+    <p class="lead">Select the medical documents you’d like to send.</p>
+  </div>
 
-    <!-- Share Documents Section -->
-    <div class="bg-white shadow rounded p-4 mb-4 mx-auto" style="max-width: 900px;">
-        <h3 class="fw-bold purple-text text-center">Share Your Documents</h3>
+  <!-- Share Documents Section -->
+  <div class="bg-white shadow rounded p-4 mb-4 mx-auto" style="max-width: 900px;">
+    <h3 class="fw-bold purple-text text-center mb-4">Share Your Documents</h3>
 
-        {% if documents %}
-        <form method="POST" action="{{ url_for('share_document') }}" class="mt-3">
-            <div class="form-check d-flex align-items-center gap-2 mb-3 justify-content-center">
-                <input class="form-check-input" type="checkbox" name="include_personal_summary" id="include_personal_summary">
-                <label class="form-check-label" for="include_personal_summary">
-                    Include personal summary file
-                </label>
-            </div>
+    {% if documents %}
+    <form method="POST" action="{{ url_for('share_document') }}">
+      <!-- Table of Documents -->
+      <div class="table-responsive">
+        <table class="table table-hover text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Select</th>
+              <th>Document</th>
+              <th>Type</th>
+              <th>Uploaded</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in documents %}
+            <tr>
+              <td><input type="checkbox" name="document_ids" value="{{ doc.id }}"></td>
+              <td>{{ doc.document_name }}</td>
+              <td>{{ doc.document_type }}</td>
+              <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-            <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3">
-                <div class="d-flex align-items-center gap-2">
-                    <input type="email" name="recipient_email" placeholder="Enter user email" class="form-control" style="max-width: 250px;">
-                    <button type="submit" class="btn btn-Appointment px-4 fw-bold">Share Internally</button>
-                </div>
-            </div>
+      <!-- Include Personal Summary -->
+      <div class="form-check d-flex align-items-center gap-2 justify-content-center mt-4">
+        <input class="form-check-input" type="checkbox" name="include_personal_summary" id="include_personal_summary">
+        <label class="form-check-label" for="include_personal_summary">Include personal summary file</label>
+      </div>
 
-            <div class="table-responsive mt-4">
-                <table class="table table-hover text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Select</th>
-                            <th>Document</th>
-                            <th>Type</th>
-                            <th>Uploaded</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for doc in documents %}
-                        <tr>
-                            <td><input type="checkbox" name="document_ids" value="{{ doc.id }}"></td>
-                            <td>{{ doc.document_name }}</td>
-                            <td>{{ doc.document_type }}</td>
-                            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </form>
-
-        <!-- ZIP download form (moved outside of the internal share form) -->
-        <form method="POST" action="{{ url_for('export_documents') }}" class="text-center mt-3">
+      <!-- Button Row -->
+      <div class="d-flex justify-content-center mt-3">
+        <div class="d-flex align-items-center gap-3 flex-nowrap justify-content-center flex-md-row flex-column">
+      
+          <!-- Share Internally Form -->
+          <form method="POST" action="{{ url_for('share_document') }}" class="d-flex align-items-center gap-2">
+            <button type="submit" id="shareButton" class="btn btn-Appointment px-3 fw-bold" style="border: 2px solid #b0e57c;"
+              disabled>Share Internally</button>
+            <input type="email" name="recipient_email" id="emailInput" placeholder="Enter user email" class="form-control"
+              style="max-width: 240px; min-width: 200px; border: 2px solid #b0e57c;">
+          </form>
+      
+          <!-- Divider -->
+          <div class="vr d-none d-md-block" style="height: 30px;"></div>
+      
+          <!-- Download ZIP Form -->
+          <form method="POST" action="{{ url_for('export_documents') }}" class="d-flex align-items-center">
             <input type="hidden" name="include_personal_summary" value="{{ 'on' if include_personal_summary else '' }}">
             <button type="submit" class="btn btn-Tests px-4 fw-bold">Download as ZIP</button>
-        </form>
-        {% else %}
-        <p class="text-muted text-center">You have no documents uploaded yet.</p>
-        {% endif %}
-    </div>
-
-    <!-- Shared With You Section -->
-    <div class="bg-white shadow rounded p-4 mb-5 mx-auto" style="max-width: 900px;">
-        <h3 class="fw-bold purple-text text-center">Documents Shared With You</h3>
-        {% if shared_documents %}
-        <div class="table-responsive mt-3">
-            <table class="table align-middle table-borderless shadow-sm text-center">
-                <thead class="table-light">
-                    <tr>
-                        <th>Document</th>
-                        <th>Sender</th>
-                        <th>Type</th>
-                        <th>Received</th>
-                        <th>Download</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for doc in shared_documents %}
-                    <tr>
-                        <td>{{ doc.document_name }}</td>
-                        <td>{{ doc.sender_email }}</td>
-                        <td>{{ doc.document_type }}</td>
-                        <td>{{ doc.received_date.strftime('%d/%m/%Y') }}</td>
-                        <td>
-                            <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-purple-calender btn-sm">
-                                Download
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+          </form>
+      
         </div>
-        {% else %}
-        <p class="text-muted text-center mt-3">No documents shared with you yet.</p>
-        {% endif %}
+      </div>
+    </form>
+    {% else %}
+    <p class="text-muted text-center">You have no documents uploaded yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Documents Shared With You -->
+  <div class="bg-white shadow rounded p-4 mb-5 mx-auto" style="max-width: 900px;">
+    <h3 class="fw-bold purple-text text-center">Documents Shared With You</h3>
+    {% if shared_documents %}
+    <div class="table-responsive mt-3">
+      <table class="table align-middle table-hover shadow-sm text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Document</th>
+            <th>Sender</th>
+            <th>Type</th>
+            <th>Received</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in shared_documents %}
+          <tr>
+            <td>{{ doc.document_name }}</td>
+            <td>{{ doc.sender_email }}</td>
+            <td>{{ doc.document_type }}</td>
+            <td>{{ doc.shared_on.strftime('%d/%m/%Y') }}</td>
+            <td>
+              <a href="{{ url_for('download_document', doc_id=doc.document_id) }}" class="btn btn-purple-calender btn-sm">
+                Download
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <p class="text-muted text-center mt-3">No documents shared with you yet.</p>
+    {% endif %}
+  </div>
 </div>
+
+<!-- Enable/disable internal share button -->
+<script>
+  const emailInput = document.getElementById('emailInput');
+  const shareButton = document.getElementById('shareButton');
+
+  emailInput.addEventListener('input', () => {
+    const isValidEmail = /\S+@\S+\.\S+/.test(emailInput.value);
+    shareButton.disabled = !isValidEmail;
+  });
+</script>
 
 {% endblock %}

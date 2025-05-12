@@ -570,9 +570,24 @@ def share_document():
             db.session.commit()
             flash("Documents shared successfully!", "success")
 
-    # For GET
-    documents = Document.query.filter_by(user_id=current_user.id).all()
-    return render_template("page_10_SelectDocumentsToSharePage.html", documents=documents)
+    # Documents owned by current user
+    user_docs = Document.query.filter_by(user_id=current_user.id).all()
+
+    # Documents shared *with* the current user
+    shared_docs = db.session.query(
+        SharedDocument,
+        Document.document_name,
+        Document.document_type,
+        SharedDocument.shared_at,
+        User.email.label("sender_email"),
+        Document.id.label("document_id")
+    ).join(Document, SharedDocument.document_id == Document.id
+    ).join(User, SharedDocument.sender_id == User.id
+    ).filter(SharedDocument.recipient_id == current_user.id).all()
+
+    return render_template("page_10_SelectDocumentsToSharePage.html",
+                           documents=user_docs,
+                           shared_documents=shared_docs)
 
 @app.route('/documents/share/search', methods=['GET'])
 @login_required
