@@ -16,16 +16,25 @@ class RegistrationForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired()])
     last_name = StringField("Last Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[
+        DataRequired(),
+        Length(min=6, message="Password must be at least 6 characters long")
+    ])
     confirm_password = PasswordField("Confirm Password", validators=[
-        DataRequired(), EqualTo("password", message="Passwords must match.")
+        DataRequired(),
+        EqualTo("password", message="Passwords must match.")
     ])
     submit = SubmitField("Register")
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError('This email is already registered. Please use a different email address.')
+        try:
+            user = User.query.filter_by(email=email.data).first()
+            if user is not None:
+                raise ValidationError('This email is already registered. Please use a different email address.')
+        except Exception as e:
+            print(f"Error in validate_email: {str(e)}")
+            # Re-raise a simplified error to avoid exposing internal details
+            raise ValidationError('Error checking email. Please try again.')
 
 class UserProfileForm(FlaskForm):
     first_name = StringField("First Name", validators=[Optional()])
@@ -58,3 +67,24 @@ class DocumentForm(FlaskForm):
     expiration_date = DateField("Expiration Date", validators=[Optional()])
     practitioner_type = StringField("Practitioner Type", validators=[DataRequired()])
 
+class RequestPasswordResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. You must register first.')
+        
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', 
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm New Password', 
+                                     validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Update Password')

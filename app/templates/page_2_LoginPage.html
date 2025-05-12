@@ -37,10 +37,16 @@
                     {{ form.submit(class="register-btn") }}
                 </div>
 
-                <p class="text-center mb-0">
-                    No account?
-                    <a href="{{ url_for('register') }}" class="purple-link">Register here</a>
-                </p>
+                <div class="text-center">
+                    <p class="mb-2">
+                        <a href="{{ url_for('reset_request') }}" class="purple-link">Forgot Password?</a>
+                    </p>
+
+                    <p class="mb-0">
+                        No account?
+                        <a href="{{ url_for('register') }}" class="purple-link">Register here</a>
+                    </p>
+                </div>
             </form>
         </div>
     </div>
