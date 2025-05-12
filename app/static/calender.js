@@ -73,7 +73,7 @@ function renderMonthView(date) {
                     const docDiv = document.createElement("div");
                     docDiv.classList.add("badge", "btn-Tests", "text-dark", "mt-1", "d-block", "text-truncate");
                     docDiv.style.maxWidth = "100%";
-                    docDiv.textContent = `${doc.type} (@${doc.start.slice(11, 16)})`;
+                    docDiv.textContent = ` @ ${doc.type}`;
                     cell.appendChild(docDiv);
                 });
 

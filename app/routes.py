@@ -395,21 +395,61 @@ def calendar():
 @login_required
 def medical_document():
     # Get all documents for the current user
-    documents = Document.query.filter_by(user_id=current_user.id).all()
+    query = request.args.get('q', '').strip()  # Search query
+    practitioner = request.args.get('practitioner', '')  # Filter by practitioner
+    doc_type = request.args.get('type', '')  # Filter by document type
+    expiration_date = request.args.get('expiration_date', '')  # Filter by expiration date
+    sort_by = request.args.get('sort', 'upload-desc')  # Sort by upload date or expiration date
 
-    # Handle sorting parameter if provided
-    sort_by = request.args.get('sort', 'upload-desc')
+    # Start querying the documents
+    documents = Document.query.filter_by(user_id=current_user.id)
 
+    # Apply search filters if any
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%')) |
+            (Document.practitioner_name.ilike(f'%{query}%'))
+        )
+
+    # Filter by practitioner name
+    if practitioner:
+        documents = documents.filter(Document.practitioner_name.ilike(f'%{practitioner}%'))
+
+    # Filter by document type
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+
+    # Filter by expiration date
+    if expiration_date:
+        try:
+            expiration_date_obj = datetime.strptime(expiration_date, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_date_obj)
+        except ValueError:
+            pass  # If the date format is incorrect, it will not filter by expiration date
+
+    # Handle sorting
     if sort_by == 'upload-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
+        documents = documents.order_by(Document.upload_date.asc())
     elif sort_by == 'upload-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.desc()).all()
+        documents = documents.order_by(Document.upload_date.desc())
     elif sort_by == 'expiry-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
+        documents = documents.order_by(Document.expiration_date.asc())
     elif sort_by == 'expiry-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
+        documents = documents.order_by(Document.expiration_date.desc())
 
-    return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
+    # Execute the query
+    documents = documents.all()
+
+    return render_template(
+        "page_8_MedicalDocumentsManagerPage.html",
+        documents=documents,
+        sort_by=sort_by,
+        query=query,
+        practitioner=practitioner,
+        doc_type=doc_type,
+        expiration_date=expiration_date
+    )
 
 # search function for documents manager page
 @app.route('/documents/search', methods=['GET'])
@@ -677,17 +717,28 @@ def insights():
     # Count most frequent appointment type
     type_counter = Counter([appt.appointment_type for appt in appointments])
     top_type = type_counter.most_common(1)
-    top_appointment_type = f"{top_type[0][0]}: {top_type[0][1]}" if top_type else "N/A"
+    top_appointment_type = f"{top_type[0][0]}" if top_type else "N/A"
 
     # Count most frequent practitioner
     practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
     top_practitioner = practitioner_counter.most_common(1)
-    most_frequent_practitioner = f"{top_practitioner[0][0]}: {top_practitioner[0][1]}" if top_practitioner else "N/A"
+
+    practitioner_names = Counter([appt.practitioner_name for appt in appointments])
+    most_frequent_practitioner = practitioner_names.most_common(1)[0][0] if practitioner_names else "TBD"
+
+    # =====Bar chart ======
+
+    top_practitioners = practitioner_names.most_common(6)
+    bar_chart_labels = [pract[0] for pract in top_practitioners]
+    bar_chart_values = [pract[1] for pract in top_practitioners]
 
     # ==== Pie chart data ====
     type_counts = Counter([appt.appointment_type for appt in appointments])
     labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
     data = [type_counts.get(label, 0) for label in labels]
+
+    # Define distinct colors (adjust or expand this list as needed)
+    bar_chart_colors = ['#3B82F6', '#22C55E', '#EAB308', '#8B5CF6', '#EF4444', '#F97316']
 
     # ==== Line chart data ====
 
@@ -763,6 +814,9 @@ def insights():
                     chart_month_labels=display_labels,
                     latest_date=latest_date_iso,
                     color_map=color_map,
-                    latest_month_index=len(all_months) - 1  # corrected here
+                    latest_month_index=len(all_months) - 1, # corrected here
+                    bar_chart_labels=bar_chart_labels,
+                    bar_chart_values=bar_chart_values,
+                    bar_chart_colors=bar_chart_colors
                 )
     
