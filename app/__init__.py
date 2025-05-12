@@ -26,7 +26,7 @@ db.init_app(app)
 migrate.init_app(app, db)
 csrf.init_app(app)
 login.init_app(app)
-login.login_view = 'login'
+login.login_view = 'index'
 socketio.init_app(app)
 
 # Import routes *after* app and extensions are set up
