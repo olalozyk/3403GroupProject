@@ -395,10 +395,15 @@ def calendar():
 @login_required
 def medical_document():
     # Get all documents for the current user
-    documents = Document.query.filter_by(user_id=current_user.id).all()
+    query = request.args.get('q', '').strip()  # Search query
+    practitioner = request.args.get('practitioner', '')  # Filter by practitioner
+    doc_type = request.args.get('type', '')  # Filter by document type
+    expiration_date = request.args.get('expiration_date', '')  # Filter by expiration date
+    sort_by = request.args.get('sort', 'upload-desc')  # Sort by upload date or expiration date
 
-    # Handle sorting parameter if provided
-    sort_by = request.args.get('sort', 'upload-desc')
+    # Start querying the documents
+    documents = Document.query.filter_by(user_id=current_user.id)
+
 
     if sort_by == 'upload-asc':
         documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
