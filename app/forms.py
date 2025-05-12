@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, DateField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, DateField, SelectField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
 from app.models import User,Document
@@ -27,7 +27,20 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('This email is already registered. Please use a different email address.')
 
-
+class UserProfileForm(FlaskForm):
+    first_name = StringField("First Name", validators=[Optional()])
+    last_name = StringField("Last Name", validators=[Optional()])
+    email = StringField("Email", render_kw={"readonly": True})
+    
+    # Optional section
+    mobile = StringField("Mobile Number", validators=[Optional()])
+    insurance = StringField("Insurance Type", validators=[Optional()])
+    dob = DateField("Date of Birth", format='%Y-%m-%d', validators=[Optional()])
+    address = StringField("Address", validators=[Optional()])
+    gender = SelectField("Gender", choices=[("Female", "Female"), ("Male", "Male"), ("Other", "Other")], validators=[Optional()])
+    password = PasswordField("New Password", validators=[Optional()])
+    confirm_password = PasswordField("Confirm Password", validators=[Optional(), EqualTo("password")])
+    
 class DocumentForm(FlaskForm):
     upload_document = FileField(
         'Choose File',

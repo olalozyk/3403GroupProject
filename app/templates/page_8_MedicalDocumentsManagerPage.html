@@ -16,19 +16,21 @@
         </div>
     </div>
 
+    <!-- Sort form -->
     <div class="card shadow-sm p-4 mb-4">
         <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-0">
             <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
             <select id="sortDocs" name="sort" class="form-select w-auto">
-                <option value="upload-asc" {% if sort_by == 'upload-asc' %}selected{% endif %}>date uploaded ↑</option>
-                <option value="upload-desc" {% if sort_by == 'upload-desc' %}selected{% endif %}>date uploaded ↓</option>
-                <option value="expiry-asc" {% if sort_by == 'expiry-asc' %}selected{% endif %}>expiration ↑</option>
-                <option value="expiry-desc" {% if sort_by == 'expiry-desc' %}selected{% endif %}>expiration ↓</option>
+                <option value="upload-asc" {% if sort_by=='upload-asc' %}selected{% endif %}>date uploaded ↑</option>
+                <option value="upload-desc" {% if sort_by=='upload-desc' %}selected{% endif %}>date uploaded ↓</option>
+                <option value="expiry-asc" {% if sort_by=='expiry-asc' %}selected{% endif %}>expiration ↑</option>
+                <option value="expiry-desc" {% if sort_by=='expiry-desc' %}selected{% endif %}>expiration ↓</option>
             </select>
             <button type="submit" class="btn btn-purple-calender px-4">Display</button>
         </form>
     </div>
 
+    <!-- Documents table -->
     <div class="card shadow-sm p-4">
         <div class="table-responsive">
             <table class="table align-middle table-borderless text-center">
@@ -45,19 +47,45 @@
                 <tbody>
                     {% for doc in documents %}
                     <tr>
-                        <td>📄 <a href="{{ url_for('view_document', doc_id=doc.id) }}">{{ doc.document_name }}</a></td>
+                        <td>
+                            📄 <a href="{{ url_for('view_document', doc_id=doc.id) }}">
+                                {{ doc.document_name }}
+                            </a>
+                        </td>
                         <td>{{ doc.practitioner_name or 'N/A' }}</td>
                         <td>{{ doc.document_type }}</td>
                         <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-                        <td>{% if doc.expiration_date %}{{ doc.expiration_date.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</td>
                         <td>
-                            <a href="{{ url_for('edit_document', doc_id=doc.id) }}" class="btn btn-purple-calender btn-sm me-1">Edit</a>
-                            <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-Appointment btn-sm me-1">Download</a>
-                            <a href="{{ url_for('delete_document', doc_id=doc.id) }}" class="btn btn-Missed btn-sm" onclick="return confirm('Delete this document?')">Delete</a>
+                            {% if doc.expiration_date %}
+                            {{ doc.expiration_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- UPDATED: blue btn-Tests + black text -->
+                            <a href="{{ url_for('edit_document', doc_id=doc.id) }}"
+                                class="btn btn-Tests btn-sm text-dark me-1">
+                                Edit
+                            </a>
+
+                            <a href="{{ url_for('download_document', doc_id=doc.id) }}"
+                                class="btn btn-Appointment btn-sm me-1">
+                                Download
+                            </a>
+
+                            <a href="{{ url_for('delete_document', doc_id=doc.id) }}" class="btn btn-Missed btn-sm"
+                                onclick="return confirm('Delete this document?')">
+                                Delete
+                            </a>
                         </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="6" class="text-muted">No documents found. Upload one to get started!</td></tr>
+                    <tr>
+                        <td colspan="6" class="text-muted">
+                            No documents found. Upload one to get started!
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

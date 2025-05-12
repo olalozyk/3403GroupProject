@@ -1,85 +1,75 @@
 {% extends 'base.html' %}
 {% block title %}Your Profile{% endblock %}
 {% block content %}
-<div class="container py-3">
+
+<div class="container py-5">
     <div class="text-center mb-4">
-        <h1 class="purple-text" style="font-size: 3rem;">Your Profile</h1>
-        <p class="fs-5">Your essential profile details</p>
+        <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Your Profile</h1>
+        <p class="lead">Manage your personal and contact details</p>
     </div>
 
-    <div class="p-4 mb-5 rounded-4 shadow-sm" style="background-color: white;">
-        <div class="p-3 rounded-4" style="background-color: #e9dffc;">
+    <form method="POST" action="{{ url_for('user_profile') }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Essential Info -->
+        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm mx-auto" style="max-width: 1000px;">
+            <h4 class="purple-text fw-bold mb-3">Essential Information</h4>
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">First Name</label>
-                    <input type="text" class="form-control" placeholder="Enter your first name">
+                    {{ form.first_name.label(class="form-label fw-bold purple-text") }}
+                    {{ form.first_name(class="form-control") }}
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" class="form-control" placeholder="Enter your last name">
+                    {{ form.last_name.label(class="form-label fw-bold purple-text") }}
+                    {{ form.last_name(class="form-control") }}
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" placeholder="Enter your email">
+                    {{ form.email.label(class="form-label fw-bold purple-text") }}
+                    {{ form.email(class="form-control", readonly=True) }}
                 </div>
             </div>
         </div>
 
-        <div class="text-end mt-3">
-            <button class="btn btn-primary me-2">Edit</button>
-            <button class="btn btn-success me-2">Confirm</button>
-            <button class="btn btn-danger">Cancel</button>
-        </div>
-    </div>
-
-    <div class="text-center mb-3">
-        <p class="fs-5">Your optional profile details</p>
-    </div>
-
-    <!-- Optional Details Section -->
-    <div class="p-4 rounded-4 shadow-sm" style="background-color: white;">
-        <div class="p-3 rounded-4" style="background-color: #e9dffc;">
+        <!-- Optional Info -->
+        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm mx-auto" style="max-width: 1000px;">
+            <h4 class="purple-text fw-bold mb-3">Optional Information</h4>
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Mobile Number</label>
-                    <input type="text" class="form-control" placeholder="Enter your mobile number">
+                    {{ form.mobile.label(class="form-label fw-bold purple-text") }}
+                    {{ form.mobile(class="form-control") }}
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Insurance Type</label>
-                    <input type="text" class="form-control" placeholder="Private, DVA, WC, etc.">
+                    {{ form.insurance.label(class="form-label fw-bold purple-text") }}
+                    {{ form.insurance(class="form-control") }}
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">New Password</label>
-                    <input type="password" class="form-control" placeholder="Enter your new password">
+                    {{ form.dob.label(class="form-label fw-bold purple-text") }}
+                    {{ form.dob(class="form-control") }}
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="text" class="form-control" placeholder="dd/mm/yyyy">
+                <div class="col-md-6">
+                    {{ form.address.label(class="form-label fw-bold purple-text") }}
+                    {{ form.address(class="form-control") }}
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Address</label>
-                    <input type="text" class="form-control" placeholder="Enter your address">
+                <div class="col-md-6">
+                    {{ form.gender.label(class="form-label fw-bold purple-text") }}
+                    {{ form.gender(class="form-control") }}
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" placeholder="Confirm your password">
+                <div class="col-md-6">
+                    {{ form.password.label(class="form-label fw-bold purple-text") }}
+                    {{ form.password(class="form-control") }}
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Gender</label>
-                    <input type="text" class="form-control" placeholder="Enter your gender">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Address</label>
-                    <input type="text" class="form-control" placeholder="Enter your address">
+                <div class="col-md-6">
+                    {{ form.confirm_password.label(class="form-label fw-bold purple-text") }}
+                    {{ form.confirm_password(class="form-control") }}
                 </div>
             </div>
         </div>
 
-        <div class="text-end mt-3">
-            <button class="btn btn-primary me-2">Edit</button>
-            <button class="btn btn-success me-2">Confirm</button>
-            <button class="btn btn-danger">Cancel</button>
+        <!-- Save Button -->
+        <div class="d-flex justify-content-end mx-auto" style="max-width: 1000px;">
+            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">Save Changes</button>
         </div>
-    </div>
+    </form>
 </div>
+
 {% endblock %}

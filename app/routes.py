@@ -1,15 +1,21 @@
 from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
+from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from wtforms import SubmitField
 from collections import Counter, defaultdict
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, DocumentForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm, UserProfileForm  
 from datetime import datetime, timedelta, time, date
-from app.models import User, Document, Appointment
+from app.models import User, Document, Appointment, SharedDocument, UserProfile
 from sqlalchemy import asc, desc, nulls_last
+from sqlalchemy.orm import joinedload
 import os
+
+class DummyForm(FlaskForm):
+    submit = SubmitField()
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -552,42 +558,49 @@ def upload_document():
 @app.route("/medical_document/share_document", methods=["GET", "POST"])
 @login_required
 def share_document():
-    if request.method == 'POST':
+    form = DummyForm()
+    if form.validate_on_submit():
         recipient_email = request.form.get('recipient_email')
-        document_ids = request.form.getlist('document_ids')
+        document_ids    = request.form.getlist('document_ids')
+        include_personal = bool(request.form.get('include_personal_summary'))
 
-        recipient = User.query.filter_by(email=recipient_email).first()
-        if not recipient:
-            flash("Recipient not found.", "danger")
+        if not recipient_email:
+            flash("No email provided.", "warning")
         else:
-            for doc_id in document_ids:
-                shared = SharedDocument(
-                    document_id=doc_id,
-                    sender_id=current_user.id,
-                    recipient_id=recipient.id
-                )
-                db.session.add(shared)
-            db.session.commit()
-            flash("Documents shared successfully!", "success")
+            recipient = User.query.filter_by(email=recipient_email).first()
+            if not recipient:
+                flash("Recipient not found.", "danger")
+            else:
+                for doc_id in document_ids:
+                    shared = SharedDocument(
+                        document_id  = doc_id,
+                        sender_id    = current_user.id,
+                        recipient_id = recipient.id,
+                        shared_at    = datetime.utcnow()
+                    )
+                    db.session.add(shared)
+                db.session.commit()
+                flash("Documents shared successfully!", "success")
+        return redirect(url_for('share_document'))
 
-    # Documents owned by current user
+    # on GET or invalid CSRF POST, fall through and re-render
     user_docs = Document.query.filter_by(user_id=current_user.id).all()
-
-    # Documents shared *with* the current user
-    shared_docs = db.session.query(
-        SharedDocument,
-        Document.document_name,
-        Document.document_type,
-        SharedDocument.shared_at,
-        User.email.label("sender_email"),
-        Document.id.label("document_id")
-    ).join(Document, SharedDocument.document_id == Document.id
-    ).join(User, SharedDocument.sender_id == User.id
-    ).filter(SharedDocument.recipient_id == current_user.id).all()
-
-    return render_template("page_10_SelectDocumentsToSharePage.html",
-                           documents=user_docs,
-                           shared_documents=shared_docs)
+    shared_q = (
+        db.session.query(
+          SharedDocument, Document.document_name, Document.document_type,
+          SharedDocument.shared_at, User.email.label("sender_email")
+        )
+        .join(Document, SharedDocument.document_id == Document.id)
+        .join(User, SharedDocument.sender_id == User.id)
+        .filter(SharedDocument.recipient_id == current_user.id)
+        .all()
+    )
+    return render_template(
+        "page_10_SelectDocumentsToSharePage.html",
+        form             = form,
+        documents        = user_docs,
+        shared_documents = shared_q
+    )
 
 @app.route('/documents/share/search', methods=['GET'])
 @login_required
@@ -673,11 +686,31 @@ def generate_personal_summary(user):
     return summary
 
 # Page 11 - User Profile Settings Page
-@app.route("/user_profile")
+@app.route("/user_profile", methods=["GET", "POST"])
 @login_required
 def user_profile():
-    return render_template("page_11_UserProfileSettingsPage.html")
+    user = current_user
+    form = UserProfileForm(obj=user)
 
+    if form.validate_on_submit():
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        # user.email is read-only
+        user.mobile_number = form.mobile_number.data
+        user.insurance_type = form.insurance_type.data
+        user.date_of_birth = form.dob.data
+        user.address = form.address.data
+        user.gender = form.gender.data
+
+        # Optional password update
+        if form.password.data:
+            user.set_password(form.password.data)
+
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("user_profile"))
+
+    return render_template("page_11_UserProfileSettingsPage.html", form=form, user=user)
 
 # Page 13 - Edit Document Page
 @app.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])
