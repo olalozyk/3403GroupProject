@@ -682,7 +682,15 @@ def insights():
     # Count most frequent practitioner
     practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
     top_practitioner = practitioner_counter.most_common(1)
-    most_frequent_practitioner = f"{top_practitioner[0][0]}: {top_practitioner[0][1]}" if top_practitioner else "N/A"
+
+    practitioner_names = Counter([appt.practitioner_name for appt in appointments])
+    most_frequent_practitioner = practitioner_names.most_common(1)[0][0] if practitioner_names else "TBD"
+
+    # =====Bar chart ======
+
+    top_practitioners = practitioner_names.most_common(6)
+    bar_chart_labels = [pract[0] for pract in top_practitioners]
+    bar_chart_values = [pract[1] for pract in top_practitioners]
 
     # ==== Pie chart data ====
     type_counts = Counter([appt.appointment_type for appt in appointments])
