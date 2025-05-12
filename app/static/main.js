@@ -111,6 +111,165 @@ socket.on("disconnect", () => {
 //-------------------for socket--------------------
 
 //-------------------for Appointment Frequency line chart--------------------
+function filterChart(range) {
+  const raw = document.getElementById("line-data")?.textContent;
+  const fullData = JSON.parse(raw);
+  const latestIndex = parseInt(
+    document.getElementById("latest-month").textContent
+  );
+  const monthKeys = JSON.parse(
+    document.getElementById("month-keys").textContent
+  );
+
+  if (range === "week" || range === "month") {
+    const dayRaw = document.getElementById("day-data")?.textContent;
+    const dayData = JSON.parse(dayRaw);
+    const allLabels = dayData.labels;
+
+    const endDate = new Date(allLabels[allLabels.length - 1]);
+    const startDate = new Date(endDate);
+
+    if (range === "week") {
+      startDate.setDate(endDate.getDate() - 7);
+    } else if (range === "month") {
+      startDate.setMonth(endDate.getMonth() - 1);
+    }
+
+    // Filter labels that fall within the range
+    const filteredLabels = allLabels.filter((label) => {
+      const d = new Date(label);
+      return d >= startDate && d <= endDate;
+    });
+
+    // Extract matching data points for each dataset
+    const filteredDatasets = dayData.datasets.map((ds) => {
+      return {
+        ...ds,
+        data: dayData.labels
+          .map((label, i) =>
+            filteredLabels.includes(label) ? ds.data[i] : null
+          )
+          .filter((_, i) => filteredLabels.includes(dayData.labels[i])),
+      };
+    });
+
+    // Format range string
+    const options = { month: "short", day: "numeric" };
+    const rangeStr = `${startDate.toLocaleDateString(
+      "en-US",
+      options
+    )} – ${endDate.toLocaleDateString("en-US", options)}`;
+    document.getElementById(
+      "date-range-label"
+    ).textContent = `Showing data from: ${rangeStr}`;
+
+    // Update chart
+    chartInstance.data.labels = filteredLabels;
+    chartInstance.data.datasets = filteredDatasets;
+    chartInstance.update();
+
+    // Hide warning
+    document.getElementById("chart-warning").style.display =
+      filteredLabels.length < 2 ? "block" : "none";
+
+    if (range === "month") {
+      console.log("End date:", endDate.toISOString());
+      console.log("Start date:", startDate.toISOString());
+    }
+
+    return;
+  }
+
+  // Default month-based handling
+  const rangeDaysMap = {
+    year: 365,
+    "6months": 180,
+    "3months": 90,
+    month: 30,
+  };
+
+  function subtractMonths(date, numMonths) {
+    const newDate = new Date(date);
+    newDate.setMonth(date.getMonth() - numMonths);
+    return newDate;
+  }
+
+  const daysBack = rangeDaysMap[range] || 365;
+  const latestDateStr = document.getElementById("latest-date")?.textContent;
+  const latestDate = new Date(latestDateStr);
+
+  // Determine cutoff based on range
+  let cutoff;
+  if (range === "year") cutoff = subtractMonths(latestDate, 12);
+  else if (range === "6months") cutoff = subtractMonths(latestDate, 6);
+  else if (range === "3months") cutoff = subtractMonths(latestDate, 3);
+  //else if (range === "month") cutoff = subtractMonths(latestDate, 1);
+  else cutoff = subtractMonths(latestDate, 12); // fallback
+
+  // Filter valid month indexes
+  const filteredIndexes = monthKeys
+    .map((key, idx) => {
+      const date = new Date(key + "-01");
+      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      return { start: date, end: lastDay, idx };
+    })
+    .filter((entry) => entry.end >= cutoff && entry.start <= latestDate)
+    .map((entry) => entry.idx);
+
+  // Extract filtered labels and datasets
+  const filteredLabels = filteredIndexes.map((i) => fullData.labels[i]);
+  const filteredDatasets = fullData.datasets.map((ds) => ({
+    ...ds,
+    data: filteredIndexes.map((i) => ds.data[i]),
+  }));
+
+  chartInstance.data.labels = filteredLabels;
+  chartInstance.data.datasets = filteredDatasets;
+
+  // Custom tick display for "month" range
+  if (range === "month" && filteredLabels.length >= 4) {
+    const gap = Math.floor(filteredLabels.length / 3); // 3 gaps = 4 points
+    const tickIndexes = [0, gap, gap * 2, filteredLabels.length - 1];
+    const forcedTicks = tickIndexes.map((i) => filteredLabels[i]);
+
+    chartInstance.options.scales.x.ticks = {
+      callback: function (_, index) {
+        return forcedTicks.includes(filteredLabels[index])
+          ? filteredLabels[index]
+          : "";
+      },
+      autoSkip: false,
+    };
+  } else {
+    chartInstance.options.scales.x.ticks = { autoSkip: true }; // fallback to default
+  }
+
+  // Format and set date range label
+  if (filteredIndexes.length >= 1) {
+    const rangeStr = `${cutoff.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })} – ${latestDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`;
+    document.getElementById(
+      "date-range-label"
+    ).textContent = `Showing data from: ${rangeStr}`;
+  } else {
+    document.getElementById("date-range-label").textContent = "";
+  }
+
+  chartInstance.update();
+
+  // Show warning if too few points
+  const warning = document.getElementById("chart-warning");
+  warning.style.display = filteredLabels.length < 2 ? "block" : "none";
+}
+
+let chartInstance;
 document.addEventListener("DOMContentLoaded", () => {
   const raw = document.getElementById("line-data")?.textContent;
   const chartData = JSON.parse(raw);
@@ -118,19 +277,13 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("appointmentFrequencyChart")
     .getContext("2d");
 
-  new Chart(ctx, {
+  chartInstance = new Chart(ctx, {
     type: "line",
     data: chartData,
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        title: {
-          display: true,
-          text: "Appointment Frequencies",
-          font: { size: 24 },
-          color: "#4B0082",
-        },
         legend: {
           position: "bottom",
         },
@@ -138,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scales: {
         y: {
           beginAtZero: true,
-          max: 10, // force max range
+          max: 10,
           ticks: {
             stepSize: 2,
           },
@@ -153,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
         x: {
           title: {
             display: true,
-            text: "Months",
+            text: "Date Range",
             font: {
               size: 18,
             },
@@ -161,10 +314,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       },
     },
-  }); // close new Chart
+  });
 });
 //-------------------for Appointment Frequency line chart--------------------
-
 //-------------------for counter effect--------------------
 document.addEventListener("DOMContentLoaded", () => {
   const counters = document.querySelectorAll(".counter");
