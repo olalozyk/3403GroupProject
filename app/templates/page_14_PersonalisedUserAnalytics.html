@@ -9,23 +9,35 @@
     </div>
 
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="p-2 bg-white rounded shadow-sm text-center">
-                <h5 class="purple-text">Total Appointments</h5>
-                <p class="display-6 fw-bold counter" data-target="{{ total_appointments }}">0</p>
+    <div class="row row-cols-1 row-cols-md-5 g-4 mb-4">
+        <div class="col">
+            <div class="h-100 p-2 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Total Appointments</h6>
+                <p class="fw-bold counter dashboard-p" data-target="{{ total_appointments }}">0</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="p-2 bg-white rounded shadow-sm text-center">
-                <h5 class="purple-text">Documents Expiring Soon</h5>
-                <p class="display-6 fw-bold counter" data-target="{{ documents_expiring_soon }}">0</p>
+        <div class="col">
+            <div class="h-100 p-2 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Total Documents</h6>
+                <p class=" fw-bold counter dashboard-p" data-target="{{ total_documents }}">0</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="p-2 bg-white rounded shadow-sm text-center">
-                <h5 class="purple-text">Most Frequent Practitioner</h5>
-                <p class="display-6 fw-bold">{{ most_frequent_practitioner }}</p>
+        <div class="col">
+            <div class="h-100 p-2 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Documents Expiring Soon</h6>
+                <p class=" fw-bold counter dashboard-p" data-target="{{ documents_expiring_soon }}">0</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-2 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Top Appointment Type</h6>
+                <p class="fw-bold dashboard-p">{{ top_appointment_type }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-2 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Most Frequent Practitioner</h6>
+                <p class="fw-bold dashboard-p">{{ most_frequent_practitioner }}</p>
             </div>
         </div>
     </div>
@@ -110,6 +122,26 @@
                     <!------------for Appointment Frequency line chart----------->
                     <div class="insight-container text-center">
 
+                        <div class="text-center mb-2">
+                            <h3 class="chart-title mb-3">Appointment Frequencies</h3>
+                        </div>
+
+
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                            <label for="sort-range" class="fw-semibold mb-0" style="white-space: nowrap;">Sort
+                                by</label>
+                            <select id="sort-range" class="form-select form-select-sm" style="width: 180px;"
+                                onchange="filterChart(this.value)">
+                                <option value="year" selected>a year</option>
+                                <option value="6months">6 months</option>
+                                <option value="3months">3 months</option>
+                                <option value="month">a month</option>
+                                <option value="week">a week</option>
+                            </select>
+                        </div>
+                        <p id="date-range-label" class="text-muted small mt-n2 mb-3"></p>
+
+
                         <div class="d-flex justify-content-center">
                             <div style="max-width: 750px; width: 100%; height: 500px;">
                                 <canvas id="appointmentFrequencyChart" style="width: 100%; height: 100%;"></canvas>
@@ -118,7 +150,7 @@
                         <!------- for chart -------->
                         <script id="line-data" type="application/json">
                         {
-                            "labels": {{ months_labels | tojson }},
+                            "labels": {{ chart_month_labels | tojson }},
                             "datasets": [
                                 {% for label, values in line_chart_data.items() %}
                                 {
@@ -133,6 +165,29 @@
                         }
                         </script>
                         <!-- prettier-ignore-end -->
+                        <script id="day-data" type="application/json">
+                        {
+                            "labels": {{ day_labels | tojson }},
+                            "datasets": [
+                                {% for label, values in line_chart_days.items() %}
+                                {
+                                    "label": "{{ label }}",
+                                    "data": {{ values | tojson }},
+                                    "backgroundColor": "{{ color_map[label] }}",
+                                    "borderColor": "{{ color_map[label] }}",
+                                    "tension": 0.4
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                        </script>
+                        <script id="month-keys" type="application/json">
+                        {{ chart_month_keys | tojson }}
+                        </script>
+                        <script id="latest-month" type="application/json">{{ latest_month_index }}</script>
+                        <script id="latest-date" type="application/json">{{ latest_date }}</script>
+                        <p id="chart-warning" class="text-muted small" style="display: none;">Not enough data to display
+                            full time range.</p>
                     </div>
                     <!------------for Appointment Frequency line chart----------->
 
@@ -141,16 +196,6 @@
         </div>
     </div>
 
-
-    <div class="insight">
-        <div class="small-container">
-            <div class="row">
-                <div class="col-md-12 insight-col">
-
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
 

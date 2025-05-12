@@ -3,7 +3,8 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, OrderedDict
+from dateutil.relativedelta import relativedelta
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, DocumentForm
 from datetime import datetime, timedelta, time, date
@@ -671,20 +672,60 @@ def insights():
 
     documents_expiring_soon = len(expiring_docs)
 
+    total_documents = Document.query.filter_by(user_id=user_id).count()
+
+    # Count most frequent appointment type
+    type_counter = Counter([appt.appointment_type for appt in appointments])
+    top_type = type_counter.most_common(1)
+    top_appointment_type = f"{top_type[0][0]}: {top_type[0][1]}" if top_type else "N/A"
+
+    # Count most frequent practitioner
+    practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
+    top_practitioner = practitioner_counter.most_common(1)
+    most_frequent_practitioner = f"{top_practitioner[0][0]}: {top_practitioner[0][1]}" if top_practitioner else "N/A"
+
     # ==== Pie chart data ====
     type_counts = Counter([appt.appointment_type for appt in appointments])
     labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
     data = [type_counts.get(label, 0) for label in labels]
 
     # ==== Line chart data ====
-    counts = defaultdict(lambda: [0] * 12)  # 12 months
-    for appt in appointments:
-        month_index = appt.appointment_date.month - 1
-        counts[appt.appointment_type][month_index] += 1
 
-    line_chart_data = {t: counts[t] for t in labels}
-    months_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    latest_appointment_date = max((appt.appointment_date for appt in appointments), default=today)
+    selected_range = "6months"  # or "3months", "year", etc.
+
+    cutoff_months_map = {
+        "year": 12,
+        "6months": 6,
+        "3months": 3,
+        "month": 1
+    }
+    cutoff_months = cutoff_months_map.get(selected_range, 12)
+    cutoff_date = latest_appointment_date - relativedelta(months=cutoff_months)
+
+    # Filter appointments by date range
+    filtered_appointments = [
+        appt for appt in appointments
+        if cutoff_date <= appt.appointment_date <= latest_appointment_date
+    ]
+
+
+    monthly_counts = defaultdict(lambda: defaultdict(int))  # {type: {YYYY-MM: count}}
+
+    for appt in filtered_appointments:
+        key = appt.appointment_date.strftime("%Y-%m")
+        monthly_counts[appt.appointment_type][key] += 1
+
+    all_months = sorted({appt.appointment_date.strftime("%Y-%m") for appt in filtered_appointments})
+
+    # Convert to display format (e.g. "Jul 2024")
+    display_labels = [datetime.strptime(m, "%Y-%m").strftime("%b %Y") for m in all_months]
+
+    # Align each type's data to all_months
+    line_chart_data = {
+        t: [monthly_counts[t].get(m, 0) for m in all_months]
+        for t in labels
+    }
     
     color_map = {
         "General": "#3B82F6",
@@ -694,12 +735,34 @@ def insights():
         "Test": "#EF4444"
     }
 
+    # Build daily aggregation (for week view)
+    daily_counts = defaultdict(lambda: defaultdict(int))  # {type: {date: count}}
+    for appt in appointments:
+        day_str = appt.appointment_date.strftime("%Y-%m-%d")
+        daily_counts[appt.appointment_type][day_str] += 1
+
+    # Extract sorted date labels (used for 'week' mode)
+    all_days = sorted({appt.appointment_date.strftime("%Y-%m-%d") for appt in appointments})
+    line_chart_days = {t: [daily_counts[t].get(day, 0) for day in all_days] for t in labels}
+    latest_date_iso = latest_appointment_date.isoformat()
+    latest_month_index = len(all_months) - 1
+    
+
     return render_template("page_14_PersonalisedUserAnalytics.html",
-                       total_appointments=len(appointments),
-                       documents_expiring_soon=documents_expiring_soon,
-                       most_frequent_practitioner="TBD",
-                       chart_labels=labels,
-                       chart_data=data,
-                       line_chart_data=line_chart_data,
-                       months_labels=months_labels,
-                       color_map=color_map)
+                    total_appointments=len(appointments),
+                    total_documents=total_documents,
+                    documents_expiring_soon=documents_expiring_soon,
+                    most_frequent_practitioner=most_frequent_practitioner,
+                    top_appointment_type=top_appointment_type,
+                    chart_labels=labels,
+                    chart_data=data,
+                    line_chart_data=line_chart_data,
+                    line_chart_days=line_chart_days,
+                    day_labels=all_days,
+                    chart_month_keys=all_months,
+                    chart_month_labels=display_labels,
+                    latest_date=latest_date_iso,
+                    color_map=color_map,
+                    latest_month_index=len(all_months) - 1  # corrected here
+                )
+    
