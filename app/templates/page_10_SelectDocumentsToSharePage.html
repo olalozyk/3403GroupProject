@@ -1,145 +1,103 @@
 {% extends 'base.html' %}
-{% block title %}Select Documents to Share{% endblock %}
+{% block title %}Share and Receive Documents{% endblock %}
 {% block content %}
 
-<div class="container py-4"> <!-- This page was written by the team member: Siena  -->
-  <h1 class="purple-text" style="font-size: 2.8rem;">Select Documents to Share</h1>
-  <p class="text-muted">Select the medical documents you’d like to send.</p>
-</div>
-
-<!-- Main Content -->
-<div class="container mt-5 member-timetable-page select-docs-page">
-  <h1 class="h1-title purple-text text-center">Select Documents to Share</h1>
-  <p class="text-center mb-4" style="color:#000000;">Select the medical documents you’d like to send.</p>
-  <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
-    <table class="table table-bordered text-center mb-0">
-      <thead class="table-outline-dark">
-        <tr>
-          <th style="width: 6%;">Select</th>
-          <th>Document</th>
-          <th>Practitioner</th>
-          <th>Type</th>
-          <th>Uploaded</th>
-          <th>Expiration</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="bg-light">
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>LDN Script - S4</td>
-          <td>Dr Jake Croll</td>
-          <td>Script</td>
-          <td>02/02/2025</td>
-          <td>N/A</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Pain Specialist Referral</td>
-          <td>Dr Jessica Adams</td>
-          <td>Referral</td>
-          <td>03/02/2025</td>
-          <td>03/05/2025</td>
-        </tr>
-        <tr class="bg-light">
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>SKG Blood Test Results</td>
-          <td>Dr Claire Willby</td>
-          <td>Report</td>
-          <td>29/04/2025</td>
-          <td>N/A</td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="form-check-input"></td>
-          <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>Photo of Medicare Card</td>
-          <td>Dr Dan Dell</td>
-          <td>Insurance</td>
-          <td>29/04/2025</td>
-          <td>08/2029</td>
-        </tr>
-      </tbody>
-    </table>
-
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
-    <input id="shareTo" type="text" class="form-control share-email-input" placeholder="e.g., admin@newclinic.com" />
-  </div>
-
-  <button class="btn user-submit-button w-100 py-2">Share Selected Documents</button>
-</div>
-
-<!-- Main Content -->
-<div class="container mt-4">
-  <form method="get" action="/documents/share/search" class="mb-4">
-    <div class="row g-2">
-      <div class="col-md-4">
-        <input type="text" name="q" class="form-control" placeholder="Search documents (name or notes)">
-      </div>
-      <div class="col-md-3">
-        <input type="text" name="type" class="form-control" placeholder="Document type">
-      </div>
-      <div class="col-md-3">
-        <input type="date" name="expiration" class="form-control">
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-purple-calender w-100">Search</button>
-      </div>
-    </div>
-  </form>
-
-  {% if documents %}
-  <p class="text-muted mb-2">{{ documents|length }} document(s) found</p>
-  {% else %}
-  <p class="text-muted mb-2">No documents found.</p>
-  {% endif %}
-
-  <!-- Document selection table -->
-  <form method="POST" action="/documents/export">
-    <div class="table-responsive shadow-sm rounded mb-4 bg-white p-3">
-      <table class="table table-bordered text-center mb-0">
-        <thead class="table-outline-dark">
-          <tr>
-            <th style="width: 6%;">Select</th>
-            <th>Document</th>
-            <th>Practitioner</th>
-            <th>Type</th>
-            <th>Uploaded</th>
-            <th>Expiration</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for doc in documents %}
-          <tr class="{% if loop.index % 2 == 0 %}bg-light{% endif %}">
-            <td><input type="checkbox" class="form-check-input" name="document_ids" value="{{ doc.id }}"></td>
-            <td class="text-start"><i class="fa-regular fa-file-lines me-2"></i>{{ doc.document_name }}</td>
-            <td>{{ doc.practitioner_name }}</td>
-            <td>{{ doc.document_type }}</td>
-            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-            <td>{{ doc.expiration_date.strftime('%d/%m/%Y') if doc.expiration_date else 'N/A' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Share and Receive Documents</h1>
+        <p class="lead">Select the medical documents you’d like to send.</p>
     </div>
 
-    <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" name="include_personal_summary" value="yes" id="personalSummary">
-      <label class="form-check-label" for="personalSummary" style="color:#6f42c1;">
-        Include Personal Details Summary
-      </label>
+    <!-- Share Documents Section -->
+    <div class="bg-white shadow rounded p-4 mb-4 mx-auto" style="max-width: 900px;">
+        <h3 class="fw-bold purple-text text-center">Share Your Documents</h3>
+
+        {% if documents %}
+        <form method="POST" action="{{ url_for('share_document') }}" class="mt-3">
+            <div class="form-check d-flex align-items-center gap-2 mb-3 justify-content-center">
+                <input class="form-check-input" type="checkbox" name="include_personal_summary" id="include_personal_summary">
+                <label class="form-check-label" for="include_personal_summary">
+                    Include personal summary file
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="email" name="recipient_email" placeholder="Enter user email" class="form-control" style="max-width: 250px;">
+                    <button type="submit" class="btn btn-Appointment px-4 fw-bold">Share Internally</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-hover text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Select</th>
+                            <th>Document</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td><input type="checkbox" name="document_ids" value="{{ doc.id }}"></td>
+                            <td>{{ doc.document_name }}</td>
+                            <td>{{ doc.document_type }}</td>
+                            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        <!-- ZIP download form (moved outside of the internal share form) -->
+        <form method="POST" action="{{ url_for('export_documents') }}" class="text-center mt-3">
+            <input type="hidden" name="include_personal_summary" value="{{ 'on' if include_personal_summary else '' }}">
+            <button type="submit" class="btn btn-Tests px-4 fw-bold">Download as ZIP</button>
+        </form>
+        {% else %}
+        <p class="text-muted text-center">You have no documents uploaded yet.</p>
+        {% endif %}
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" style="color:#6f42c1;">Share with (email or practice name)</label>
-      <input type="text" name="recipient_email" class="form-control share-email-input"
-        placeholder="e.g., admin@newclinic.com" />
+    <!-- Shared With You Section -->
+    <div class="bg-white shadow rounded p-4 mb-5 mx-auto" style="max-width: 900px;">
+        <h3 class="fw-bold purple-text text-center">Documents Shared With You</h3>
+        {% if shared_documents %}
+        <div class="table-responsive mt-3">
+            <table class="table align-middle table-borderless shadow-sm text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Document</th>
+                        <th>Sender</th>
+                        <th>Type</th>
+                        <th>Received</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in shared_documents %}
+                    <tr>
+                        <td>{{ doc.document_name }}</td>
+                        <td>{{ doc.sender_email }}</td>
+                        <td>{{ doc.document_type }}</td>
+                        <td>{{ doc.received_date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-purple-calender btn-sm">
+                                Download
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center mt-3">No documents shared with you yet.</p>
+        {% endif %}
     </div>
-
-    <button type="submit" class="btn btn-purple-calender w-100 py-2">
-      Download Selected Documents as ZIP
-    </button>
-  </form>
 </div>
 
 {% endblock %}
