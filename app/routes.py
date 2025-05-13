@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,11 +6,13 @@ from werkzeug.utils import secure_filename
 from collections import Counter, defaultdict, OrderedDict
 from dateutil.relativedelta import relativedelta
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, DocumentForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm
 from datetime import datetime, timedelta, time, date
 from app.models import User, Document, Appointment
 from sqlalchemy import asc, desc, nulls_last
 import os
+import zipfile
+import io
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -24,60 +26,103 @@ def index():
 # Page 2 - Login Page
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
     form = LoginForm()
     msg = ""
 
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            
+            # Check if user exists and password is correct
+            if user and user.check_password(form.password.data):
+                login_user(user, remember=form.remember_me.data)
 
-            session['user_id'] = user.id
-            session['first_name'] = user.first_name
-            session['role'] = user.role
+                # Set up session data
+                session['user_id'] = user.id
+                session['first_name'] = user.first_name
+                session['role'] = user.role
+                session['notifications_viewed_at'] = (
+                    user.notifications_viewed_at.isoformat()
+                    if user.notifications_viewed_at else datetime.min.isoformat()
+                )
+                flash("Login successful", "success")
+                
+                # Redirect to 'next' parameter if it exists, otherwise to dashboard
+                next_page = request.args.get('next')
+                return redirect(next_page if next_page else url_for('dashboard'))
+            else:
+                if user:
+                    print("Password check failed")
+                msg = "Invalid email or password"
+        except Exception as e:
+            # Log any errors
+            print(f"Login error: {str(e)}")
+            msg = "An error occurred during login"
 
-            # Sync session with DB-stored notification viewed_at
-            session['notifications_viewed_at'] = (
-                user.notifications_viewed_at.isoformat()
-                if user.notifications_viewed_at else datetime.min.isoformat()
-            )
-
-            flash("Login successful", "success")
-            return redirect(url_for('dashboard'))
-        else:
-            msg = "Invalid email or password"
-
-    return render_template("page_2_loginPage.html", form=form, msg=msg)
+    return render_template("page_2_LoginPage.html", form=form, msg=msg)
 
 @app.route("/logout")
 def logout():
     logout_user()
     session.clear()
+    flash("You have been logged out", "info")
     return redirect(url_for("index"))
 
 # Page 3 - Register Page
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+        
     form = RegistrationForm()
-
+    
+    # Print form data for debugging
+    if request.method == "POST":
+        print(f"Register form submitted with data: {request.form}")
+    
     if form.validate_on_submit():
-        # All validations passed, create new user
-        hashed_pw = generate_password_hash(form.password.data)
-        new_user = User(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-            password=hashed_pw,
-            role="member"  # Make sure to set a default role
-        )
+        try:
+            print("Form validation successful")
+            
+            # Create a new user object
+            print(f"Creating user with email: {form.email.data}")
+            hashed_pw = generate_password_hash(form.password.data)
+            new_user = User(
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                email=form.email.data,
+                password=hashed_pw,
+                role="member"
+            )
 
-        db.session.add(new_user)
-        db.session.commit()
+            # Add to database and commit
+            db.session.add(new_user)
+            db.session.commit()
 
-        success_msg = "Account has been created successfully! You can now login."
-        return render_template("page_3_registerPage.html", form=RegistrationForm(), success_msg=success_msg)
+            # Success message
+            flash("Account created successfully! You can now login.", "success")
+            
+            # Important: Redirect to login page, don't render template
+            print("Redirecting to login page")
+            return redirect(url_for("login"))
+            
+        except Exception as e:
+            # Roll back any changes and show error message
+            db.session.rollback()
+            print(f"ERROR in registration: {str(e)}")
+            import traceback
+            traceback.print_exc()  # Print full traceback for debugging
+            flash(f"Registration failed: {str(e)}", "danger")
 
-    return render_template("page_3_registerPage.html", form=form)
+    # Print form errors if validation failed
+    if form.errors:
+        print(f"Form validation errors: {form.errors}")
+
+    # Render registration form
+    return render_template("page_3_RegisterPage.html", form=form)
 
 # Page 4 - Dashboard Page
 @app.route("/dashboard")
@@ -395,21 +440,61 @@ def calendar():
 @login_required
 def medical_document():
     # Get all documents for the current user
-    documents = Document.query.filter_by(user_id=current_user.id).all()
+    query = request.args.get('q', '').strip()  # Search query
+    practitioner = request.args.get('practitioner', '')  # Filter by practitioner
+    doc_type = request.args.get('type', '')  # Filter by document type
+    expiration_date = request.args.get('expiration_date', '')  # Filter by expiration date
+    sort_by = request.args.get('sort', 'upload-desc')  # Sort by upload date or expiration date
 
-    # Handle sorting parameter if provided
-    sort_by = request.args.get('sort', 'upload-desc')
+    # Start querying the documents
+    documents = Document.query.filter_by(user_id=current_user.id)
 
+    # Apply search filters if any
+    if query:
+        documents = documents.filter(
+            (Document.document_name.ilike(f'%{query}%')) |
+            (Document.document_notes.ilike(f'%{query}%')) |
+            (Document.practitioner_name.ilike(f'%{query}%'))
+        )
+
+    # Filter by practitioner name
+    if practitioner:
+        documents = documents.filter(Document.practitioner_name.ilike(f'%{practitioner}%'))
+
+    # Filter by document type
+    if doc_type:
+        documents = documents.filter(Document.document_type.ilike(f'%{doc_type}%'))
+
+    # Filter by expiration date
+    if expiration_date:
+        try:
+            expiration_date_obj = datetime.strptime(expiration_date, '%Y-%m-%d').date()
+            documents = documents.filter(Document.expiration_date == expiration_date_obj)
+        except ValueError:
+            pass  # If the date format is incorrect, it will not filter by expiration date
+
+    # Handle sorting
     if sort_by == 'upload-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.asc()).all()
+        documents = documents.order_by(Document.upload_date.asc())
     elif sort_by == 'upload-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.upload_date.desc()).all()
+        documents = documents.order_by(Document.upload_date.desc())
     elif sort_by == 'expiry-asc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.asc()).all()
+        documents = documents.order_by(Document.expiration_date.asc())
     elif sort_by == 'expiry-desc':
-        documents = Document.query.filter_by(user_id=current_user.id).order_by(Document.expiration_date.desc()).all()
+        documents = documents.order_by(Document.expiration_date.desc())
 
-    return render_template("page_8_MedicalDocumentsManagerPage.html", documents=documents, sort_by=sort_by)
+    # Execute the query
+    documents = documents.all()
+
+    return render_template(
+        "page_8_MedicalDocumentsManagerPage.html",
+        documents=documents,
+        sort_by=sort_by,
+        query=query,
+        practitioner=practitioner,
+        doc_type=doc_type,
+        expiration_date=expiration_date
+    )
 
 # search function for documents manager page
 @app.route('/documents/search', methods=['GET'])
@@ -677,17 +762,28 @@ def insights():
     # Count most frequent appointment type
     type_counter = Counter([appt.appointment_type for appt in appointments])
     top_type = type_counter.most_common(1)
-    top_appointment_type = f"{top_type[0][0]}: {top_type[0][1]}" if top_type else "N/A"
+    top_appointment_type = f"{top_type[0][0]}" if top_type else "N/A"
 
     # Count most frequent practitioner
     practitioner_counter = Counter([appt.practitioner_type for appt in appointments if appt.practitioner_type])
     top_practitioner = practitioner_counter.most_common(1)
-    most_frequent_practitioner = f"{top_practitioner[0][0]}: {top_practitioner[0][1]}" if top_practitioner else "N/A"
+
+    practitioner_names = Counter([appt.practitioner_name for appt in appointments])
+    most_frequent_practitioner = practitioner_names.most_common(1)[0][0] if practitioner_names else "TBD"
+
+    # =====Bar chart ======
+
+    top_practitioners = practitioner_names.most_common(6)
+    bar_chart_labels = [pract[0] for pract in top_practitioners]
+    bar_chart_values = [pract[1] for pract in top_practitioners]
 
     # ==== Pie chart data ====
     type_counts = Counter([appt.appointment_type for appt in appointments])
     labels = ["General", "Follow-up", "Checkup", "Consultation", "Test"]
     data = [type_counts.get(label, 0) for label in labels]
+
+    # Define distinct colors (adjust or expand this list as needed)
+    bar_chart_colors = ['#3B82F6', '#22C55E', '#EAB308', '#8B5CF6', '#EF4444', '#F97316']
 
     # ==== Line chart data ====
 
@@ -747,22 +843,104 @@ def insights():
     latest_date_iso = latest_appointment_date.isoformat()
     latest_month_index = len(all_months) - 1
     
-
     return render_template("page_14_PersonalisedUserAnalytics.html",
-                    total_appointments=len(appointments),
-                    total_documents=total_documents,
-                    documents_expiring_soon=documents_expiring_soon,
-                    most_frequent_practitioner=most_frequent_practitioner,
-                    top_appointment_type=top_appointment_type,
-                    chart_labels=labels,
-                    chart_data=data,
-                    line_chart_data=line_chart_data,
-                    line_chart_days=line_chart_days,
-                    day_labels=all_days,
-                    chart_month_keys=all_months,
-                    chart_month_labels=display_labels,
-                    latest_date=latest_date_iso,
-                    color_map=color_map,
-                    latest_month_index=len(all_months) - 1  # corrected here
-                )
+                           total_appointments=len(appointments),
+                           total_documents=total_documents,
+                           documents_expiring_soon=documents_expiring_soon,
+                           most_frequent_practitioner=most_frequent_practitioner,
+                           top_appointment_type=top_appointment_type,
+                           chart_labels=labels,
+                           chart_data=data,
+                           line_chart_data=line_chart_data,
+                           line_chart_days=line_chart_days,
+                           day_labels=all_days,
+                           chart_month_keys=all_months,
+                           chart_month_labels=display_labels,
+                           latest_date=latest_date_iso,
+                           latest_month_index=len(all_months) - 1,
+                           bar_chart_labels=bar_chart_labels,
+                           bar_chart_values=bar_chart_values,
+                           bar_chart_colors=bar_chart_colors,
+                           color_map=color_map)
+
+
+# Page 15 - Password Reset Page
+def send_reset_email(user):
+    token = user.get_reset_token()
+    # in real application, we would send an actual email but
+    # for this project, we'll flash the reset link for demonstration
+    reset_url = url_for('reset_token', token=token, _external=True)
+    flash(f'Password reset link (for testing only): {reset_url}', 'info')
+
+@app.route("/reset_request", methods=["GET", "POST"])
+def reset_request():
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+        
+    form = RequestPasswordResetForm()
     
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        
+        # Send password reset email
+        # (In a real application, you would send an actual email here)
+        token = user.get_reset_token()
+        
+        # For demonstration, we'll just show a direct link
+        reset_url = url_for('reset_token', token=token, _external=True)
+        print(f"Password reset link: {reset_url}")
+        
+        flash("A password reset link has been sent to your email.", "info")
+        return redirect(url_for("login"))
+    
+    return render_template("page_15_PasswordResetRequest.html", form=form)
+
+# Page 16 - Password Reset Page
+# Password reset with token
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_token(token):
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+        
+    # Verify the token and get user
+    user = User.verify_reset_token(token)
+    
+    if user is None:
+        flash("That is an invalid or expired token", "warning")
+        return redirect(url_for("reset_request"))
+    
+    form = ResetPasswordForm()
+    
+    if form.validate_on_submit():
+        # Update the user's password
+        user.set_password(form.password.data)
+        db.session.commit()
+        
+        flash("Your password has been updated! You can now log in.", "success")
+        return redirect(url_for("login"))
+    
+    return render_template("page_16_ResetToken.html", form=form)
+
+# Page 17 - Change Password Page
+# Change password (for logged-in users)
+@app.route("/change_password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    
+    if form.validate_on_submit():
+        # Verify current password
+        if not current_user.check_password(form.current_password.data):
+            flash("Current password is incorrect", "danger")
+            return render_template("page_17_ChangePassword.html", form=form)
+        
+        # Set new password
+        current_user.set_password(form.new_password.data)
+        db.session.commit()
+        
+        flash("Your password has been changed successfully!", "success")
+        return redirect(url_for("user_profile"))
+    
+    return render_template("page_17_ChangePassword.html", form=form)
