@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import time
+import datetime
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,21 +9,46 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from werkzeug.security import generate_password_hash
 
-import time
-import datetime
+# Add parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Flask app imports
+from app import create_app, db
+from app.models import User
 
 # Test config
 BASE_URL = "http://localhost:5000"
 LOGIN_EMAIL = "test@example.com"
 LOGIN_PASSWORD = "yourpassword"
 
+# Ensure test user exists in the DB
+def ensure_test_user():
+    app = create_app()
+
+    with app.app_context():
+        user = User.query.filter_by(email=LOGIN_EMAIL).first()
+        if not user:
+            hashed_pw = generate_password_hash(LOGIN_PASSWORD)
+            user = User(
+                first_name="Test",
+                last_name="User",
+                email=LOGIN_EMAIL,
+                password=hashed_pw,
+                role="member"
+            )
+            db.session.add(user)
+            db.session.commit()
+            print("✅ Test user created.")
+        else:
+            print("ℹ️ Test user already exists.")
+
 # Chrome options
 options = Options()
 options.add_argument("--log-level=3")  # Suppress Chrome logging
-options.add_experimental_option("detach", True)  # Optional: keep window open
-
-# Initialize ChromeDriver
+options.add_experimental_option("detach", True)  # Optional: keep browser open
+# Initialize driver
 driver = webdriver.Chrome(service=Service(), options=options)
 
 def login(driver):
@@ -85,6 +111,8 @@ def test_add_appointment():
 
 
 if __name__ == "__main__":
+    ensure_test_user()  # Create test user before running the test
+
     try:
         test_add_appointment()
     finally:
