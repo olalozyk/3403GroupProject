@@ -7,7 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from collections import Counter, defaultdict, OrderedDict
 from dateutil.relativedelta import relativedelta
-from app import app, db
+from app import db
+from flask import current_app as app
 from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm, UserProfileForm 
 from datetime import datetime, timedelta, time, date
 from app.models import User, Document, Appointment, SharedDocument, UserProfile
