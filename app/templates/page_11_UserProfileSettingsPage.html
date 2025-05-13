@@ -54,24 +54,18 @@
                     {{ form.gender.label(class="form-label fw-bold purple-text") }}
                     {{ form.gender(class="form-control") }}
                 </div>
-                <div class="col-md-6">
-                    {{ form.password.label(class="form-label fw-bold purple-text") }}
-                    {{ form.password(class="form-control") }}
-                </div>
-                <div class="col-md-6">
-                    {{ form.confirm_password.label(class="form-label fw-bold purple-text") }}
-                    {{ form.confirm_password(class="form-control") }}
-                </div>
             </div>
-        </div>
 
-        <!-- Save Button Row -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <!-- Left: Change Password Button -->
-            <a href="{{ url_for('change_password') }}" class="btn btn-Tests px-4 fw-bold">
-                Change Password
-            </a>
-            <!-- Right: Save Changes -->
+            <!-- Change Password button inside the box -->
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('change_password') }}" class="btn btn-info text-white px-4 fw-bold">
+                    Change Password
+                </a>
+            </div>
+        </div> <!-- closes optional info box -->
+
+        <!-- Save Changes Button OUTSIDE the optional info box -->
+        <div class="text-center mt-4" style="max-width: 1000px; margin: 0 auto;">
             <button type="submit" class="btn btn-purple-calender px-4 fw-bold">
                 Save Changes
             </button>
