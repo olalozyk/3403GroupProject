@@ -65,10 +65,18 @@
             </div>
         </div>
 
-        <!-- Save Button -->
-        <div class="d-flex justify-content-end mx-auto" style="max-width: 1000px;">
-            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">Save Changes</button>
+        <!-- Save Button Row -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <!-- Left: Change Password Button -->
+            <a href="{{ url_for('change_password') }}" class="btn btn-Tests px-4 fw-bold">
+                Change Password
+            </a>
+            <!-- Right: Save Changes -->
+            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">
+                Save Changes
+            </button>
         </div>
+
     </form>
 </div>
 
