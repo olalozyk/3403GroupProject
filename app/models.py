@@ -3,6 +3,8 @@ from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, time, datetime
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from flask import current_app
 
 
 class User(UserMixin, db.Model):
@@ -28,6 +30,35 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.email}>'
+
+    def get_reset_token(self, expires_sec=1800):
+        import jwt
+        import datetime
+        #create a JWT token with user ID and expiration time
+        payload = {
+            'user_id': self.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_sec)
+        }
+        #secret key should be a string
+        secret_key = current_app.config['SECRET_KEY']
+        if isinstance(secret_key, bytes):
+            secret_key = secret_key.decode('utf-8')
+        #create token
+        return jwt.encode(payload, secret_key, algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_token(token):
+        import jwt
+        #secret key should be a string
+        secret_key = current_app.config['SECRET_KEY']
+        if isinstance(secret_key, bytes):
+            secret_key = secret_key.decode('utf-8')        
+        try:
+            payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+            user_id = payload['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
 
 class Appointment(db.Model):

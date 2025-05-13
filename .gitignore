@@ -17,3 +17,7 @@ migrations/versions/__pycache__/
 
 # Ignore VS Code SQLTools extension data
 **/vscode-sqltools/Data/.node-runtimeinstance/ChronicCare.db
+
+# Ignore SQLite DB and migrations
+*.db
+migrations/
