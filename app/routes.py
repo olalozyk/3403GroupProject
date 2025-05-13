@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 from collections import Counter, defaultdict, OrderedDict
 from dateutil.relativedelta import relativedelta
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordFor, UserProfileForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm, UserProfileForm 
 from datetime import datetime, timedelta, time, date
 from app.models import User, Document, Appointment, SharedDocument, UserProfile
 from sqlalchemy import asc, desc, nulls_last
