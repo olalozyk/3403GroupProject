@@ -21,3 +21,4 @@ migrations/
 
 # Ignore VS Code SQLTools extension data
 **/vscode-sqltools/Data/.node-runtimeinstance/ChronicCare.db
+.vscode-sqltools/
