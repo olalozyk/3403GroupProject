@@ -9,6 +9,7 @@ from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPassword
 from datetime import datetime, timedelta, time, date
 from app import db
 from app.models import User, Document, Appointment
+import os
 from sqlalchemy import asc, desc, nulls_last
 from flask import current_app as app
 import zipfile
