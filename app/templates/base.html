@@ -22,9 +22,10 @@
             <!-- Replace this with your own logo -->
 
             <a class="navbar-brand"
-                href="{% if session.role == 'member' %}{{ url_for('dashboard') }}{% else %}{{ url_for('index') }}{% endif %}">
+                href="{% if session.role == 'member' %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}">
                 <img class="logo" src="{{ url_for('static', filename='images/chronic-care-title.png') }}" alt="logo">
             </a>
+
 
             <!-- Toggler/collapsibe Button for small screens -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
@@ -37,49 +38,49 @@
                 <ul class="navbar-nav mx-auto">
                     {% if session.get('role') == 'member' %}
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('dashboard') }}"
-                            class="nav-item1 {% if request.endpoint == 'dashboard' %}active-link{% endif %}">Home</a>
+                        <a href="{{ url_for('main.dashboard') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.dashboard' %}active-link{% endif %}">Home</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('appointment_manager') }}"
-                            class="nav-item1 {% if request.endpoint == 'appointment_manager' %}active-link{% endif %}">Appointment</a>
+                        <a href="{{ url_for('main.appointment_manager') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.appointment_manager' %}active-link{% endif %}">Appointment</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('calendar') }}"
-                            class="nav-item1 {% if request.endpoint == 'calendar' %}active-link{% endif %}">Calendar</a>
+                        <a href="{{ url_for('main.calendar') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.calendar' %}active-link{% endif %}">Calendar</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('medical_document') }}"
-                            class="nav-item1 {% if request.endpoint == 'medical_document' %}active-link{% endif %}">Documents</a>
-                    </li>
-
-                    <li class="nav-item nav1">
-                        <a href="{{ url_for('insights') }}"
-                            class="nav-item1 {% if request.endpoint == 'insights' %}active-link{% endif %}">Insights</a>
+                        <a href="{{ url_for('main.medical_document') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.medical_document' %}active-link{% endif %}">Documents</a>
                     </li>
 
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('user_profile') }}"
-                            class="nav-item1 {% if request.endpoint == 'user_profile' %}active-link{% endif %}">Profile</a>
+                        <a href="{{ url_for('main.insights') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.insights' %}active-link{% endif %}">Insights</a>
+                    </li>
+
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.user_profile') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.user_profile' %}active-link{% endif %}">Profile</a>
                     </li>
                     {% else %}
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('index') }}"
-                            class="nav-item1 {% if request.endpoint == 'index' %}active-link{% endif %}">Home</a>
+                        <a href="{{ url_for('main.index') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.index' %}active-link{% endif %}">Home</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('login') }}"
-                            class="nav-item1 {% if request.endpoint == 'login' %}active-link{% endif %}">Login</a>
+                        <a href="{{ url_for('main.login') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.login' %}active-link{% endif %}">Login</a>
                     </li>
                     <li class="nav-item nav1">
-                        <a href="{{ url_for('register') }}"
-                            class="nav-item1 {% if request.endpoint == 'register' %}active-link{% endif %}">Register</a>
+                        <a href="{{ url_for('main.register') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.register' %}active-link{% endif %}">Register</a>
                     </li>
                     {% endif %}
 
                     {% if session.get('role') %}
                     <li class="nav-item nav1">
-                        <a class="nav-item1" href="{{ url_for('logout') }}">Log Out</a>
+                        <a class="nav-item1" href="{{ url_for('main.logout') }}">Log Out</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -143,17 +144,17 @@
     <!-- Flash Messages -->
     <div class="container mt-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
-    
+
     {% block content %}{% endblock %}
 
 
