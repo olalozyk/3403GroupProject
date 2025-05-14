@@ -12,6 +12,53 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Suppress noisy test resource warnings
 warnings.filterwarnings("ignore", category=ResourceWarning)
 
+class RegistrationTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app()
+        self.app.config['TESTING'] = True
+        self.app.config['WTF_CSRF_ENABLED'] = False
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.client = self.app.test_client()
+
+        with self.app.app_context():
+            db.create_all()    
+
+    def test_register_user(self):
+        with self.app.app_context():
+            # Ensure test email isn't in DB
+            User.query.filter_by(email="newuser@example.com").delete()
+            db.session.commit()
+
+        response = self.client.post("/register", data={
+            "first_name": "New",
+            "last_name": "User",
+            "email": "newuser@example.com",
+            "password": "testpass123",
+            "confirm_password": "testpass123"
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Account created successfully", response.data)
+
+        with self.app.app_context():
+            user = User.query.filter_by(email="newuser@example.com").first()
+            self.assertIsNotNone(user)
+            self.assertEqual(user.first_name, "New")
+
+    def test_register_duplicate_email(self):
+        self.test_register_user()  # First registration
+
+        response = self.client.post("/register", data={
+            "first_name": "New",
+            "last_name": "User",
+            "email": "newuser@example.com",
+            "password": "testpass123",
+            "confirm_password": "testpass123"
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"error checking email", response.data.lower())  # Adjust as needed
+
 class AppointmentTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
