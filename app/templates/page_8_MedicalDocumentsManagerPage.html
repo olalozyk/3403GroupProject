@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container py-5">
-    <div class="text-center mb-4">
+    <div class="text-center mb-5">
         <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Your Medical Documents</h1>
 
         <div class="d-flex justify-content-center gap-3 mt-3">
@@ -16,24 +16,59 @@
         </div>
     </div>
 
-    <!-- Sort form -->
-    <div class="card shadow-sm p-4 mb-4">
-        <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-0">
-            <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
-            <select id="sortDocs" name="sort" class="form-select w-auto">
-                <option value="upload-asc" {% if sort_by=='upload-asc' %}selected{% endif %}>date uploaded ↑</option>
-                <option value="upload-desc" {% if sort_by=='upload-desc' %}selected{% endif %}>date uploaded ↓</option>
-                <option value="expiry-asc" {% if sort_by=='expiry-asc' %}selected{% endif %}>expiration ↑</option>
-                <option value="expiry-desc" {% if sort_by=='expiry-desc' %}selected{% endif %}>expiration ↓</option>
+    <form method="GET" class="d-flex flex-wrap align-items-end gap-3 mb-3">
+        <!-- Search box -->
+        <div class="flex-grow-1">
+            <label for="q" class="form-label fw-semibold text-purple">Search by name, notes, or practitioner</label>
+            <input type="text" name="q" class="form-control" placeholder="e.g. MRI or Dr Smith" value="{{ query }}">
+        </div>
+    
+        <!-- Practitioner box -->
+        <div class="flex-grow-1">
+            <label for="practitioner" class="form-label fw-semibold text-purple">Practitioner</label>
+            <input type="text" name="practitioner" class="form-control" placeholder="e.g. Dr John Doe"
+                value="{{ practitioner }}">
+        </div>
+    
+        <!-- Document Type dropdown -->
+        <div class="flex-grow-1">
+            <label for="type" class="form-label fw-semibold text-purple">Document Type</label>
+            <select name="type" class="form-select">
+                <option value="">All Types</option>
+                <option value="report" {% if doc_type=='report' %}selected{% endif %}>Report</option>
+                <option value="referral" {% if doc_type=='referral' %}selected{% endif %}>Referral</option>
+                <option value="result" {% if doc_type=='result' %}selected{% endif %}>Test Result</option>
+                <!-- Add more if needed -->
             </select>
-            <button type="submit" class="btn btn-purple-calender px-4">Display</button>
-        </form>
-    </div>
+        </div>
+    
+        <!-- Sort By -->
+        <div>
+            <label for="sortDocs" class="form-label fw-semibold text-purple">Sort By</label>
+            <select id="sortDocs" name="sort" class="form-select">
+                <option value="upload-asc" {% if sort_by=='upload-asc' %}selected{% endif %}>Date Uploaded ↑</option>
+                <option value="upload-desc" {% if sort_by=='upload-desc' %}selected{% endif %}>Date Uploaded ↓</option>
+                <option value="expiry-asc" {% if sort_by=='expiry-asc' %}selected{% endif %}>Expiration ↑</option>
+                <option value="expiry-desc" {% if sort_by=='expiry-desc' %}selected{% endif %}>Expiration ↓</option>
+            </select>
+        </div>
+    
+        <!-- Buttons -->
+        <div class="d-flex gap-2 align-items-end">
+            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">
+                Apply
+            </button>
+            <a href="{{ url_for('medical_document') }}" class="btn btn-outline-secondary px-4 fw-bold"
+                style="border: 2px solid #8e60c4;">
+                Clear
+            </a>
+        </div>
+    </form>
 
     <!-- Documents table -->
     <div class="card shadow-sm p-4">
         <div class="table-responsive">
-            <table class="table align-middle table-borderless text-center">
+            <table class="table align-middle text-center">
                 <thead>
                     <tr class="fw-bold text-muted">
                         <th>Document</th>
