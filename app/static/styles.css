@@ -97,6 +97,15 @@ a.nav-item1.active-link {
   color: #9d5ced;
   font-weight: bold;
 }
+
+.title-purple-text {
+  color: #9d5ced !important;
+  font-weight: bold;
+  font-size: 2.8rem;
+  animation: fadeInUp 1s ease-in-out;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .form-label {
   color: #9562ee;
   font-weight: bold;
