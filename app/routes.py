@@ -9,10 +9,12 @@ from collections import Counter, defaultdict, OrderedDict
 from dateutil.relativedelta import relativedelta
 from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm, UserProfileForm 
 from datetime import datetime, timedelta, time, date
+from app import db
+from app.models import User, Document, Appointment
+import os
 from app.models import User, Document, Appointment, SharedDocument, UserProfile
 from sqlalchemy import asc, desc, nulls_last
 from sqlalchemy.orm import joinedload
-from app import db
 from flask import current_app as app
 import zipfile
 import io
@@ -135,7 +137,7 @@ def register():
 @login_required
 def dashboard():
     if session.get("role") != "member":
-        return redirect(url_for(""))
+        return redirect(url_for("login"))
 
     today = datetime.today().date()
 
