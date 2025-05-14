@@ -40,16 +40,16 @@ class UserProfileForm(FlaskForm):
     first_name = StringField("First Name", validators=[Optional()])
     last_name = StringField("Last Name", validators=[Optional()])
     email = StringField("Email", render_kw={"readonly": True})
-    
+
     # Optional section
-    mobile = StringField("Mobile Number", validators=[Optional()])
-    insurance = StringField("Insurance Type", validators=[Optional()])
+    mobile_number = StringField('Mobile Number', validators=[DataRequired(), Length(min=8, max=15)])
+    insurance_type = StringField("Insurance Type", validators=[Optional()])
     dob = DateField("Date of Birth", format='%Y-%m-%d', validators=[Optional()])
     address = StringField("Address", validators=[Optional()])
     gender = SelectField("Gender", choices=[("Female", "Female"), ("Male", "Male"), ("Other", "Other")], validators=[Optional()])
     password = PasswordField("New Password", validators=[Optional()])
     confirm_password = PasswordField("Confirm Password", validators=[Optional(), EqualTo("password")])
-    
+
 class DocumentForm(FlaskForm):
     upload_document = FileField(
         'Choose File',
@@ -75,16 +75,16 @@ class RequestPasswordResetForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError('There is no account with that email. You must register first.')
-        
+
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('New Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', 
+    confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset Password')
 
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm New Password', 
+    confirm_password = PasswordField('Confirm New Password',
                                      validators=[DataRequired(), EqualTo('new_password')])
     submit = SubmitField('Update Password')
