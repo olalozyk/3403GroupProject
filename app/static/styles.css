@@ -960,3 +960,15 @@ table.table-outline-dark .btn {
   padding: 8px 16px;
   border: none;
 }
+
+.btn-outline-secondary {
+  border: 2px solid #a6a6a6;
+  color: #6c757d;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f2f2f2;
+  color: #343a40;
+}
