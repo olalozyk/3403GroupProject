@@ -1,46 +1,59 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file, send_from_directory
-from flask_login import login_user, logout_user, current_user, login_required
+import os
+import io
+import zipfile
+from datetime import datetime, timedelta, time, date
+from collections import Counter, defaultdict, OrderedDict
+from dateutil.relativedelta import relativedelta
+
+from flask import (
+    render_template, flash, redirect, url_for, request, session,
+    jsonify, current_app, send_file, send_from_directory
+)
+from flask_login import (
+    login_user, logout_user, current_user, login_required
+)
 from flask_wtf.csrf import validate_csrf, CSRFError
 from flask_wtf import FlaskForm
 from wtforms import SubmitField
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from collections import Counter, defaultdict, OrderedDict
-from dateutil.relativedelta import relativedelta
-from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm, UserProfileForm 
-from datetime import datetime, timedelta, time, date
-from app.models import User, Document, Appointment, SharedDocument, UserProfile
 from sqlalchemy import asc, desc, nulls_last
 from sqlalchemy.orm import joinedload
 from app import db
-from flask import current_app as app
-import zipfile
-import io
+from app.forms import (
+    LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm,
+    ResetPasswordForm, ChangePasswordForm, UserProfileForm
+)
+from app.models import (
+    User, Document, Appointment, SharedDocument, UserProfile
+)
+from app.blueprints import blueprint
 
+# Dummy form for CSRF protection where needed
 class DummyForm(FlaskForm):
     submit = SubmitField()
 
 # Page 1 - Landing Page
-@app.route('/')
-@app.route('/index')
+@blueprint.route('/')
+@blueprint.route('/index')
 def index():
     # Automatically redirect member to dashboard if already logged in
     if session.get("role") == "member":
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("main.dashboard"))
     return render_template("page_1_LandingPage.html")
 
 # Page 2 - Login Page
-@app.route("/login", methods=["GET", "POST"])
+@blueprint.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("main.dashboard"))
     form = LoginForm()
     msg = ""
 
     if form.validate_on_submit():
         try:
             user = User.query.filter_by(email=form.email.data).first()
-            
+
             # Check if user exists and password is correct
             if user and user.check_password(form.password.data):
                 login_user(user, remember=form.remember_me.data)
@@ -54,10 +67,10 @@ def login():
                     if user.notifications_viewed_at else datetime.min.isoformat()
                 )
                 flash("Login successful", "success")
-                
+
                 # Redirect to 'next' parameter if it exists, otherwise to dashboard
                 next_page = request.args.get('next')
-                return redirect(next_page if next_page else url_for('dashboard'))
+                return redirect(next_page if next_page else url_for('main.dashboard'))
             else:
                 if user:
                     print("Password check failed")
@@ -69,30 +82,30 @@ def login():
 
     return render_template("page_2_LoginPage.html", form=form, msg=msg)
 
-@app.route("/logout")
+@blueprint.route("/logout")
 def logout():
     logout_user()
     session.clear()
     flash("You have been logged out", "info")
-    return redirect(url_for("index"))
+    return redirect(url_for("main.index"))
 
 # Page 3 - Register Page
-@app.route("/register", methods=["GET", "POST"])
+@blueprint.route("/register", methods=["GET", "POST"])
 def register():
     # Redirect if user is already logged in
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
-        
+        return redirect(url_for("main.dashboard"))
+
     form = RegistrationForm()
-    
+
     # Print form data for debugging
     if request.method == "POST":
         print(f"Register form submitted with data: {request.form}")
-    
+
     if form.validate_on_submit():
         try:
             print("Form validation successful")
-            
+
             # Create a new user object
             print(f"Creating user with email: {form.email.data}")
             hashed_pw = generate_password_hash(form.password.data)
@@ -110,11 +123,11 @@ def register():
 
             # Success message
             flash("Account created successfully! You can now login.", "success")
-            
+
             # Important: Redirect to login page, don't render template
             print("Redirecting to login page")
-            return redirect(url_for("login"))
-            
+            return redirect(url_for("main.login"))
+
         except Exception as e:
             # Roll back any changes and show error message
             db.session.rollback()
@@ -131,11 +144,11 @@ def register():
     return render_template("page_3_RegisterPage.html", form=form)
 
 # Page 4 - Dashboard Page
-@app.route("/dashboard")
+@blueprint.route("/dashboard")
 @login_required
 def dashboard():
     if session.get("role") != "member":
-        return redirect(url_for(""))
+        return redirect(url_for("main.login"))
 
     today = datetime.today().date()
 
@@ -195,7 +208,7 @@ def dashboard():
         expiring_docs=expiring_data  # Include this line
     )
 
-@app.route("/notifications/read", methods=["POST"])
+@blueprint.route("/notifications/read", methods=["POST"])
 def mark_notifications_read():
     try:
         csrf_token = request.headers.get("X-CSRFToken")
@@ -214,7 +227,7 @@ def mark_notifications_read():
     return jsonify({"success": True})
 
 
-@app.context_processor
+@blueprint.context_processor
 def inject_notifications():
     notifications = []
     n_not = 0
@@ -274,11 +287,11 @@ def inject_notifications():
     return dict(n_not=n_not, notifications=notifications)
 
 # Page 5 - Appointments Manager Page
-@app.route("/appointments")
+@blueprint.route("/appointments")
 @login_required
 def appointment_manager():
     if session.get("role") != "member":
-        return redirect(url_for("login"))
+        return redirect(url_for("main.login"))
 
     query = request.args.get('q', '').strip()
     practitioner = request.args.get('practitioner', '')
@@ -290,10 +303,10 @@ def appointment_manager():
 
     if query:
         appointments = appointments.filter(
-        (Appointment.appointment_type.ilike(f'%{query}%')) |
-        (Appointment.appointment_notes.ilike(f'%{query}%')) |
-        (Appointment.practitioner_name.ilike(f'%{query}%'))  # Add this line
-    )
+            (Appointment.appointment_type.ilike(f'%{query}%')) |
+            (Appointment.appointment_notes.ilike(f'%{query}%')) |
+            (Appointment.practitioner_name.ilike(f'%{query}%'))  # Add this line
+        )
     if practitioner:
         appointments = appointments.filter(Appointment.practitioner_name.ilike(f'%{practitioner}%'))
     if date:
@@ -313,7 +326,7 @@ def appointment_manager():
 
 
 
-@app.route("/appointment/add", methods=["GET", "POST"])
+@blueprint.route("/appointment/add", methods=["GET", "POST"])
 def add_appointment():
     if request.method == "POST":
         # Directly get start_time and end_time from the form
@@ -350,17 +363,17 @@ def add_appointment():
         db.session.commit()
 
         flash("Appointment successfully created", "success")
-        return redirect(url_for("appointment_manager"))
+        return redirect(url_for("main.appointment_manager"))
 
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
 
-@app.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
+@blueprint.route("/appointment/edit/<int:appointment_id>", methods=["GET", "POST"])
 def edit_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
 
     if session.get("role") != "member" or appt.user_id != session.get("user_id"):
-        return redirect(url_for("login"))
+        return redirect(url_for("main.login"))
 
     if request.method == "POST":
         # NEW: Fetch start_time and end_time separately (NO more time split)
@@ -387,11 +400,11 @@ def edit_appointment(appointment_id):
 
         db.session.commit()
         flash("Appointment successfully updated", "success")
-        return redirect(url_for("appointment_manager"))
+        return redirect(url_for("main.appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
-@app.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
+@blueprint.route("/appointment/delete/<int:appointment_id>", methods=["POST"])
 def delete_appointment(appointment_id):
     appt = Appointment.query.get_or_404(appointment_id)
 
@@ -404,11 +417,11 @@ def delete_appointment(appointment_id):
     return jsonify({"success": True})
 
 # Page 7 - Calendar View Page
-@app.route("/calendar")
+@blueprint.route("/calendar")
 @login_required
 def calendar():
     if session.get("role") != "member":
-        return redirect(url_for("login"))
+        return redirect(url_for("main.login"))
 
     appointments = Appointment.query.filter_by(user_id=session["user_id"]).all()
     documents = Document.query.filter_by(user_id=session["user_id"]).all()
@@ -442,7 +455,7 @@ def calendar():
     return render_template("page_7_CalendarViewPage.html", appt_data=appt_data, doc_data=doc_data)
 
 # Page 8 - Medical Documents Manager Page
-@app.route("/medical_document")
+@blueprint.route("/medical_document")
 @login_required
 def medical_document():
     # Get all documents for the current user
@@ -503,7 +516,7 @@ def medical_document():
     )
 
 # search function for documents manager page
-@app.route('/documents/search', methods=['GET'])
+@blueprint.route('/documents/search', methods=['GET'])
 @login_required
 def search_documents():
     query = request.args.get('q', '').strip()
@@ -531,7 +544,7 @@ def search_documents():
 
 
 # View document route
-@app.route("/medical_document/view/<int:doc_id>")
+@blueprint.route("/medical_document/view/<int:doc_id>")
 @login_required
 def view_document(doc_id):
     document = Document.query.get_or_404(doc_id)
@@ -543,23 +556,23 @@ def view_document(doc_id):
     return redirect(url_for('medical_document'))
 
 # Download document route
-@app.route("/medical_document/download/<int:doc_id>")
+@blueprint.route("/medical_document/download/<int:doc_id>")
 @login_required
 def download_document(doc_id):
     document = Document.query.get_or_404(doc_id)
     if document.user_id != current_user.id:
         flash("You don't have permission to download this document")
-        return redirect(url_for('medical_document'))
+        return redirect(url_for('main.medical_document'))
 
     file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], document.file)
     if not os.path.exists(file_path):
         flash("File not found", "danger")
-        return redirect(url_for('medical_document'))
+        return redirect(url_for('main.medical_document'))
 
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], document.file, as_attachment=True)
 
 # Delete document route
-@app.route("/medical_document/delete/<int:doc_id>")
+@blueprint.route("/medical_document/delete/<int:doc_id>")
 @login_required
 def delete_document(doc_id):
     document = Document.query.get_or_404(doc_id)
@@ -573,7 +586,7 @@ def delete_document(doc_id):
     return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
-@app.route("/medical_document/upload_document", methods=["GET", "POST"])
+@blueprint.route("/medical_document/upload_document", methods=["GET", "POST"])
 @login_required
 def upload_document():
     if request.method == "POST":
@@ -633,15 +646,15 @@ def upload_document():
 
         db.session.add(new_doc)
         db.session.commit()
-        print("DEBUG: Upload succeeded")  # <-- Debug line 
+        print("DEBUG: Upload succeeded")  # <-- Debug line
 
         flash("Document uploaded successfully!", "success")
-        return redirect(url_for("medical_document"))
+        return redirect(url_for("main.medical_document"))
 
     return render_template("page_9_UploadNewDocumentPage.html")
 
 # Page 10 - Select Documents to Share Page
-@app.route("/medical_document/share_document", methods=["GET", "POST"])
+@blueprint.route("/medical_document/share_document", methods=["GET", "POST"])
 @login_required
 def share_document():
     form = DummyForm()
@@ -667,14 +680,14 @@ def share_document():
                     db.session.add(shared)
                 db.session.commit()
                 flash("Documents shared successfully!", "success")
-        return redirect(url_for('share_document'))
+        return redirect(url_for('main.share_document'))
 
     # on GET or invalid CSRF POST, fall through and re-render
     user_docs = Document.query.filter_by(user_id=current_user.id).all()
     shared_q = (
         db.session.query(
-          SharedDocument, Document.document_name, Document.document_type,
-          SharedDocument.shared_at, User.email.label("sender_email")
+            SharedDocument, Document.document_name, Document.document_type,
+            SharedDocument.shared_at, User.email.label("sender_email")
         )
         .join(Document, SharedDocument.document_id == Document.id)
         .join(User, SharedDocument.sender_id == User.id)
@@ -688,7 +701,7 @@ def share_document():
         shared_documents = shared_q
     )
 
-@app.route('/documents/share/search', methods=['GET'])
+@blueprint.route('/documents/share/search', methods=['GET'])
 @login_required
 def search_documents_to_share():
     query = request.args.get('q', '').strip()
@@ -714,7 +727,7 @@ def search_documents_to_share():
     documents = documents.all()
     return render_template('page_10_SelectDocumentsToSharePage.html', documents=documents)
 
-@app.route('/documents/export', methods=['POST'])
+@blueprint.route('/documents/export', methods=['POST'])
 @login_required
 def export_documents():
     selected_ids = request.form.getlist('document_ids')
@@ -724,27 +737,25 @@ def export_documents():
         flash('No documents selected for export.', 'danger')
         return redirect(url_for('share_document'))
 
-    # Set up an in-memory ZIP
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for doc_id in selected_ids:
-            doc = Document.query.filter_by(id=doc_id, owner_id=current_user.id).first()
+            doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first()
             if not doc:
-                continue  # skip if doc not found or not owned by user
+                continue
 
-            file_path = os.path.join(app.root_path, 'static', 'documents', doc.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], doc.file)
             if os.path.exists(file_path):
-                zipf.write(file_path, arcname=doc.filename)
+                zipf.write(file_path, arcname=doc.file)
             else:
                 app.logger.warning(f"File not found: {file_path}")
 
-        # add personal summary if requested
         if include_personal_summary:
             personal_details = generate_personal_summary(current_user)
             zipf.writestr('PersonalDetails.txt', personal_details)
 
     zip_buffer.seek(0)
-    filename = f"SharedDocuments_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.zip"
+    filename = f"{current_user.first_name}{current_user.last_name}_DocumentsToBeSent.zip"
 
     return send_file(
         zip_buffer,
@@ -753,26 +764,30 @@ def export_documents():
         download_name=filename
     )
 
-@app.route('/uploads/<filename>')
+@blueprint.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 def generate_personal_summary(user):
+    profile = user.profile
+
     summary = f"""
     Personal Details Summary
     ------------------------
     Name: {user.first_name} {user.last_name}
     Email: {user.email}
-    Date of Birth: {user.date_of_birth}
-    Contact Number: {user.contact_number}
-    Medical Summary:
-    {user.medical_summary}
+    Date of Birth: {profile.date_of_birth if profile else 'Not provided'}
+    Contact Number: {profile.mobile_number if profile else 'Not provided'}
+    Address: {profile.address if profile else 'Not provided'}
+    Gender: {profile.gender if profile else 'Not provided'}
+    Insurance Type: {profile.insurance_type if profile else 'Not provided'}
+    Medical Summary: {getattr(user, 'medical_summary', 'Not provided')}
 
     Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC"""
     return summary
 
 # Page 11 - User Profile Settings Page
-@app.route("/user_profile", methods=["GET", "POST"])
+@blueprint.route("/user_profile", methods=["GET", "POST"])
 @login_required
 def user_profile():
     user = current_user
@@ -794,12 +809,12 @@ def user_profile():
 
         db.session.commit()
         flash("Profile updated successfully!", "success")
-        return redirect(url_for("user_profile"))
+        return redirect(url_for("main.user_profile"))
 
     return render_template("page_11_UserProfileSettingsPage.html", form=form, user=user)
 
 # Page 13 - Edit Document Page
-@app.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])
+@blueprint.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])
 @login_required
 def edit_document(doc_id):
     document = Document.query.get_or_404(doc_id)
@@ -831,7 +846,7 @@ def edit_document(doc_id):
         db.session.commit()
 
         flash("Document edited successfully!", "success")
-        return redirect(url_for("medical_document"))
+        return redirect(url_for("main.medical_document"))
 
     return render_template(
         "page_13_EditDocumentPage.html",
@@ -840,7 +855,7 @@ def edit_document(doc_id):
     )
 
 # Page 14 - Personal Insights
-@app.route("/insights")
+@blueprint.route("/insights")
 @login_required
 def insights():
     user_id = session.get("user_id")
@@ -925,7 +940,7 @@ def insights():
         t: [monthly_counts[t].get(m, 0) for m in all_months]
         for t in labels
     }
-    
+
     color_map = {
         "General": "#3B82F6",
         "Follow-up": "#22C55E",
@@ -945,7 +960,7 @@ def insights():
     line_chart_days = {t: [daily_counts[t].get(day, 0) for day in all_days] for t in labels}
     latest_date_iso = latest_appointment_date.isoformat()
     latest_month_index = len(all_months) - 1
-    
+
     return render_template("page_14_PersonalisedUserAnalytics.html",
                            total_appointments=len(appointments),
                            total_documents=total_documents,
@@ -975,75 +990,75 @@ def send_reset_email(user):
     reset_url = url_for('reset_token', token=token, _external=True)
     flash(f'Password reset link (for testing only): {reset_url}', 'info')
 
-@app.route("/reset_request", methods=["GET", "POST"])
+@blueprint.route("/reset_request", methods=["GET", "POST"])
 def reset_request():
     # Redirect if user is already logged in
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
-        
+        return redirect(url_for("main.dashboard"))
+
     form = RequestPasswordResetForm()
-    
+
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        
+
         # Send password reset email
         # (In a real application, you would send an actual email here)
         token = user.get_reset_token()
-        
+
         # For demonstration, we'll just show a direct link
-        reset_url = url_for('reset_token', token=token, _external=True)
+        reset_url = url_for('main.reset_token', token=token, _external=True)
         print(f"Password reset link: {reset_url}")
-        
+
         flash("A password reset link has been sent to your email.", "info")
-        return redirect(url_for("login"))
-    
+        return redirect(url_for("main.login"))
+
     return render_template("page_15_PasswordResetRequest.html", form=form)
 
 # Page 16 - Password Reset Page
 # Password reset with token
-@app.route("/reset_password/<token>", methods=["GET", "POST"])
+@blueprint.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_token(token):
     # Redirect if user is already logged in
     if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
-        
+        return redirect(url_for("main.dashboard"))
+
     # Verify the token and get user
     user = User.verify_reset_token(token)
-    
+
     if user is None:
         flash("That is an invalid or expired token", "warning")
-        return redirect(url_for("reset_request"))
-    
+        return redirect(url_for("main.reset_request"))
+
     form = ResetPasswordForm()
-    
+
     if form.validate_on_submit():
         # Update the user's password
         user.set_password(form.password.data)
         db.session.commit()
-        
+
         flash("Your password has been updated! You can now log in.", "success")
-        return redirect(url_for("login"))
-    
+        return redirect(url_for("main.login"))
+
     return render_template("page_16_ResetToken.html", form=form)
 
 # Page 17 - Change Password Page
 # Change password (for logged-in users)
-@app.route("/change_password", methods=["GET", "POST"])
+@blueprint.route("/change_password", methods=["GET", "POST"])
 @login_required
 def change_password():
     form = ChangePasswordForm()
-    
+
     if form.validate_on_submit():
         # Verify current password
         if not current_user.check_password(form.current_password.data):
             flash("Current password is incorrect", "danger")
             return render_template("page_17_ChangePassword.html", form=form)
-        
+
         # Set new password
         current_user.set_password(form.new_password.data)
         db.session.commit()
-        
+
         flash("Your password has been changed successfully!", "success")
-        return redirect(url_for("user_profile"))
-    
+        return redirect(url_for("main.user_profile"))
+
     return render_template("page_17_ChangePassword.html", form=form)
