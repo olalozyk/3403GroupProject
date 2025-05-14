@@ -2,13 +2,13 @@
 {% block title %}Your Profile{% endblock %}
 {% block content %}
 
-<div class="container py-5">
+<div class="container py-4">
     <div class="text-center mb-4">
-        <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Your Profile</h1>
+        <h1 class="title-purple-text">Your Profile</h1>
         <p class="lead">Manage your personal and contact details</p>
     </div>
 
-    <form method="POST" action="{{ url_for('user_profile') }}">
+    <form method="POST" action="{{ url_for('main.user_profile') }}">
         {{ form.hidden_tag() }}
 
         <!-- Essential Info -->
@@ -35,12 +35,12 @@
             <h4 class="purple-text fw-bold mb-3">Optional Information</h4>
             <div class="row g-3">
                 <div class="col-md-4">
-                    {{ form.mobile.label(class="form-label fw-bold purple-text") }}
-                    {{ form.mobile(class="form-control") }}
+                    {{ form.mobile_number.label(class="form-label fw-bold purple-text") }}
+                    {{ form.mobile_number(class="form-control") }}
                 </div>
                 <div class="col-md-4">
-                    {{ form.insurance.label(class="form-label fw-bold purple-text") }}
-                    {{ form.insurance(class="form-control") }}
+                    {{ form.insurance_type.label(class="form-label fw-bold purple-text") }}
+                    {{ form.insurance_type(class="form-control") }}
                 </div>
                 <div class="col-md-4">
                     {{ form.dob.label(class="form-label fw-bold purple-text") }}
@@ -58,7 +58,7 @@
 
             <!-- Change Password button inside the box -->
             <div class="mt-4 text-center">
-                <a href="{{ url_for('change_password') }}" class="btn btn-info text-white px-4 fw-bold">
+                <a href="{{ url_for('main.change_password') }}" class="btn btn-info text-white px-4 fw-bold">
                     Change Password
                 </a>
             </div>

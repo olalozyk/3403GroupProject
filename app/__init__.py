@@ -1,42 +1,44 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import CSRFProtect
 from flask_login import LoginManager
 from flask_socketio import SocketIO
-from app.config import Config
 from dotenv import load_dotenv
-import os
+from app.config import Config
+from app.config import DeploymentConfig
 
+# Load environment variables
 load_dotenv()
 
-# Create extensions first (unbound)
+# Unbound Flask extensions
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
 login = LoginManager()
 socketio = SocketIO(cors_allowed_origins="*")
 
-def create_app():
-    # Create the Flask app
-    app = Flask(__name__)
+
+
+def create_app(config=DeploymentConfig):
+    application = Flask(__name__, instance_relative_config=True)
 
     # Load config
-    from app.config import Config
-    app.config.from_object(Config)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key').encode('utf-8')
+    application.config.from_object(config)
 
-    # Initialize extensions with the app
-    db.init_app(app)
-    migrate.init_app(app, db)
-    csrf.init_app(app)
-    login.init_app(app)
-    login.login_view = 'logout'
-    socketio.init_app(app)
+    from app.blueprints import blueprint
+    application.register_blueprint(blueprint)
 
+    # Initialize extensions
+    db.init_app(application)
+    migrate.init_app(application, db)
+    csrf.init_app(application)
+    login.init_app(application)
+    login.login_view = 'main.index'
+    socketio.init_app(application)
 
-    # Import routes *after* app and extensions are set up
-    with app.app_context():
-        from app import routes, models, sockets  # Ensure sockets.py exists
-        
-    return app
+    # Import routes, models, sockets
+    from app import routes, models, sockets
+
+    return application

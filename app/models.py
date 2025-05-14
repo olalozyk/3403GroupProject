@@ -93,6 +93,13 @@ class Document(db.Model):
     expiration_date = db.Column(db.Date, nullable=True)
     practitioner_type = db.Column(db.String(100), nullable=True)
 
+    shared_instances = db.relationship(
+        'SharedDocument',
+        backref='document',
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
+
 class UserProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -110,7 +117,6 @@ class SharedDocument(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     shared_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    document = db.relationship('Document', backref='shared_instances')
     sender = db.relationship('User', foreign_keys=[sender_id])
     recipient = db.relationship('User', foreign_keys=[recipient_id])
 

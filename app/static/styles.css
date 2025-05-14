@@ -97,6 +97,15 @@ a.nav-item1.active-link {
   color: #9d5ced;
   font-weight: bold;
 }
+
+.title-purple-text {
+  color: #9d5ced !important;
+  font-weight: bold;
+  font-size: 2.8rem;
+  animation: fadeInUp 1s ease-in-out;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .form-label {
   color: #9562ee;
   font-weight: bold;
@@ -959,4 +968,37 @@ table.table-outline-dark .btn {
   border-radius: 20px;
   padding: 8px 16px;
   border: none;
+}
+
+.btn-outline-secondary {
+  border: 2px solid #8e60c4;
+  color: #8e60c4;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover {
+  border: 3px solid #d44c4c;
+  color: #d44c4c;
+  background-color: transparent;
+}
+
+.bg-today {
+  background-color: #f59494;
+  color: black;
+}
+
+.bg-upcoming {
+  background-color: #f7c06b;
+  color: black;
+}
+
+.bg-completed {
+  background-color: #b0e57c;
+  color: black;
+}
+
+.bg-unknown {
+  background-color: #8ddcff;
+  color: black;
 }
