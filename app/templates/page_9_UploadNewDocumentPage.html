@@ -2,9 +2,9 @@
 {% block title %}Upload New Document{% endblock %}
 {% block content %}
 
-<h1 class="upload-document-text text-center mt-4">Upload New Document</h1>
+<h1 class="title-purple-text text-center mt-5">Upload New Document</h1>
 
-<div class="container mt-5 member-timetable-page shadow">
+<div class="container mt-4 member-timetable-page shadow">
     <form class="file-upload" action="{{ url_for('upload_document') }}" method="POST" enctype="multipart/form-data">
         <!-- Manual CSRF token, just like in your appointments form -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
