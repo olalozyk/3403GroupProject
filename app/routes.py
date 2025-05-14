@@ -1,18 +1,24 @@
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, current_app, send_file, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf.csrf import validate_csrf, CSRFError
+from flask_wtf import FlaskForm
+from wtforms import SubmitField
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from collections import Counter, defaultdict, OrderedDict
 from dateutil.relativedelta import relativedelta
-from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm
+from app.forms import LoginForm, RegistrationForm, DocumentForm, RequestPasswordResetForm, ResetPasswordForm, ChangePasswordForm, UserProfileForm 
 from datetime import datetime, timedelta, time, date
-from app.models import User, Document, Appointment
+from app.models import User, Document, Appointment, SharedDocument, UserProfile
 from sqlalchemy import asc, desc, nulls_last
+from sqlalchemy.orm import joinedload
 from app import db
 from flask import current_app as app
 import zipfile
 import io
+
+class DummyForm(FlaskForm):
+    submit = SubmitField()
 
 # Page 1 - Landing Page
 @app.route('/')
@@ -544,8 +550,13 @@ def download_document(doc_id):
     if document.user_id != current_user.id:
         flash("You don't have permission to download this document")
         return redirect(url_for('medical_document'))
-    flash("Document download functionality will be implemented soon")
-    return redirect(url_for('medical_document'))
+
+    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], document.file)
+    if not os.path.exists(file_path):
+        flash("File not found", "danger")
+        return redirect(url_for('medical_document'))
+
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], document.file, as_attachment=True)
 
 # Delete document route
 @app.route("/medical_document/delete/<int:doc_id>")
@@ -562,52 +573,120 @@ def delete_document(doc_id):
     return redirect(url_for('medical_document'))
 
 # Page 9 - Upload New Document Page
-
 @app.route("/medical_document/upload_document", methods=["GET", "POST"])
 @login_required
 def upload_document():
-    form = DocumentForm()
+    if request.method == "POST":
+        if 'upload_document' not in request.files:
+            flash("No file part", "danger")
+            return redirect(request.url)
 
-    if form.validate_on_submit():
-        # 1. Get the file and save it
-        file_field = form.upload_document.data
-        filename   = secure_filename(file_field.filename)
-        save_path  = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        file_field.save(save_path)
+        file = request.files['upload_document']
+        if file.filename == '':
+            flash("No selected file", "danger")
+            return redirect(request.url)
 
-        # 2. Build your Document model from form data
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_path)
+
+        # Parse form fields manually
+        document_name = request.form['document_name']
+        document_type = request.form['document_type']
+        document_notes = request.form.get('document_notes', '')
+        practitioner_name = request.form.get('practitioner_name', '')
+        practitioner_type = request.form.get('practitioner_type', '')
+
+        # Parse and validate date fields
+        upload_date_str = request.form.get('upload_date')
+        if not upload_date_str:
+            flash("Upload date is required.", "danger")
+            return redirect(request.url)
+
+        try:
+            upload_date = datetime.strptime(upload_date_str, "%Y-%m-%d")
+        except ValueError:
+            flash("Invalid upload date format. Use yyyy-mm-dd.", "danger")
+            return redirect(request.url)
+
+        expiration_date = None
+        if request.form.get("expiration_enabled"):
+            try:
+                expiration_date = datetime.strptime(request.form['expiration_date'], "%Y-%m-%d")
+            except ValueError:
+                flash("Invalid expiration date format. Use yyyy-mm-dd.", "danger")
+                return redirect(request.url)
+
+        # Save document to DB
+        print("DEBUG: Uploading", document_name, filename)  # <- Debug line
         new_doc = Document(
             user_id=current_user.id,
-            file=filename,
-            document_name    = form.document_name.data,
-            upload_date      = form.upload_date.data,
-            document_type    = form.document_type.data,
-            document_notes   = form.document_notes.data,
-            practitioner_name= form.practitioner_name.data,
-            expiration_date  = form.expiration_date.data,
-            practitioner_type= form.practitioner_type.data
+            document_name=document_name,
+            document_type=document_type,
+            document_notes=document_notes,
+            practitioner_name=practitioner_name,
+            practitioner_type=practitioner_type,
+            upload_date=upload_date,
+            expiration_date=expiration_date,
+            file=filename
         )
 
-        # 3. Commit to the database
         db.session.add(new_doc)
         db.session.commit()
+        print("DEBUG: Upload succeeded")  # <-- Debug line 
 
         flash("Document uploaded successfully!", "success")
         return redirect(url_for("medical_document"))
 
-    # If GET, or if validation failed, render the template with the form
-    return render_template(
-        "page_9_UploadNewDocumentPage.html",
-        form=form
-    )
+    return render_template("page_9_UploadNewDocumentPage.html")
 
 # Page 10 - Select Documents to Share Page
-@app.route("/medical_document/share_document")
+@app.route("/medical_document/share_document", methods=["GET", "POST"])
 @login_required
 def share_document():
-    # by default, show all documents for the user
-    documents = Document.query.filter_by(user_id=current_user.id).all()
-    return render_template("page_10_SelectDocumentsToSharePage.html", documents=documents)
+    form = DummyForm()
+    if form.validate_on_submit():
+        recipient_email = request.form.get('recipient_email')
+        document_ids    = request.form.getlist('document_ids')
+        include_personal = bool(request.form.get('include_personal_summary'))
+
+        if not recipient_email:
+            flash("No email provided.", "warning")
+        else:
+            recipient = User.query.filter_by(email=recipient_email).first()
+            if not recipient:
+                flash("Recipient not found.", "danger")
+            else:
+                for doc_id in document_ids:
+                    shared = SharedDocument(
+                        document_id  = doc_id,
+                        sender_id    = current_user.id,
+                        recipient_id = recipient.id,
+                        shared_at    = datetime.utcnow()
+                    )
+                    db.session.add(shared)
+                db.session.commit()
+                flash("Documents shared successfully!", "success")
+        return redirect(url_for('share_document'))
+
+    # on GET or invalid CSRF POST, fall through and re-render
+    user_docs = Document.query.filter_by(user_id=current_user.id).all()
+    shared_q = (
+        db.session.query(
+          SharedDocument, Document.document_name, Document.document_type,
+          SharedDocument.shared_at, User.email.label("sender_email")
+        )
+        .join(Document, SharedDocument.document_id == Document.id)
+        .join(User, SharedDocument.sender_id == User.id)
+        .filter(SharedDocument.recipient_id == current_user.id)
+        .all()
+    )
+    return render_template(
+        "page_10_SelectDocumentsToSharePage.html",
+        form             = form,
+        documents        = user_docs,
+        shared_documents = shared_q
+    )
 
 @app.route('/documents/share/search', methods=['GET'])
 @login_required
@@ -674,6 +753,10 @@ def export_documents():
         download_name=filename
     )
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 def generate_personal_summary(user):
     summary = f"""
     Personal Details Summary
@@ -689,11 +772,31 @@ def generate_personal_summary(user):
     return summary
 
 # Page 11 - User Profile Settings Page
-@app.route("/user_profile")
+@app.route("/user_profile", methods=["GET", "POST"])
 @login_required
 def user_profile():
-    return render_template("page_11_UserProfileSettingsPage.html")
+    user = current_user
+    form = UserProfileForm(obj=user)
 
+    if form.validate_on_submit():
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        # user.email is read-only
+        user.mobile_number = form.mobile_number.data
+        user.insurance_type = form.insurance_type.data
+        user.date_of_birth = form.dob.data
+        user.address = form.address.data
+        user.gender = form.gender.data
+
+        # Optional password update
+        if form.password.data:
+            user.set_password(form.password.data)
+
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("user_profile"))
+
+    return render_template("page_11_UserProfileSettingsPage.html", form=form, user=user)
 
 # Page 13 - Edit Document Page
 @app.route("/medical_document/edit_document/<int:doc_id>", methods=["GET", "POST"])

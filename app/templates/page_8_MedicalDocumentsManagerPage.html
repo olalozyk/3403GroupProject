@@ -2,104 +2,94 @@
 {% block title %}Medical Documents{% endblock %}
 {% block content %}
 
-<div class="container py-4">
+<div class="container py-5">
     <div class="text-center mb-4">
-        <h1 class="purple-text" style="font-size: 2.8rem;">Your Medical Documents</h1>
+        <h1 class="purple-text fw-bold" style="font-size: 2.8rem;">Your Medical Documents</h1>
 
         <div class="d-flex justify-content-center gap-3 mt-3">
             <a href="{{ url_for('upload_document') }}" class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2">
                 + Upload New Document
             </a>
             <a href="{{ url_for('share_document') }}" class="btn btn-purple-calender shadow-sm fw-bold px-4 py-2">
-                ← Share Your Documents
+                ← Share and Recieve Your Documents
             </a>
         </div>
     </div>
 
-    <!-- Search Form -->
-    <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-4">
-        <div class="row g-2">
-            <!-- Search query for document name or notes -->
-            <div class="col-md-4">
-                <input type="text" name="q" class="form-control" placeholder="Search document name or notes" value="{{ query }}">
-            </div>
-            <!-- Filter by practitioner -->
-            <div class="col-md-2">
-                <input type="text" name="practitioner" class="form-control" placeholder="Practitioner" value="{{ practitioner }}">
-            </div>
-            <!-- Filter by document type -->
-            <div class="col-md-2">
-                <select name="type" class="form-select">
-                    <option value="">All Types</option>
-                    <option value="Referral" {% if type == 'general' %}selected{% endif %}>General</option>
-                    <option value="Report" {% if type == 'report' %}selected{% endif %}>Report</option>
-                    <option value="test" {% if type == 'test' %}selected{% endif %}>Test</option>
-                    <option value="prescription" {% if type == 'prescription' %}selected{% endif %}>Prescription</option>
-                </select>
-            </div>
-            <!-- Filter by expiration date -->
-            <div class="col-md-2">
-                <input type="date" name="expiration_date" class="form-control" value="{{ expiration_date }}">
-            </div>
-            <!-- Search button -->
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-purple-calender w-100">Search</button>
-            </div>
+    <!-- Sort form -->
+    <div class="card shadow-sm p-4 mb-4">
+        <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-0">
+            <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
+            <select id="sortDocs" name="sort" class="form-select w-auto">
+                <option value="upload-asc" {% if sort_by=='upload-asc' %}selected{% endif %}>date uploaded ↑</option>
+                <option value="upload-desc" {% if sort_by=='upload-desc' %}selected{% endif %}>date uploaded ↓</option>
+                <option value="expiry-asc" {% if sort_by=='expiry-asc' %}selected{% endif %}>expiration ↑</option>
+                <option value="expiry-desc" {% if sort_by=='expiry-desc' %}selected{% endif %}>expiration ↓</option>
+            </select>
+            <button type="submit" class="btn btn-purple-calender px-4">Display</button>
+        </form>
+    </div>
+
+    <!-- Documents table -->
+    <div class="card shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table align-middle table-borderless text-center">
+                <thead>
+                    <tr class="fw-bold text-muted">
+                        <th>Document</th>
+                        <th>Practitioner</th>
+                        <th>Type</th>
+                        <th>Uploaded</th>
+                        <th>Expiration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>
+                            📄 <a href="{{ url_for('view_document', doc_id=doc.id) }}">
+                                {{ doc.document_name }}
+                            </a>
+                        </td>
+                        <td>{{ doc.practitioner_name or 'N/A' }}</td>
+                        <td>{{ doc.document_type }}</td>
+                        <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if doc.expiration_date %}
+                            {{ doc.expiration_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- UPDATED: blue btn-Tests + black text -->
+                            <a href="{{ url_for('edit_document', doc_id=doc.id) }}"
+                                class="btn btn-Tests btn-sm text-dark me-1">
+                                Edit
+                            </a>
+
+                            <a href="{{ url_for('download_document', doc_id=doc.id) }}"
+                                class="btn btn-Appointment btn-sm me-1">
+                                Download
+                            </a>
+
+                            <a href="{{ url_for('delete_document', doc_id=doc.id) }}" class="btn btn-Missed btn-sm"
+                                onclick="return confirm('Delete this document?')">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-muted">
+                            No documents found. Upload one to get started!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </form>
-
-    <!-- Sorting Form -->
-    <form method="GET" class="d-flex justify-content-center align-items-center gap-2 mb-4">
-        <label for="sortDocs" class="fw-semibold mb-0">Order your documents by</label>
-        <select id="sortDocs" name="sort" class="form-select w-auto">
-            <option value="upload-asc" {% if sort_by == 'upload-asc' %}selected{% endif %}>date uploaded ↑</option>
-            <option value="upload-desc" {% if sort_by == 'upload-desc' %}selected{% endif %}>date uploaded ↓</option>
-            <option value="expiry-asc" {% if sort_by == 'expiry-asc' %}selected{% endif %}>expiration ↑</option>
-            <option value="expiry-desc" {% if sort_by == 'expiry-desc' %}selected{% endif %}>expiration ↓</option>
-        </select>
-        <button type="submit" class="btn btn-purple-calender px-4">Display</button>
-    </form>
-
-    <!-- Document Table -->
-    <div class="scrollable-timetable table-responsive shadow-sm rounded mb-5">
-        <table class="table align-middle table-borderless table-outline-dark shadow-sm rounded text-center">
-            <thead class="table-outline-dark">
-            <tr>
-                <th>Document</th>
-                <th>Practitioner</th>
-                <th>Type</th>
-                <th>Uploaded</th>
-                <th>Expiration</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for doc in documents %}
-            <tr class="rostercells">
-                <td>📄 <a href="{{ url_for('view_document', doc_id=doc.id) }}">{{ doc.document_name }}</a></td>
-                <td>{{ doc.practitioner_name or 'N/A' }}</td>
-                <td>{{ doc.document_type }}</td>
-                <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-                <td>{% if doc.expiration_date %}{{ doc.expiration_date.strftime('%d/%m/%Y') }}{% else %}N/A{% endif %}</td>
-                <td>
-                    <a href="{{ url_for('edit_document', doc_id=doc.id) }}" class="btn btn-purple-calender btn-sm me-1">
-                        Edit
-                    </a>
-                    <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-Appointment btn-sm me-1">
-                        Download
-                    </a>
-                    <a href="{{ url_for('delete_document', doc_id=doc.id) }}"
-                       class="btn btn-Missed btn-sm"
-                       onclick="return confirm('Delete this document?')">
-                        Delete
-                    </a>
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="6">No documents found. Upload one to get started!</td></tr>
-            {% endfor %}
-            </tbody>
-        </table>
     </div>
 </div>
 
