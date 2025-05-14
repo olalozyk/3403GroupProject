@@ -23,27 +23,6 @@ BASE_URL = "http://localhost:5000"
 LOGIN_EMAIL = "test@example.com"
 LOGIN_PASSWORD = "yourpassword"
 
-# Ensure test user exists in the DB
-def ensure_test_user():
-    app = create_app()
-
-    with app.app_context():
-        user = User.query.filter_by(email=LOGIN_EMAIL).first()
-        if not user:
-            hashed_pw = generate_password_hash(LOGIN_PASSWORD)
-            user = User(
-                first_name="Test",
-                last_name="User",
-                email=LOGIN_EMAIL,
-                password=hashed_pw,
-                role="member"
-            )
-            db.session.add(user)
-            db.session.commit()
-            print("✅ Test user created.")
-        else:
-            print("ℹ️ Test user already exists.")
-
 # Chrome options
 options = Options()
 options.add_argument("--log-level=3")  # Suppress Chrome logging
@@ -51,20 +30,40 @@ options.add_experimental_option("detach", True)  # Optional: keep browser open
 # Initialize driver
 driver = webdriver.Chrome(service=Service(), options=options)
 
-def login(driver):
-    driver.get("http://localhost:5000/login")
+LOGIN_PASSWORD = "testpass123"  # Shared password
+
+def test_register_user():
+    driver.get(f"{BASE_URL}/register")
     time.sleep(1)
 
-    # Fill in login form
-    driver.find_element(By.NAME, "email").send_keys(LOGIN_EMAIL)
+    new_email = f"user{int(time.time())}@example.com"  # Unique email
+    driver.find_element(By.NAME, "first_name").send_keys("Selenium")
+    driver.find_element(By.NAME, "last_name").send_keys("Test")
+    driver.find_element(By.NAME, "email").send_keys(new_email)
     driver.find_element(By.NAME, "password").send_keys(LOGIN_PASSWORD)
+    driver.find_element(By.NAME, "confirm_password").send_keys(LOGIN_PASSWORD)
 
-    # Submit the form
+    submit_btn = driver.find_element(By.NAME, "submit")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", submit_btn)
+    time.sleep(0.5)
+    submit_btn.click()
+    WebDriverWait(driver, 5).until(EC.url_contains("/login"))
+
+    assert "login" in driver.current_url.lower()
+    print("✅ Registration test passed.")
+
+    return new_email  # Return the email for next login
+
+def login(driver, email):
+    driver.get(f"{BASE_URL}/login")
+    time.sleep(1)
+    driver.find_element(By.NAME, "email").send_keys(email)
+    driver.find_element(By.NAME, "password").send_keys(LOGIN_PASSWORD)
     driver.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    time.sleep(2)  # Allow redirect to dashboard or appointment page
+    time.sleep(2)
 
-def test_add_appointment():
-    login(driver)
+def test_add_appointment(user_email):
+    login(driver, user_email)
 
     driver.get(f"{BASE_URL}/appointment/add")
     time.sleep(1)
@@ -111,9 +110,8 @@ def test_add_appointment():
 
 
 if __name__ == "__main__":
-    ensure_test_user()  # Create test user before running the test
-
     try:
-        test_add_appointment()
+        user_email = test_register_user()   # store returned email
+        test_add_appointment(user_email)    # pass it to the function
     finally:
         driver.quit()
