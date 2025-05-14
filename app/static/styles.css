@@ -942,3 +942,21 @@ table.table-outline-dark .btn {
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
+
+.btn-share-internal {
+  background-color: #A3E635; /* match green */
+  color: black;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 8px 16px;
+  border: none;
+}
+
+.btn-zip-download {
+  background-color: #60A5FA; /* match blue */
+  color: black;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 8px 16px;
+  border: none;
+}
