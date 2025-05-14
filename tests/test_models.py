@@ -35,8 +35,10 @@ def test_userprofile_creation():
     profile = UserProfile(
         user_id=1,
         mobile_number='0400123456',
-        email='testprofile@example.com',
-        password='testpassword'
+        date_of_birth='1990-01-01',
+        address='123 Test St',
+        gender='Male',
+        insurance_type='Private'
     )
-    assert profile.email == 'testprofile@example.com'
-    assert profile.mobile_number.startswith('0400')
+    assert profile.mobile_number == '0400123456'
+    assert profile.gender == 'Male'
