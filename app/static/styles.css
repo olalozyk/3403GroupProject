@@ -962,13 +962,34 @@ table.table-outline-dark .btn {
 }
 
 .btn-outline-secondary {
-  border: 2px solid #a6a6a6;
-  color: #6c757d;
+  border: 2px solid #8e60c4;
+  color: #8e60c4;
   background-color: transparent;
   transition: all 0.2s ease-in-out;
 }
 
 .btn-outline-secondary:hover {
-  background-color: #f2f2f2;
-  color: #343a40;
+  border: 3px solid #d44c4c;
+  color: #d44c4c;
+  background-color: transparent;
+}
+
+.bg-today {
+  background-color: #f59494;
+  color: black;
+}
+
+.bg-upcoming {
+  background-color: #f7c06b;
+  color: black;
+}
+
+.bg-completed {
+  background-color: #b0e57c;
+  color: black;
+}
+
+.bg-unknown {
+  background-color: #8ddcff;
+  color: black;
 }
