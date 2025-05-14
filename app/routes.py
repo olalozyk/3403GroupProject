@@ -726,27 +726,25 @@ def export_documents():
         flash('No documents selected for export.', 'danger')
         return redirect(url_for('share_document'))
 
-    # Set up an in-memory ZIP
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for doc_id in selected_ids:
-            doc = Document.query.filter_by(id=doc_id, owner_id=current_user.id).first()
+            doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first()
             if not doc:
-                continue  # skip if doc not found or not owned by user
+                continue
 
-            file_path = os.path.join(app.root_path, 'static', 'documents', doc.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], doc.file) 
             if os.path.exists(file_path):
-                zipf.write(file_path, arcname=doc.filename)
+                zipf.write(file_path, arcname=doc.file)
             else:
                 app.logger.warning(f"File not found: {file_path}")
 
-        # add personal summary if requested
         if include_personal_summary:
             personal_details = generate_personal_summary(current_user)
             zipf.writestr('PersonalDetails.txt', personal_details)
 
     zip_buffer.seek(0)
-    filename = f"SharedDocuments_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.zip"
+    filename = f"{current_user.first_name}{current_user.last_name}_DocumentsToBeSent.zip" 
 
     return send_file(
         zip_buffer,
@@ -760,15 +758,19 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 def generate_personal_summary(user):
+    profile = user.profile
+
     summary = f"""
     Personal Details Summary
     ------------------------
     Name: {user.first_name} {user.last_name}
     Email: {user.email}
-    Date of Birth: {user.date_of_birth}
-    Contact Number: {user.contact_number}
-    Medical Summary:
-    {user.medical_summary}
+    Date of Birth: {profile.date_of_birth if profile else 'Not provided'}
+    Contact Number: {profile.mobile_number if profile else 'Not provided'}
+    Address: {profile.address if profile else 'Not provided'}
+    Gender: {profile.gender if profile else 'Not provided'}
+    Insurance Type: {profile.insurance_type if profile else 'Not provided'}
+    Medical Summary: {getattr(user, 'medical_summary', 'Not provided')}
 
     Generated on: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC"""
     return summary
