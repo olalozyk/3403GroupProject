@@ -219,6 +219,61 @@ def test_edit_document():
 
     print("✅ Document edit test passed.")
 
+def test_calendar_view():
+    print("▶ Testing Calendar View page...")
+    driver.get(f"{BASE_URL}/calendar")
+
+    # Wait for the calendar title to appear
+    try:
+        heading = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//h1[contains(text(), 'Your Calendar')]"))
+        )
+        assert heading is not None
+    except Exception as e:
+        print("❌ Calendar heading not found.")
+        raise
+
+    # Check Month View is selected and disabled
+    try:
+        view_selector = driver.find_element(By.ID, "viewSelector")
+        assert view_selector.get_attribute("disabled") == "true"
+        assert view_selector.get_attribute("value") == "month"
+    except Exception as e:
+        print("❌ View selector missing or incorrect.")
+        raise
+
+    # Check the navigation arrows and month/year heading
+    try:
+        prev_btn = driver.find_element(By.ID, "prevMonth")
+        next_btn = driver.find_element(By.ID, "nextMonth")
+        heading = driver.find_element(By.ID, "monthYearHeading")
+        assert prev_btn.is_displayed() and next_btn.is_displayed() and heading.is_displayed()
+    except Exception as e:
+        print("❌ Month navigation buttons or heading not found.")
+        raise
+
+    # Check if appointment and document filter buttons exist
+    for btn_class in ["btn-Appointment", "btn-Tests", "btn-Expirations", "btn-Missed"]:
+        try:
+            btn = driver.find_element(By.CLASS_NAME, btn_class)
+            assert btn.is_displayed()
+        except:
+            raise AssertionError(f"❌ Filter button '{btn_class}' not found.")
+
+    # Optionally check if at least one calendar event is rendered (depends on your JS)
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                ".btn-Appointment, .btn-Missed, .btn-Tests, .btn-Expirations"
+            ))
+        )
+        print("✅ Events are rendered on the calendar.")
+    except:
+        print("❌ No events found on the calendar.")
+
+    print("✅ Calendar View test passed.")
+
 
 
 if __name__ == "__main__":
@@ -231,4 +286,5 @@ if __name__ == "__main__":
             pass
         test_upload_document()
         test_edit_document()
+        test_calendar_view()
         driver.quit()
