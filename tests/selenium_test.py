@@ -142,6 +142,83 @@ def test_upload_document():
     assert "successfully" in driver.page_source.lower()
     print("✅ Document upload test passed.")
 
+def test_edit_document():
+    # Navigate to the list of documents
+    driver.get(f"{BASE_URL}/medical_document")
+    time.sleep(1)
+
+    # Find and click the first "Edit" link
+    edit_links = driver.find_elements(By.LINK_TEXT, "Edit")
+    if not edit_links:
+        raise Exception("❌ No documents available to edit.")
+    edit_links[0].click()
+
+    # Wait for edit form to load
+    WebDriverWait(driver, 5).until(EC.url_contains("/edit_document"))
+
+    # Edit fields
+    document_name_field = driver.find_element(By.NAME, "document_name")
+    document_name_field.clear()
+    document_name_field.send_keys("Edited Document Name")
+
+    notes_field = driver.find_element(By.NAME, "document_notes")
+    notes_field.clear()
+    notes_field.send_keys("Updated via Selenium.")
+
+    # Upload a new file (optional but can trigger backend validations)
+    new_test_file_path = os.path.abspath("tests/test_upload_edited.pdf")
+    if os.path.exists(new_test_file_path):
+        try:
+            file_input = driver.find_element(By.NAME, "upload_document")
+            file_input.send_keys(new_test_file_path)
+        except Exception as e:
+            print(f"[Warning] Failed to upload new file: {e}")
+
+    # Enable expiration date
+    expiration_checkbox = driver.find_element(By.ID, "enableExpirationDate")
+    try:
+        driver.execute_script("arguments[0].click();", expiration_checkbox)
+        time.sleep(0.3)  # Allow JS to toggle visibility/enabled state
+    except Exception as e:
+        print(f"[Warning] Failed to click expiration checkbox: {e}")
+
+    # Set expiration date using JavaScript to avoid 'Element Not Interactable'
+    new_exp_date = (datetime.date.today() + datetime.timedelta(days=60)).strftime('%Y-%m-%d')
+    expiration_input = driver.find_element(By.NAME, "expiration_date")
+    try:
+        driver.execute_script("arguments[0].value = '';", expiration_input)  # clear
+        driver.execute_script("arguments[0].value = arguments[1];", expiration_input, new_exp_date)
+    except Exception as e:
+        print(f"[Warning] Failed to set expiration date: {e}")
+        driver.save_screenshot("expiration_date_error.png")
+        raise
+
+    # Submit the form
+    submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", submit_btn)
+    time.sleep(0.5)
+
+    try:
+        driver.execute_script("arguments[0].click();", submit_btn)
+    except Exception as e:
+        print("[Error] Submit button could not be clicked:", e)
+        driver.save_screenshot("edit_submit_error.png")
+        raise
+
+    # Wait for redirection or check for success message
+    try:
+        WebDriverWait(driver, 10).until(EC.url_contains("/medical_document"))
+    except:
+        print("[Warning] URL didn't change after edit. Checking page source.")
+
+    page_source = driver.page_source.lower()
+    if "successfully" not in page_source:
+        print("❌ Edit failed. Page source snippet:")
+        driver.save_screenshot("edit_debug.png")
+        raise AssertionError("Edit did not succeed. Check logs or screenshot.")
+
+    print("✅ Document edit test passed.")
+
 
 
 if __name__ == "__main__":
@@ -153,4 +230,5 @@ if __name__ == "__main__":
         except:
             pass
         test_upload_document()
+        test_edit_document()
         driver.quit()
