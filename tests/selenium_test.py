@@ -23,27 +23,6 @@ BASE_URL = "http://localhost:5000"
 LOGIN_EMAIL = "test@example.com"
 LOGIN_PASSWORD = "yourpassword"
 
-# Ensure test user exists in the DB
-def ensure_test_user():
-    app = create_app()
-
-    with app.app_context():
-        user = User.query.filter_by(email=LOGIN_EMAIL).first()
-        if not user:
-            hashed_pw = generate_password_hash(LOGIN_PASSWORD)
-            user = User(
-                first_name="Test",
-                last_name="User",
-                email=LOGIN_EMAIL,
-                password=hashed_pw,
-                role="member"
-            )
-            db.session.add(user)
-            db.session.commit()
-            print("✅ Test user created.")
-        else:
-            print("ℹ️ Test user already exists.")
-
 # Chrome options
 options = Options()
 options.add_argument("--log-level=3")  # Suppress Chrome logging
@@ -51,69 +30,96 @@ options.add_experimental_option("detach", True)  # Optional: keep browser open
 # Initialize driver
 driver = webdriver.Chrome(service=Service(), options=options)
 
-def login(driver):
-    driver.get("http://localhost:5000/login")
+LOGIN_PASSWORD = "testpass123"  # Shared password
+
+def test_register_user():
+    driver.get(f"{BASE_URL}/register")
     time.sleep(1)
 
-    # Fill in login form
-    driver.find_element(By.NAME, "email").send_keys(LOGIN_EMAIL)
+    new_email = f"user{int(time.time())}@example.com"  # Unique email
+    driver.find_element(By.NAME, "first_name").send_keys("Selenium")
+    driver.find_element(By.NAME, "last_name").send_keys("Test")
+    driver.find_element(By.NAME, "email").send_keys(new_email)
     driver.find_element(By.NAME, "password").send_keys(LOGIN_PASSWORD)
+    driver.find_element(By.NAME, "confirm_password").send_keys(LOGIN_PASSWORD)
 
-    # Submit the form
+    submit_btn = driver.find_element(By.NAME, "submit")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", submit_btn)
+    time.sleep(0.5)
+    submit_btn.click()
+    WebDriverWait(driver, 5).until(EC.url_contains("/login"))
+
+    assert "login" in driver.current_url.lower()
+    print("✅ Registration test passed.")
+
+    return new_email  # Return the email for next login
+
+def login(driver, email):
+    driver.get(f"{BASE_URL}/login")
+    time.sleep(1)
+    driver.find_element(By.NAME, "email").send_keys(email)
+    driver.find_element(By.NAME, "password").send_keys(LOGIN_PASSWORD)
     driver.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    time.sleep(2)  # Allow redirect to dashboard or appointment page
+    time.sleep(2)
 
-def test_add_appointment():
-    login(driver)
+def test_add_appointment(user_email):
+    login(driver, user_email)
 
     driver.get(f"{BASE_URL}/appointment/add")
     time.sleep(1)
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    start_time = "09:00"
-    end_time = "10:00"
 
-    driver.find_element(By.NAME, "appointment_date").send_keys(today)
-    driver.find_element(By.NAME, "starting_time").send_keys(start_time)
-    driver.find_element(By.NAME, "ending_time").send_keys(end_time)
+    # Enter time in 24-hour format
+    driver.find_element(By.NAME, "starting_time").send_keys("14:00")
+    driver.find_element(By.NAME, "ending_time").send_keys("15:00")
+
+    # Set date using JS
+    date_input = driver.find_element(By.NAME, "appointment_date")
+    driver.execute_script("arguments[0].value = arguments[1]", date_input, today)
+
+    # Fill form fields
     driver.find_element(By.NAME, "practitioner_name").send_keys("Dr. Smith")
-
     Select(driver.find_element(By.NAME, "practitioner_type")).select_by_visible_text("General Practitioner (GP)")
     driver.find_element(By.NAME, "location").send_keys("Test Clinic")
     driver.find_element(By.NAME, "provider_number").send_keys("123456")
     Select(driver.find_element(By.NAME, "appointment_type")).select_by_visible_text("General")
     driver.find_element(By.NAME, "appointment_notes").send_keys("Testing via Selenium.")
 
+    # Tick reminders
     for label in ["2 hours before", "1 day before"]:
         checkbox = driver.find_element(By.XPATH, f"//input[@type='checkbox' and @value='{label}']")
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-        time.sleep(0.5)
+        time.sleep(0.2)
         if not checkbox.is_selected():
             checkbox.click()
 
-    # Custom reminder (set to tomorrow)
+    # Custom reminder = tomorrow
     custom_reminder = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    driver.find_element(By.NAME, "custom_reminder").send_keys(custom_reminder)
+    custom_input = driver.find_element(By.NAME, "custom_reminder")
+    driver.execute_script("arguments[0].value = arguments[1]", custom_input, custom_reminder)
 
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    # Submit form
+    submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+    submit_btn.click()
 
-    # Wait for confirmation either by URL or a known element
+    # Wait for redirect
     try:
         WebDriverWait(driver, 10).until(
             EC.url_contains("/appointments")
         )
     except:
         print("[Warning] URL didn't change. Checking page content instead.")
-    
-    assert "appointment" in driver.current_url.lower() or "successfully" in driver.page_source.lower()
+        print("Current URL:", driver.current_url)
+        print("Page content snippet:", driver.page_source[:500])
 
+    assert "appointment" in driver.current_url.lower() or "successfully" in driver.page_source.lower()
     print("✅ Appointment submission test passed.")
 
 
 if __name__ == "__main__":
-    ensure_test_user()  # Create test user before running the test
-
     try:
-        test_add_appointment()
+        user_email = test_register_user()   # store returned email
+        test_add_appointment(user_email)    # pass it to the function
     finally:
         driver.quit()

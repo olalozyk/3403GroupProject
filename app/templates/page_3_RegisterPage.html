@@ -1,5 +1,5 @@
 <!-- This page was written by the team member: Aleksandra Lozyk (Ola)  -->
- 
+
 {% extends 'base.html' %}
 {% block title %}Member Login{% endblock %}
 {% block content %}
@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-center align-items-center" style="min-height: 45.5vh;">
         <div class="p-4 shadow rounded" style="background-color: white; max-width: 420px; width: 100%;">
 
-            <form method="POST" action="{{ url_for('register') }}">
+            <form method="POST" action="{{ url_for('main.register') }}">
                 <div class="msg-col">
                     {% if success_msg %}
                     <div class="success-msg">{{ success_msg }}</div>
@@ -22,11 +22,11 @@
                     <div class="error-msg">{{ error_msg }}</div>
                     {% endif %}
                     {% if form.errors %}
-                        {% for field, errors in form.errors.items() %}
-                            {% for error in errors %}
-                                <div class="error-msg">{{ error }}</div>
-                            {% endfor %}
-                        {% endfor %}
+                    {% for field, errors in form.errors.items() %}
+                    {% for error in errors %}
+                    <div class="error-msg">{{ error }}</div>
+                    {% endfor %}
+                    {% endfor %}
                     {% endif %}
                 </div>
                 {{ form.hidden_tag() }}
@@ -51,7 +51,7 @@
                     <div class="form-group position-relative">
                         {{ form.password(class='form-control pe-5', id='password', placeholder="Enter your password") }}
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
-                            data-target="password" style="cursor: pointer;"></i>
+                           data-target="password" style="cursor: pointer;"></i>
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@
                         {{ form.confirm_password(class='form-control pe-5',
                         id='confirm_password', placeholder="Confirm your password") }}
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
-                            data-target="confirm_password" style="cursor: pointer;"></i>
+                           data-target="confirm_password" style="cursor: pointer;"></i>
                     </div>
                 </div>
 
@@ -71,7 +71,7 @@
 
                 <p class="text-center mb-0">
                     Already have an account?
-                    <a href="{{ url_for('login') }}" class="purple-link">Login here</a>
+                    <a href="{{ url_for('main.login') }}" class="purple-link">Login here</a>
                 </p>
             </form>
 

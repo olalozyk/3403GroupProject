@@ -11,7 +11,7 @@
 
     <div class="d-flex justify-content-center align-items-center" style="min-height: 45.5vh;">
         <div class="p-4 shadow rounded" style="background-color: white; max-width: 420px; width: 100%;">
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('main.login') }}">
                 <div class="msg-col">
                     {% if msg %}
                     <div class="msg">{{ msg }}</div>
@@ -29,7 +29,7 @@
                     <div class="form-group position-relative mb-3">
                         {{ form.password(class='form-control pe-5', placeholder="Enter password", id='password') }}
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
-                            data-target="password" style="cursor: pointer;"></i>
+                           data-target="password" style="cursor: pointer;"></i>
                     </div>
                 </div>
 
@@ -39,12 +39,12 @@
 
                 <div class="text-center">
                     <p class="mb-2">
-                        <a href="{{ url_for('reset_request') }}" class="purple-link">Forgot Password?</a>
+                        <a href="{{ url_for('main.reset_request') }}" class="purple-link">Forgot Password?</a>
                     </p>
 
                     <p class="mb-0">
                         No account?
-                        <a href="{{ url_for('register') }}" class="purple-link">Register here</a>
+                        <a href="{{ url_for('main.register') }}" class="purple-link">Register here</a>
                     </p>
                 </div>
             </form>

@@ -12,31 +12,31 @@
     <h3 class="fw-bold purple-text text-center mb-4">Share Your Documents</h3>
 
     {% if documents %}
-    <form method="POST" action="{{ url_for('share_document') }}">
+    <form method="POST" action="{{ url_for('main.share_document') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       <div class="table-responsive mb-3">
         <table class="table table-hover text-center">
           <thead class="table-light">
-            <tr>
-              <th>Select</th>
-              <th>Document</th>
-              <th>Type</th>
-              <th>Uploaded</th>
-            </tr>
+          <tr>
+            <th>Select</th>
+            <th>Document</th>
+            <th>Type</th>
+            <th>Uploaded</th>
+          </tr>
           </thead>
           <tbody>
-            {% for doc in documents %}
-            <tr>
-              <td>
-                <input class="form-check-input" type="checkbox" name="document_ids" value="{{ doc.id }}"
-                  id="doc-{{ doc.id }}">
-              </td>
-              <td>{{ doc.document_name }}</td>
-              <td>{{ doc.document_type }}</td>
-              <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
-            </tr>
-            {% endfor %}
+          {% for doc in documents %}
+          <tr>
+            <td>
+              <input class="form-check-input" type="checkbox" name="document_ids" value="{{ doc.id }}"
+                     id="doc-{{ doc.id }}">
+            </td>
+            <td>{{ doc.document_name }}</td>
+            <td>{{ doc.document_type }}</td>
+            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+          </tr>
+          {% endfor %}
           </tbody>
         </table>
       </div>
@@ -53,17 +53,17 @@
 
       <div class="d-flex justify-content-center align-items-center gap-3 flex-nowrap">
         <button type="submit" name="action" value="share" id="shareButton" class="btn btn-Appointment px-3 fw-bold"
-          style="border:2px solid #b0e57c;" disabled>
+                style="border:2px solid #b0e57c;" disabled>
           Share Internally
         </button>
 
         <input type="email" name="recipient_email" id="emailInput" class="form-control" placeholder="Enter user email"
-          style="max-width:240px; min-width:200px; border:2px solid #b0e57c;" required>
+               style="max-width:240px; min-width:200px; border:2px solid #b0e57c;" required>
 
         <div class="vr d-none d-md-block" style="height:30px;"></div>
 
-        <button type="submit" name="action" value="download" formaction="{{ url_for('export_documents') }}"
-          formmethod="POST" class="btn btn-Tests px-4 fw-bold">
+        <button type="submit" name="action" value="download" formaction="{{ url_for('main.export_documents') }}"
+                formmethod="POST" class="btn btn-Tests px-4 fw-bold">
           Download as ZIP
         </button>
       </div>
@@ -80,29 +80,29 @@
     <div class="table-responsive">
       <table class="table align-middle table-hover text-center">
         <thead class="table-light">
-          <tr>
-            <th>Document</th>
-            <th>Sender</th>
-            <th>Type</th>
-            <th>Received</th>
-            <th>Actions</th>
-          </tr>
+        <tr>
+          <th>Document</th>
+          <th>Sender</th>
+          <th>Type</th>
+          <th>Received</th>
+          <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-          {% for shared, name, dtype, shared_at, sender_email in shared_documents %}
-          <tr>
-            <td>{{ name }}</td>
-            <td>{{ sender_email }}</td>
-            <td>{{ dtype }}</td>
-            <td>{{ shared_at.strftime('%d/%m/%Y') }}</td>
-            <td>
-              <a href="{{ url_for('download_document', doc_id=shared.document_id) }}"
-                class="btn btn-purple-calender btn-sm">
-                Download
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
+        {% for shared, name, dtype, shared_at, sender_email in shared_documents %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ sender_email }}</td>
+          <td>{{ dtype }}</td>
+          <td>{{ shared_at.strftime('%d/%m/%Y') }}</td>
+          <td>
+            <a href="{{ url_for('main.download_document', doc_id=shared.document_id) }}"
+               class="btn btn-purple-calender btn-sm">
+              Download
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
         </tbody>
       </table>
     </div>
