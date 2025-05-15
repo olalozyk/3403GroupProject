@@ -6,12 +6,12 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <div class="container mt-3">
-  {% for category, message in messages %}
-  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  {% endfor %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 </div>
 {% endif %}
 {% endwith %}
@@ -48,7 +48,8 @@
                 <form method="get" action="/appointments" class="mb-4">
                     <div class="row g-2">
                         <div class="col-md-4">
-                            <input type="text" name="q" class="form-control" placeholder="Search by practitioner, type, or notes">
+                            <input type="text" name="q" class="form-control"
+                                placeholder="Search by practitioner, type, or notes">
                         </div>
                         <div class="col-md-3">
                             <input type="date" name="date" class="form-control" placeholder="Appointment date">
@@ -88,43 +89,54 @@
             <div class="table-responsive col-md-12 appt-manager-col d-flex justify-content-center align-items-center">
                 <table class="table appt-manager-table">
                     <thead class="table-light">
-                    <tr class="text-center fw-semibold">
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Type</th>
-                        <th>Practitioner</th>
-                        <th>Location</th>
-                        <th>Notes</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr class="text-center fw-semibold">
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Practitioner</th>
+                            <th>Location</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
 
-                    {% for appt in appointments %}
-                    <tr class="align-middle text-center {% if loop.index % 2 == 0 %}table-light{% endif %}">
-                        <td><strong>{{ appt.appointment_date.strftime('%d/%m/%y') }}</strong></td>
-                        <td>{{ appt.starting_time.strftime('%I:%M %p') }}</td>
-                        <td>{{ appt.appointment_type }}</td>
-                        <td>{{ appt.practitioner_name }}</td>
-                        <td>{{ appt.location }}</td>
-                        <td>{{ appt.appointment_notes }}</td>
-                        <td>
-                            <span class="badge bg-success">Upcoming</span>
-                        </td>
-                        <td class="text-nowrap">
-                            <a href="{{ url_for('main.edit_appointment', appointment_id=appt.id) }}" class="btn edit-btn btn-sm">Edit</a>
-                            <button data-id="{{ appt.id }}" onclick="deleteAppointment(this.dataset.id)"
+                        {% for appt in appointments %}
+                        <tr class="align-middle text-center {% if loop.index % 2 == 0 %}table-light{% endif %}">
+                            <td><strong>{{ appt.appointment_date.strftime('%d/%m/%y') }}</strong></td>
+                            <td>{{ appt.starting_time.strftime('%I:%M %p') }}</td>
+                            <td>{{ appt.appointment_type }}</td>
+                            <td>{{ appt.practitioner_name }}</td>
+                            <td>{{ appt.location }}</td>
+                            <td>{{ appt.appointment_notes }}</td>
+                            <td>
+                                {% set appt_datetime = appt.appointment_date %}
+                                {% set today = now.date() %}
+
+                                {% if appt_datetime == today %}
+                                <span class="badge bg-info">Today</span>
+                                {% elif appt_datetime > today %}
+                                <span class="badge bg-success">Upcoming</span>
+                                {% elif appt_datetime < today %} <span class="badge bg-secondary">Completed</span>
+                                    {% else %}
+                                    <span class="badge bg-dark">Unknown</span>
+                                    {% endif %}
+                            </td>
+                            <td class="text-nowrap">
+                                <a href="{{ url_for('main.edit_appointment', appointment_id=appt.id) }}"
+                                    class="btn edit-btn btn-sm">Edit</a>
+                                <button data-id="{{ appt.id }}" onclick="deleteAppointment(this.dataset.id)"
                                     class="btn cancel-btn btn-sm">
-                                Cancel
-                            </button>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">No appointments found.</td>
-                    </tr>
-                    {% endfor %}
+                                    Cancel
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No appointments found.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
