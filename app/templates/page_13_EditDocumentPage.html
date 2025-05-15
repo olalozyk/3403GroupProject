@@ -2,9 +2,9 @@
 {% block title %}Edit Document{% endblock %}
 {% block content %}
 
-<h1 class="upload-document-text text-center mt-4">Edit Document</h1>
+<h1 class="title-purple-text text-center mt-5">Edit Document</h1>
 
-<div class="container mt-5 member-timetable-page shadow">
+<div class="container mt-4 member-timetable-page shadow">
     <form method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -56,8 +56,9 @@
             <div class="col-md-6">
                 <h4 class="mb-2 upload-title"><strong>Notes (Optional)</strong></h4>
                 <div class="input-group shadow-sm w-75">
-                    <textarea class="form-control form-control-sm" name="notes" rows="4"
-                              placeholder="Enter a short note or comment about the document (optional)">{{ document.notes or '' }}</textarea>
+                    <textarea class="form-control form-control-sm" name="document_notes" rows="4"
+
+                              placeholder="Enter a short note or comment about the document (optional)">{{ document.document_notes or '' }}</textarea>
                 </div>
             </div>
         </div>
