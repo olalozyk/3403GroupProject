@@ -320,9 +320,32 @@ def appointment_manager():
 
     appointments = appointments.order_by(
         Appointment.appointment_date.asc() if order == 'asc' else Appointment.appointment_date.desc()
-    )
+    ).all()
 
-    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
+    # Add days_away and status dynamically
+    now = datetime.now()
+    for appt in appointments:
+        appt_datetime = datetime.combine(appt.appointment_date, appt.starting_time)
+        if appt.appointment_date and appt.starting_time:
+            appt_datetime = datetime.combine(appt.appointment_date, appt.starting_time)
+            appt.days_away = (appt_datetime.date() - now.date()).days
+            if appt_datetime.date() == now.date():
+                appt.status = "Today"
+            elif appt_datetime > now:
+                appt.status = "Upcoming"
+            else:
+                appt.status = "Completed"
+        else:
+            appt.status = "Unknown"
+        appt.days_away = (appt_datetime.date() - now.date()).days
+        if appt_datetime.date() == now.date():
+            appt.status = "Today"
+        elif appt_datetime > now:
+            appt.status = "Upcoming"
+        else:
+            appt.status = "Completed"
+
+    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments)
 
 
 
