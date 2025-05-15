@@ -69,43 +69,51 @@ def test_add_appointment(user_email):
     time.sleep(1)
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    start_time = "09:00"
-    end_time = "10:00"
 
-    driver.find_element(By.NAME, "appointment_date").send_keys(today)
-    driver.find_element(By.NAME, "starting_time").send_keys(start_time)
-    driver.find_element(By.NAME, "ending_time").send_keys(end_time)
+    # Enter time in 24-hour format
+    driver.find_element(By.NAME, "starting_time").send_keys("14:00")
+    driver.find_element(By.NAME, "ending_time").send_keys("15:00")
+
+    # Set date using JS
+    date_input = driver.find_element(By.NAME, "appointment_date")
+    driver.execute_script("arguments[0].value = arguments[1]", date_input, today)
+
+    # Fill form fields
     driver.find_element(By.NAME, "practitioner_name").send_keys("Dr. Smith")
-
     Select(driver.find_element(By.NAME, "practitioner_type")).select_by_visible_text("General Practitioner (GP)")
     driver.find_element(By.NAME, "location").send_keys("Test Clinic")
     driver.find_element(By.NAME, "provider_number").send_keys("123456")
     Select(driver.find_element(By.NAME, "appointment_type")).select_by_visible_text("General")
     driver.find_element(By.NAME, "appointment_notes").send_keys("Testing via Selenium.")
 
+    # Tick reminders
     for label in ["2 hours before", "1 day before"]:
         checkbox = driver.find_element(By.XPATH, f"//input[@type='checkbox' and @value='{label}']")
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-        time.sleep(0.5)
+        time.sleep(0.2)
         if not checkbox.is_selected():
             checkbox.click()
 
-    # Custom reminder (set to tomorrow)
+    # Custom reminder = tomorrow
     custom_reminder = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    driver.find_element(By.NAME, "custom_reminder").send_keys(custom_reminder)
+    custom_input = driver.find_element(By.NAME, "custom_reminder")
+    driver.execute_script("arguments[0].value = arguments[1]", custom_input, custom_reminder)
 
-    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    # Submit form
+    submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+    submit_btn.click()
 
-    # Wait for confirmation either by URL or a known element
+    # Wait for redirect
     try:
         WebDriverWait(driver, 10).until(
             EC.url_contains("/appointments")
         )
     except:
         print("[Warning] URL didn't change. Checking page content instead.")
-    
-    assert "appointment" in driver.current_url.lower() or "successfully" in driver.page_source.lower()
+        print("Current URL:", driver.current_url)
+        print("Page content snippet:", driver.page_source[:500])
 
+    assert "appointment" in driver.current_url.lower() or "successfully" in driver.page_source.lower()
     print("✅ Appointment submission test passed.")
 
 
