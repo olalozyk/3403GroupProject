@@ -386,7 +386,7 @@ def add_appointment():
         db.session.commit()
 
         flash("Appointment successfully created", "success")
-        return redirect(url_for("main.appointment_manager"))
+        return redirect(url_for("main.appointments"))
 
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
