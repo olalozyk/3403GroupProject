@@ -51,6 +51,57 @@ class UnitTests(unittest.TestCase):
         db.session.add(self.test_user)
         db.session.commit()
     
+    # Create a test user in the database
+    def create_user(self, email="test@example.com", password="testpass123"):
+        user = User(
+            first_name="Test",
+            last_name="User",
+            email=email
+        )
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        return user
+    
+    # Gets the CSRF token from any page that renders a form 
+    def get_csrf_token(self, route): 
+        response = self.client.get(route)
+        token = None
+        if b'name="csrf_token"' in response.data:
+            import re
+            match = re.search(r'name="csrf_token" type="hidden" value="([^"]+)"', response.get_data(as_text=True))
+            if match:
+                token = match.group(1)
+        return token
+    
+    # Log in a user via the test client
+    def login(self, user, password="testpass123"):
+        return self.client.post("/login", data={
+            "email": user.email,
+            "password": password
+        }, follow_redirects=True)
+
+    # Upload and register a test document for a user
+    def add_document(self, user, document_name="Sample Doc", file="sample_file.pdf", document_type="General", practitioner_name="Dr. Smith", document_notes="Routine checkup"):
+        os.makedirs("app/static/uploads", exist_ok=True)
+        file_path = os.path.join("app/static/uploads", file)
+
+        with open(file_path, "wb") as f:
+            f.write(b"Dummy file content")
+
+        doc = Document(
+            user_id=user.id,
+            file=file,
+            document_name=document_name,
+            document_type=document_type,
+            document_notes=document_notes, 
+            practitioner_name=practitioner_name,
+            upload_date=datetime.utcnow()
+        )
+        db.session.add(doc)
+        db.session.commit()
+        return doc
+
     def tearDown(self):
         """Clean up after each test"""
         db.session.remove()
@@ -456,6 +507,68 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Dr. Jess", response.data)
         self.assertNotIn(b"Dr. Sam", response.data)
+
+    # Share documents internally between users
+    def test_share_documents_internally(self):
+        """Test sharing documents with another user"""
+        user1 = self.create_user(email="sharer@example.com")
+        user2 = self.create_user(email="receiver@example.com")
+        self.login(user1)
+
+        # Add a test document
+        doc = self.add_document(user1, document_name="X-Ray", document_type="Imaging")
+
+        # Share the document with user2
+        response = self.client.post(
+            "/medical_document/share_document",
+            data={
+                "document_ids": [str(doc.id)],
+                "recipient_email": user2.email,
+                "include_personal_summary": "on",
+                "csrf_token": self.get_csrf_token("/documents/share")
+            },
+            follow_redirects=True
+        )
+
+        self.assertIn(b"Documents shared successfully!", response.data)
+
+    # Download selected documents as a ZIP archive
+    def test_download_documents_zip(self):
+        """Test downloading selected documents as a ZIP archive"""
+        user = self.create_user(email="zipuser@example.com")
+        self.login(user)
+
+        # Add a document
+        doc = self.add_document(user, document_name="MRI Scan", file="sample_file.pdf")
+
+        response = self.client.post(
+            "/documents/export",
+            data={
+                "document_ids": [str(doc.id)],
+                "include_personal_summary": "on",
+                "csrf_token": self.get_csrf_token("/documents/share")
+            },
+            follow_redirects=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "application/zip")
+        self.assertIn(b'PK', response.data[:2])  # ZIP file starts with "PK"
+
+    # Search documents by name/type before sharing
+    def test_search_documents_to_share(self):
+        """Test document search for sharing functionality"""
+        user = self.create_user(email="searcher@example.com")
+        self.login(user)
+
+        # Add documents
+        self.add_document(user, document_name="Blood Test", document_type="Lab")
+        self.add_document(user, document_name="X-Ray Result", document_type="Imaging")
+
+        response = self.client.get("/documents/share/search?q=Blood", follow_redirects=True)
+
+        self.assertIn(b"Blood Test", response.data)
+        self.assertNotIn(b"X-Ray Result", response.data)
 
 if __name__ == '__main__':
     unittest.main()
