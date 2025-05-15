@@ -278,5 +278,100 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(appt.reminder, "2 hours before,1 day before")
         self.assertEqual(appt.custom_reminder, tomorrow)
 
+    # Test searching appointments by partial practitioner name returns correct results
+    def test_appointment_search_by_practitioner(self):
+        """Test searching appointments by practitioner name"""
+        # Add two appointments with different practitioners
+        appt1 = Appointment(
+            user_id=self.test_user.id,
+            practitioner_name="Dr. Jess",
+            practitioner_type="GP",
+            appointment_date=date(2025, 5, 28),
+            starting_time=time(8, 0),
+            ending_time=time(9, 0),
+            location="Wellness Clinic",
+            appointment_type="Checkup",
+            appointment_notes="First visit"
+        )
+        appt2 = Appointment(
+            user_id=self.test_user.id,
+            practitioner_name="Dr. Sam",
+            practitioner_type="Physio",
+            appointment_date=date(2025, 6, 1),
+            starting_time=time(10, 0),
+            ending_time=time(10, 30),
+            location="Care Centre",
+            appointment_type="Follow-Up",
+            appointment_notes="Post-treatment"
+        )
+        db.session.add_all([appt1, appt2])
+        db.session.commit()
+
+        self.login_session()
+        response = self.client.get("/appointments?q=Jess", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Dr. Jess", response.data)
+        self.assertNotIn(b"Dr. Sam", response.data)
+
+    # Test sorting appointments in descending date order
+    def test_appointment_sorting_order(self):
+        """Test sorting appointments in descending order"""
+        appt1 = Appointment(
+            user_id=self.test_user.id,
+            practitioner_name="Dr. A",
+            practitioner_type="GP",
+            appointment_date=date(2025, 5, 10),
+            starting_time=time(9, 0),
+            ending_time=time(10, 0),
+            location="Clinic A",
+            appointment_type="General",
+            appointment_notes="Older"
+        )
+        appt2 = Appointment(
+            user_id=self.test_user.id,
+            practitioner_name="Dr. B",
+            practitioner_type="GP",
+            appointment_date=date(2025, 6, 10),
+            starting_time=time(9, 0),
+            ending_time=time(10, 0),
+            location="Clinic B",
+            appointment_type="General",
+            appointment_notes="Newer"
+        )
+        db.session.add_all([appt1, appt2])
+        db.session.commit()
+
+        self.login_session()
+        response = self.client.get("/appointments?order=desc", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        # Check that newer appointment appears first
+        self.assertTrue(response.data.find(b"Dr. B") < response.data.find(b"Dr. A"))
+
+    # Test clearing filters resets the appointment view
+    def test_clear_appointment_filters(self):
+        """Test clearing filters returns all appointments"""
+        appt = Appointment(
+            user_id=self.test_user.id,
+            practitioner_name="Dr. Clear",
+            practitioner_type="GP",
+            appointment_date=date.today(),
+            starting_time=time(10, 0),
+            ending_time=time(10, 30),
+            location="Clinic Clear",
+            appointment_type="Checkup",
+            appointment_notes="Test clear"
+        )
+        db.session.add(appt)
+        db.session.commit()
+
+        self.login_session()
+        response = self.client.get("/appointments", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Dr. Clear", response.data)
+
+
+
 if __name__ == '__main__':
     unittest.main()
+
+
