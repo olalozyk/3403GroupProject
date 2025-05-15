@@ -322,8 +322,9 @@ def appointment_manager():
         Appointment.appointment_date.asc() if order == 'asc' else Appointment.appointment_date.desc()
     )
 
-    return render_template("page_5_AppointmentsManagerPage.html", appointments=appointments.all())
-
+    return render_template("page_5_AppointmentsManagerPage.html", 
+                           appointments=appointments.all(),
+                           now=datetime.now())
 
 
 @blueprint.route("/appointment/add", methods=["GET", "POST"])
@@ -560,14 +561,13 @@ def view_document(doc_id):
 @login_required
 def download_document(doc_id):
     document = Document.query.get_or_404(doc_id)
-    if document.user_id != current_user.id:
-        flash("You don't have permission to download this document")
-        return redirect(url_for('main.medical_document'))
+     # Allow if user owns the doc or it's been shared with them
+    is_owner = document.user_id == session["user_id"]
+    is_shared_with_user = SharedDocument.query.filter_by(document_id=doc_id, recipient_id=session["user_id"]).first()
 
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], document.file)
-    if not os.path.exists(file_path):
-        flash("File not found", "danger")
-        return redirect(url_for('main.medical_document'))
+    if not (is_owner or is_shared_with_user):
+        flash("You don't have permission to download this document")
+        return redirect(url_for("document_manager"))
 
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], document.file, as_attachment=True)
 
@@ -744,11 +744,11 @@ def export_documents():
             if not doc:
                 continue
 
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], doc.file)
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], doc.file)
             if os.path.exists(file_path):
                 zipf.write(file_path, arcname=doc.file)
             else:
-                app.logger.warning(f"File not found: {file_path}")
+                current_app.logger.warning(f"File not found: {file_path}")
 
         if include_personal_summary:
             personal_details = generate_personal_summary(current_user)
@@ -766,7 +766,7 @@ def export_documents():
 
 @blueprint.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
 def generate_personal_summary(user):
     profile = user.profile
