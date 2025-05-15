@@ -605,7 +605,7 @@ def delete_document(doc_id):
     db.session.commit()
 
     flash(f"Document '{document.document_name}' has been deleted")
-    return redirect(url_for('medical_document'))
+    return redirect(url_for('main.medical_document'))
 
 # Page 9 - Upload New Document Page
 @blueprint.route("/medical_document/upload_document", methods=["GET", "POST"])

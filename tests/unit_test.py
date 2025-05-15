@@ -368,8 +368,94 @@ class UnitTests(unittest.TestCase):
         response = self.client.get("/appointments", follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Dr. Clear", response.data)
+    
+    # Test downloading a document the user owns
+    def test_document_download(self):
+        """Test that a user can download their own document"""
+        self.login_session()
 
+        # Upload a mock document entry
+        doc = Document(
+            user_id=self.test_user.id,
+            document_name="Download Test",
+            file="sample_file.pdf",
+            upload_date=date.today(),
+            document_type="General",
+            document_notes="Test doc",
+            practitioner_name="Dr. Test"
+        )
+        db.session.add(doc)
+        db.session.commit()
 
+        # Manually ensure the dummy file exists in the upload directory
+        filepath = os.path.join(self.app.config['UPLOAD_FOLDER'], doc.file)
+        os.makedirs(self.app.config['UPLOAD_FOLDER'], exist_ok=True)
+        with open(filepath, 'w') as f:
+            f.write("Dummy content")
+
+        # Perform the download
+        response = self.client.get(f"/medical_document/download/{doc.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Dummy content", response.data)
+
+    # Test deleting a document the user owns
+    def test_document_delete(self):
+        """Test that a user can delete their own document"""
+        self.login_session()
+
+        doc = Document(
+            user_id=self.test_user.id,
+            document_name="Delete Test",
+            file="delete_me.pdf",
+            upload_date=date.today(),
+            document_type="Lab",
+            document_notes="To delete",
+            practitioner_name="Dr. Delete"
+        )
+        db.session.add(doc)
+        db.session.commit()
+
+        # Perform the delete
+        response = self.client.get(f"/medical_document/delete/{doc.id}", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"has been deleted", response.data)
+
+        # Confirm deletion
+        deleted_doc = Document.query.get(doc.id)
+        self.assertIsNone(deleted_doc)
+
+    # Test document search by practitioner name
+    def test_document_search(self):
+        """Test document search returns correct matches"""
+        self.login_session()
+
+        doc1 = Document(
+            user_id=self.test_user.id,
+            document_name="Lab Results",
+            file="lab_results.pdf",  
+            document_type="Lab",
+            document_notes="Blood test",
+            practitioner_name="Dr. Jess",
+            upload_date=date.today()
+        )
+        doc2 = Document(
+            user_id=self.test_user.id,
+            document_name="Scan Report",
+            file="scan_report.pdf",  
+            document_type="Radiology",
+            document_notes="Chest scan",
+            practitioner_name="Dr. Sam",
+            upload_date=date.today()
+        )
+
+        db.session.add_all([doc1, doc2])
+        db.session.commit()
+
+        # Search for Dr. Jess
+        response = self.client.get("/medical_document?q=Jess", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Dr. Jess", response.data)
+        self.assertNotIn(b"Dr. Sam", response.data)
 
 if __name__ == '__main__':
     unittest.main()
