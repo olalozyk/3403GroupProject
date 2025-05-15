@@ -70,7 +70,7 @@ def login():
 
                 # Redirect to 'next' parameter if it exists, otherwise to dashboard
                 next_page = request.args.get('next')
-                return redirect(next_page if next_page else url_for('dashboard'))
+                return redirect(next_page if next_page else url_for('main.dashboard'))
             else:
                 if user:
                     print("Password check failed")
