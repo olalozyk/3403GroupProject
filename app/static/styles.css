@@ -984,21 +984,25 @@ table.table-outline-dark .btn {
 }
 
 .bg-today {
+  display: inline;
   background-color: #f59494;
   color: black;
 }
 
 .bg-upcoming {
+  display: inline;
   background-color: #f7c06b;
   color: black;
 }
 
 .bg-completed {
+  display: inline;
   background-color: #b0e57c;
   color: black;
 }
 
 .bg-unknown {
+  display: inline;
   background-color: #8ddcff;
   color: black;
 }
