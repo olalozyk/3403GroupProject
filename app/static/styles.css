@@ -953,7 +953,7 @@ table.table-outline-dark .btn {
 }
 
 .btn-share-internal {
-  background-color: #A3E635; /* match green */
+  background-color: #b0e57c; /* match green */
   color: black;
   font-weight: bold;
   border-radius: 20px;
@@ -962,7 +962,7 @@ table.table-outline-dark .btn {
 }
 
 .btn-zip-download {
-  background-color: #60A5FA; /* match blue */
+  background-color: #8ddcff; /* match blue */
   color: black;
   font-weight: bold;
   border-radius: 20px;
@@ -984,21 +984,25 @@ table.table-outline-dark .btn {
 }
 
 .bg-today {
+  display: inline;
   background-color: #f59494;
   color: black;
 }
 
 .bg-upcoming {
+  display: inline;
   background-color: #f7c06b;
   color: black;
 }
 
 .bg-completed {
+  display: inline;
   background-color: #b0e57c;
   color: black;
 }
 
 .bg-unknown {
+  display: inline;
   background-color: #8ddcff;
   color: black;
 }
