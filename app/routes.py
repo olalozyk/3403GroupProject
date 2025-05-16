@@ -280,6 +280,26 @@ def inject_notifications():
                         "timestamp": custom_reminder_time
                     })
 
+        shared_docs = (
+            db.session.query(SharedDocument)
+            .join(User, SharedDocument.sender_id == User.id)
+            .filter(SharedDocument.recipient_id == session["user_id"])
+            .order_by(SharedDocument.shared_at.desc())
+            .all()
+        )
+
+        for shared in shared_docs:
+            # Only show if recent or unread (up to you)
+            if shared.shared_at <= datetime.now():
+                notifications.append({
+                    "title": "Shared Document",
+                    "first_name": shared.sender.first_name,
+                    "body": f" has shared their document(s)",
+                    "date": shared.shared_at.strftime("%d %b"),  # e.g., "16 May"
+                    "time": shared.shared_at.strftime("%H:%M"),
+                    "triggered_on": shared.shared_at.isoformat(),
+                })
+
         n_not = len(notifications)  # badge will now show ALL relevant notifications
 
     notifications.sort(key=lambda x: x.get("triggered_on"), reverse=True)
