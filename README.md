@@ -83,8 +83,12 @@ All data is stored privately per user, with secure authentication and controlled
    pip install -r requirements.txt
 
    ```
+4. **Create A Folder for the Database**
+   ```bash
+   mkdir instance
+   ```
 
-4. **Run the app**
+5. **Run the app**
 
 ```bash
 + flask db upgrade  # Run database migrations (if using Flask-Migrate)
