@@ -386,7 +386,7 @@ def add_appointment():
         db.session.commit()
 
         flash("Appointment successfully created", "success")
-        return redirect(url_for("main.appointments"))
+        return redirect(url_for("main.appointment_manager"))
 
     # GET method — show blank form
     return render_template("page_6_AddAppointmentPage.html", appt=None, is_edit=False)
@@ -423,7 +423,7 @@ def edit_appointment(appointment_id):
 
         db.session.commit()
         flash("Appointment successfully updated", "success")
-        return redirect(url_for("main.appointment_manager"))
+        return redirect(url_for("appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
@@ -605,7 +605,7 @@ def delete_document(doc_id):
     db.session.commit()
 
     flash(f"Document '{document.document_name}' has been deleted")
-    return redirect(url_for('medical_document'))
+    return redirect(url_for('main.medical_document'))
 
 # Page 9 - Upload New Document Page
 @blueprint.route("/medical_document/upload_document", methods=["GET", "POST"])
