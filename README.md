@@ -38,18 +38,24 @@ All data is stored privately per user, with secure authentication and controlled
 - **Calendar View**: See all appointments and reminders in a month-based layout
 - **Medical Document Manager**: Upload and manage test results, referrals, invoices, and prescriptions
 - **Document Sharing**: Select and bundle documents to share externally
+- **Insights & Analytics**: Visual charts showing appointment trends, top practitioners, and frequencies
 - **Profile Settings** (optional): Change email, password, and delete account
+- **Notifications**: Shows reminders for upcoming and custom appointments based on real-time logic
+- **SocketIO Integration**: Real-time login and user connection events
 
 ---
 
 ## Tech Stack
 
-| Category | Tools/Libraries                          |
-| -------- | ---------------------------------------- |
-| Frontend | HTML, CSS, Bootstrap, JavaScript, JQuery |
-| Backend  | Python, Flask                            |
-| Database | SQLite with SQLAlchemy ORM               |
-| Other    | AJAX, Flask-WTF, WTForms                 |
+| Category  | Tools/Libraries                             |
+| --------- | ------------------------------------------- |
+| Frontend  | HTML, CSS, Bootstrap, JavaScript, JQuery    |
+| Backend   | Python, Flask                               |
+| Charting  | Chart.js, ChartDataLabels                   |
+| Database  | SQLite with SQLAlchemy ORM                  |
+| Forms     | Flask-WTF, WTForms                          |
+| Real-Time | Flask-SocketIO                              |
+| Other     | AJAX, CSRF protection, Meta tag integration |
 
 ---
 
@@ -79,12 +85,12 @@ All data is stored privately per user, with secure authentication and controlled
    ```
 
 4. **Run the app**
-  
-  ```bash
-  + flask db upgrade  # Run database migrations (if using Flask-Migrate)
-  + flask run
 
-  ```
+```bash
++ flask db upgrade  # Run database migrations (if using Flask-Migrate)
++ flask run
+
+```
 
 ## Team Members
 
