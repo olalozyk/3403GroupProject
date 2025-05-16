@@ -103,16 +103,23 @@
                             <li class="mb-3 border-bottom pb-2">
                                 <div>
                                     {% if note.title == "Reminder" %}
-                                    <span class="notif-bold-text">Custom reminder</span> for {{ note.body }} appointment
-                                    at
+                                    <span class="notif-bold-text">Custom reminder</span> for {{ note.body }}
+                                    appointment at
                                     <span class="notif-bold-text">{{ note.date }}</span><br>
                                     <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
                                     <small class="notif-small-text">Custom reminder: {{ note.reminder_date
                                         }}</small><br>
                                     <small>Notified on: {{ note.triggered_on }}</small>
+
+                                    {% elif note.title == "Shared Document" %}
+                                    <span class="notif-bold-text">{{ note.first_name }}</span> {{ note.body }}
+                                    <a href="{{ url_for('main.share_document') }}"
+                                        class="btn btn-notif btn-sm mt-2 mb-1">View Document</a><br>
+                                    <small>Shared on: {{ note.date }} {{ note.time }}</small><br>
+
                                     {% else %}
-                                    <span class="notif-bold-text">{{ note.title }}:</span> {{ note.body }} appointment
-                                    at
+                                    <span class="notif-bold-text">{{ note.title }}:</span> {{ note.body }}
+                                    appointment at
                                     <span class="notif-bold-text">{{ note.date }}</span><br>
                                     <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
                                     <small>Notified on: {{ note.triggered_on }}</small>
