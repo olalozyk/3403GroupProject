@@ -3,7 +3,6 @@ import sys
 import time
 import datetime
 import threading
-from encodings.punycode import selective_find
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
