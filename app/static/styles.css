@@ -70,6 +70,20 @@ a.nav-item1.active-link {
   font-weight: 600;
   font-size: 14px;
 }
+
+.btn-notif {
+  display: inline-block;
+  background-color: #6f42c1;
+  color: #fff;
+  padding: 2px 25px; /** topbot rightleft*/
+  border-radius: 30px;
+  transition: background 0.5s;
+}
+
+.btn-notif:hover {
+  background-color: #a783ec;
+  color: #2c2c2c;
+}
 /**-----------general section--------**/
 .container {
   max-width: 1320px;
