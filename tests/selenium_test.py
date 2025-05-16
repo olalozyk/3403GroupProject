@@ -101,6 +101,51 @@ def test_add_appointment():
     assert "appointment" in driver.current_url.lower() or "successfully" in driver.page_source.lower()
     print("✅ Appointment submission test passed.")
 
+def test_edit_appointment():
+    # Go to appointment manager page
+    driver.get(f"{BASE_URL}/appointments")
+    time.sleep(2)
+
+    # Find the first "Edit" button (assumes buttons have 'Edit' text or specific class/id)
+    try:
+        edit_btn = driver.find_element(By.LINK_TEXT, "Edit")
+    except:
+        print("❌ No appointment found to edit.")
+        return
+
+    # Click edit and wait for form to load
+    edit_btn.click()
+    WebDriverWait(driver, 5).until(EC.url_contains("/appointment/edit"))
+    assert "edit" in driver.current_url.lower()
+
+    # Change some fields
+    new_notes = "Updated via Selenium."
+    new_location = "Updated Clinic"
+
+    notes_field = driver.find_element(By.NAME, "appointment_notes")
+    location_field = driver.find_element(By.NAME, "location")
+
+    notes_field.clear()
+    notes_field.send_keys(new_notes)
+    location_field.clear()
+    location_field.send_keys(new_location)
+
+    # Optionally toggle one reminder checkbox
+    checkbox_label = "2 hours before"
+    checkbox = driver.find_element(By.XPATH, f"//input[@type='checkbox' and @value='{checkbox_label}']")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
+    time.sleep(0.2)
+    checkbox.click()  # toggle (will deselect if selected, or select if not)
+
+    # Submit the form
+    submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+    submit_btn.click()
+
+    # Verify redirect back to appointments page
+    WebDriverWait(driver, 10).until(EC.url_contains("/appointments"))
+    assert "appointments" in driver.current_url.lower()
+    print("✅ Edit appointment test passed.")
+
 
 def test_upload_document():
     driver.get(f"{BASE_URL}/medical_document/upload_document")
@@ -226,13 +271,74 @@ def test_calendar_view():
     print("✅ Calendar View test passed.")
 
 
+def test_analytics_page():
+    # Navigate to the insights page
+    driver.get(f"{BASE_URL}/insights")
+    time.sleep(2)
+
+    # Ensure URL is correct
+    assert "insights" in driver.current_url.lower()
+
+    # Wait for one of the dashboard metrics to be present
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "dashboard-p"))
+    )
+
+    # Verify key stats are visible
+    summary_labels = [
+        "Total Appointments",
+        "Total Documents",
+        "Documents Expiring Soon",
+        "Top Appointment Type",
+        "Most Frequent Practitioner"
+    ]
+
+    for label in summary_labels:
+        assert label in driver.page_source, f"Missing summary label: {label}"
+
+    # Check for presence of chart canvases
+    canvas_ids = [
+        "appointmentTypeChart",
+        "appointmentFrequencyChart",
+        "practitionerBarChart"
+    ]
+    for canvas_id in canvas_ids:
+        chart = driver.find_element(By.ID, canvas_id)
+        assert chart.is_displayed(), f"Chart {canvas_id} is not visible"
+
+    # Interact with the "Sort by" dropdown (pure JS effect — test UI response)
+    sort_dropdown = Select(driver.find_element(By.ID, "sort-range"))
+    sort_options = ["year", "6months", "3months", "month", "week"]
+
+    for value in sort_options:
+        sort_dropdown.select_by_value(value)
+        time.sleep(1)  # Let JS re-render the chart
+
+        chart = driver.find_element(By.ID, "appointmentFrequencyChart")
+        assert chart.is_displayed(), f"Line chart not visible for sort option: {value}"
+
+        label_text = driver.find_element(By.ID, "date-range-label").text.strip()
+        warning_visible = driver.find_element(By.ID, "chart-warning").is_displayed()
+
+        print(f"Sort range '{value}': label = '{label_text}', warning visible = {warning_visible}")
+
+        if not label_text and not warning_visible:
+            print(f"⚠️ No date label or warning shown — possibly due to insufficient data for '{value}' range.")
+        else:
+            print(f"✅ Valid response for '{value}' range.")
+
+    print("✅ Analytics page test passed.")
+
+
 if __name__ == "__main__":
     try:
         user_email = test_register_user()
         login(user_email)
         test_add_appointment()
+        test_edit_appointment()
         test_upload_document()
         test_edit_document()
         test_calendar_view()
+        test_analytics_page()
     finally:
         driver.quit()

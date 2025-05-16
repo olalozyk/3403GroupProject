@@ -2,24 +2,11 @@
 {% block title %}Appointment Manager{% endblock %}
 {% block content %}
 
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div class="container mt-3">
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
-{% endwith %}
-
 <!-- Main heading -->
-<div class="container py-5">
+<h1 class="title-purple-text text-center mt-5">Your Appointments</h1>
+
+<div class="container mt-5">
     <div class="text-center mb-5">
-        <h1 class="title-purple-text">Your Appointments</h1>
         <div class="d-flex justify-content-center gap-3 mt-3">
             <a href="{{ url_for('main.add_appointment') }}" class="btn btn-purple-calender px-4 py-2">
                 + Add Appointment
