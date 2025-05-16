@@ -423,7 +423,7 @@ def edit_appointment(appointment_id):
 
         db.session.commit()
         flash("Appointment successfully updated", "success")
-        return redirect(url_for("appointment_manager"))
+        return redirect(url_for("main.appointment_manager"))
 
     return render_template("page_6_AddAppointmentPage.html", appt=appt, is_edit=True)
 
