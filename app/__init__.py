@@ -35,7 +35,7 @@ def create_app(config=DeploymentConfig):
     migrate.init_app(application, db)
     csrf.init_app(application)
     login.init_app(application)
-    login.login_view = 'main.index'
+    login.login_view = 'main.login'
     socketio.init_app(application)
 
     # Import routes, models, sockets
