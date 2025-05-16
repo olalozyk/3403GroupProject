@@ -1,7 +1,5 @@
 # Ignore environment variable files
 app/application-env/
-.env
-*.env
 instance/
 env/
 # Ignore virtual environment
@@ -17,7 +15,6 @@ migrations/versions/__pycache__/
 
 # Ignore SQLite DB and migrations
 *.db
-migrations/
 
 # Ignore VS Code SQLTools extension data
 **/vscode-sqltools/Data/.node-runtimeinstance/ChronicCare.db
