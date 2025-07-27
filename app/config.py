@@ -9,7 +9,8 @@ class Config:
 
 
 class DeploymentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, 'instance', 'ChronicCare.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:////tmp/ChronicCare.db")
+
 
 
 class TestConfig(Config):
