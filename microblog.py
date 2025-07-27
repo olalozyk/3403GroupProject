@@ -4,10 +4,11 @@ load_dotenv()
 
 from flask_migrate import Migrate
 from app import socketio, create_app, db
-from app.config import DeploymentConfig
+from app.config import ProductionConfig  # instead of DeploymentConfig
+
 
 # Make these available globally for Flask CLI
-application = create_app(DeploymentConfig)
+application = create_app(ProductionConfig)
 migrate = Migrate(application, db)
 
 # Run with SocketIO if script is executed directly
