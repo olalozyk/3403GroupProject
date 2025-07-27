@@ -13,6 +13,10 @@ migrate = Migrate(application, db)
 
 # Run with SocketIO if script is executed directly
 if __name__ == '__main__':
-    socketio.run(application, debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    import eventlet
+    import eventlet.wsgi
+    eventlet.monkey_patch()
+
+    socketio.run(application, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
 
